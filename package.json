@@ -1,0 +1,18 @@
+{
+	"name": "buffetbotjs",
+	"version": "1.0.0",
+	"private": true,
+	"main": "./src/buffetBotMain.js",
+	"description": "Simple bot I created for my private Discord, that I host on a local Ubuntu box",
+	"author": {
+		"email": "me@danielTurcich.com",
+		"name": "Daniel Turcich",
+		"url": "https://danielTurcich.com"
+	},
+	"scripts": {
+		"serve": "node ./src/buffetBotMain.js"
+	},
+	"dependencies": {
+		"discord.js": "^12.5.1"
+	}
+}
