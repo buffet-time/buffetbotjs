@@ -1,13 +1,14 @@
 import { Client } from 'discord.js'
 import config from '../config.js'
-import { acronym } from './acronym.js'
+import { getAcronym } from './acronym.js'
+import { addReminder, removeReminder, viewReminders } from './reminders.js'
 
 const client = new Client()
 let messageToSend = ''
 let command = ''
-let commandSender = ''
 let commandArray = []
-let firstWord = ''
+let firstValue = ''
+let secondValue = ''
 let content = ''
 
 client.once('ready', () => {
@@ -18,73 +19,85 @@ client.once('ready', () => {
 client.on('message', (message) => {
 	content = message.content
 	command = content.slice()
-	commandSender = message.author.username
 	commandArray = command.split(' ')
-	firstWord = commandArray[0]
+	firstValue = commandArray[0]
+	secondValue = commandArray[1]
 
-	// !help
-	if (firstWord === '!help') {
-		messageToSend =
-			`Current commands: !acronym [insert word here]\n` +
-			`Current modifiers: /d\n` +
-			`Example: !acronym meme /d`
-		// console.log('!help command initiated by: ' + commandSender)
-	}
-
-	// !acronym
-	else if (command.length > 10 && firstWord === '!acronym') {
-		const word = command.slice(9, commandArray[1].length + 9)
-		const lowercaseWord = word.toLowerCase()
-		if (lowercaseWord === 'acab') {
-			messageToSend = '**ALL** cops are bastards'
-		} else if (lowercaseWord === 'mac') {
-			messageToSend = 'Linux Stan'
-		} else if (/^[a-zA-Z]+$/.test(word)) {
-			messageToSend = acronym(word)
-			// console.log('!acronym command initiated by: ' + commandSender)
-		} else {
+	switch (firstValue) {
+		case '!help':
 			messageToSend =
-				'The word you want to become an acronym must only contain letters.'
-		}
+				`**Current commands**:\n!acronym [insert word here]\n!reminders [add, remove, view]\n` +
+				`**Current modifiers**:\n**-d** deletes your message that invoked the command\n` +
+				`**Example:** !acronym meme -d`
+			break
+		case '!acronym': // !acronym [word]
+			if (!secondValue) {
+				messageToSend = 'Must pass a word.'
+				break
+			}
+			const word = command.slice(9, secondValue.length + 9)
+			const lowercaseWord = word.toLowerCase()
+			if (secondValue.length < 2) {
+				messageToSend = 'Acronym must be more than one letter.'
+				break
+			} else if (lowercaseWord === 'acab') {
+				messageToSend = '**ALL** cops are bastards'
+				break
+			} else if (lowercaseWord === 'mac') {
+				messageToSend = 'Linux Stan'
+				break
+			} else if (/^[a-zA-Z]+$/.test(word)) {
+				messageToSend = getAcronym(word)
+			} else {
+				messageToSend =
+					'The word you want to become an acronym must only contain letters.'
+			}
+			break
+		case '!reminders': // !reminders [add, remove, view]
+			if (!secondValue) {
+				messageToSend = 'Must pass **add** **remove** or **view**'
+				break
+			}
+			switch (secondValue) {
+				case 'add':
+					break
+				case 'remove':
+					//
+					break
+				case 'view':
+					//
+					break
+				default:
+					messageToSend =
+						'Incorrect invocation of the !reminders command. See !help'
+			}
+			break
+		default:
+			if (
+				content.includes('<@!136494200391729152>') &&
+				message.author.id !== '136494200391729152'
+			) {
+				messageToSend = `dont ever @ me again`
+			} else {
+				return
+			}
+			break
 	}
 
-	// !remindme command
-	else if (firstWord === '!remindme') {
-		//
-	}
-
-	// dont @ me
-	else if (
-		content.includes('<@!136494200391729152>') &&
-		message.author.id !== '136494200391729152'
-	) {
-		messageToSend = `dont ever @ me again`
-	}
-
-	// no conditions met so stop execution
-	else {
-		return
-	}
-
-	// /d modifier
-	if (command.includes('/d')) {
+	// -d modifier
+	if (command.includes('-d')) {
 		try {
 			message.delete()
-		} catch (error) {
-			// console.log('message.delete(): ' + error)
-		}
+		} catch (e) {}
 	}
 
 	// send the message
 	try {
 		message.channel.send(messageToSend)
-	} catch (error) {
+	} catch (e) {
 		try {
-			message.channel.send('Command Failed: ' + error)
-		} catch (error) {
-			// console.log(error)
-		}
-		// console.log('message.channel.send(): ' + error)
+			message.channel.send('Command Failed: ' + e)
+		} catch (e) {}
 	}
 })
 

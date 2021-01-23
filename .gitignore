@@ -2,6 +2,7 @@ node_modules
 
 config.js
 ignoreThis.txt
+exampleMessage.txt
 
 # Log files
 npm-debug.log*

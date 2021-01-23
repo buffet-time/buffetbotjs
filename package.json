@@ -14,6 +14,7 @@
 		"serve": "node ./src/buffetBotMain.js"
 	},
 	"dependencies": {
-		"discord.js": "^12.5.1"
+		"discord.js": "^12.5.1",
+		"file-system": "^2.2.2"
 	}
 }
