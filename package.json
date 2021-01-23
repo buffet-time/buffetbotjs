@@ -9,6 +9,7 @@
 		"name": "Daniel Turcich",
 		"url": "https://danielTurcich.com"
 	},
+	"type": "module",
 	"scripts": {
 		"serve": "node ./src/buffetBotMain.js"
 	},
