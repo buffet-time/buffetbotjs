@@ -16,7 +16,7 @@ client.once('ready', () => {
 	console.log('Ready\n ')
 })
 
-client.on('message', (message) => {
+client.on('message', async (message) => {
 	content = message.content
 	command = content.slice()
 	commandArray = command.split(' ')
@@ -59,13 +59,15 @@ client.on('message', (message) => {
 				break
 			}
 			switch (secondValue) {
-				case 'add':
+				case 'add': {
+					messageToSend = await addReminder(message, commandArray)
 					break
+				}
 				case 'remove':
-					//
+					removeReminder(message, commandArray)
 					break
 				case 'view':
-					//
+					viewReminders(message)
 					break
 				default:
 					messageToSend =

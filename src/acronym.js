@@ -1,5 +1,6 @@
 import { wordsArray } from '../assets/words.js'
 
+// TODO: make async
 export function getAcronym(word) {
 	const generatedAcronym = getWordsFromProvidedAcronym(word)
 		.toString()
