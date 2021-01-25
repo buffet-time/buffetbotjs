@@ -26,8 +26,10 @@ client.on('message', async (message) => {
 	switch (firstValue) {
 		case '!help':
 			messageToSend =
-				`**Current commands**:\n!acronym [insert word here]\n!reminders [add, remove, view]\n` +
+				`**Current commands**:\n!acronym [insert word here]\n` +
+				`!reminders add [number] [seconds/ second, ..., year/years] [#channel] ["message in quotes"] \n` +
 				`**Current modifiers**:\n**-d** deletes your message that invoked the command\n` +
+				`**-o** omits the output from the bot\n` +
 				`**Example:** !acronym meme -d`
 			break
 		case '!acronym': // !acronym [word]
@@ -60,14 +62,30 @@ client.on('message', async (message) => {
 			}
 			switch (secondValue) {
 				case 'add': {
-					messageToSend = await addReminder(message, commandArray)
+					if (commandArray.length > 5 && !isNaN(Number(commandArray[2]))) {
+						messageToSend = await addReminder(message, commandArray)
+					} else {
+						messageToSend =
+							'Incorrect invocation of the add reminders command. See !help'
+					}
 					break
 				}
 				case 'remove':
-					removeReminder(message, commandArray)
+					if (!isNaN(Number(commandArray[2]))) {
+						messageToSend = await removeReminder(
+							message.author.id,
+							commandArray[2]
+						)
+					} else {
+						messageToSend = 'You must pass a valid number.'
+					}
 					break
 				case 'view':
-					viewReminders(message)
+					// need to scrub incorrect invocations
+					messageToSend = await viewReminders(
+						message.author.id,
+						commandArray[2]
+					)
 					break
 				default:
 					messageToSend =
@@ -86,11 +104,18 @@ client.on('message', async (message) => {
 			break
 	}
 
-	// -d modifier
+	// -d modifier = deletes the message that invoked the command
 	if (command.includes('-d')) {
 		try {
 			message.delete()
-		} catch (e) {}
+		} catch (error) {}
+	}
+
+	// -o modifier = omits the bots response
+	else if (command.includes('-o')) {
+		try {
+			return
+		} catch (error) {}
 	}
 
 	// send the message

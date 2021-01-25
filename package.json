@@ -1,7 +1,7 @@
 {
 	"name": "buffetbotjs",
 	"version": "1.0.0",
-	"private": true,
+	"private": false,
 	"main": "./src/buffetBotMain.js",
 	"description": "Simple bot I created for my private Discord, that I host on a local Ubuntu box",
 	"author": {
@@ -16,6 +16,6 @@
 	"dependencies": {
 		"discord.js": "^12.5.1",
 		"file-system": "^2.2.2",
-		"util": "^0.12.3"
+		"lodash.isequal": "^4.5.0"
 	}
 }
