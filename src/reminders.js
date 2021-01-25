@@ -92,13 +92,15 @@ export async function viewReminders(messageAuthor, reminderToView) {
 		const data = await FileSystem.readFile('./assets/reminders.json')
 		const parsedData = JSON.parse(data)
 		if (reminderToView) {
-			return getRemindersByAuthor(parsedData, messageAuthor).filter(
-				(object) => {
+			return remindersArrayToReturnString(
+				getRemindersByAuthor(parsedData, messageAuthor).filter((object) => {
 					return object.reminderNumber === Number(reminderToView)
-				}
+				})
 			)
 		} else {
-			return getRemindersByAuthor(parsedData, messageAuthor)
+			return remindersArrayToReturnString(
+				getRemindersByAuthor(parsedData, messageAuthor)
+			)
 		}
 	} catch (error) {
 		return 'You have no saved reminders.'
@@ -156,4 +158,23 @@ function getRemindersByAuthor(parsedData, messageAuthor) {
 	return parsedData.filter((element) => {
 		return element.user === messageAuthor
 	})
+}
+
+function remindersArrayToReturnString(remindersArray) {
+	let remindersStringArray = []
+	remindersArray.forEach((object) => {
+		const date = new Date(object.time)
+		remindersStringArray.push(
+			'Reminder ' +
+				object.reminderNumber +
+				': "' +
+				object.message +
+				'" will be sent on: ' +
+				date +
+				' in <#' +
+				object.channel +
+				'>'
+		)
+	})
+	return remindersStringArray
 }
