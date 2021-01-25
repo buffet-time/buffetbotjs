@@ -1,6 +1,7 @@
 import FileSystem from 'fs/promises'
 import IsEqual from 'lodash.isequal'
 
+// need to scrub channel coming in incorrect and time being incorrect
 export async function addReminder(message, commandsArray) {
 	try {
 		const messageAuthor = message.author.id
@@ -56,18 +57,18 @@ export async function addReminder(message, commandsArray) {
 	}
 }
 
-export async function removeReminder(messageAuthor, reminderToRemove) {
+export async function removeReminder(messageAuthor, reminderNumberToRemove) {
 	try {
 		const data = await FileSystem.readFile('./assets/reminders.json')
 		const parsedData = JSON.parse(data)
 		const remindersArray = getRemindersByAuthor(parsedData, messageAuthor)
 		const objectToRemoveArray = remindersArray.filter((object) => {
-			return object.reminderNumber === Number(reminderToRemove)
+			return object.reminderNumber === Number(reminderNumberToRemove)
 		})
-		const objectToRemove = objectToRemoveArray[0]
-		if (objectToRemove) {
-			const indexToRemove = parsedData.findIndex((object) => {
-				return IsEqual(object, objectToRemove)
+		const reminderToRemove = objectToRemoveArray[0]
+		if (reminderToRemove) {
+			const indexToRemove = parsedData.findIndex((reminder) => {
+				return IsEqual(reminder, reminderToRemove)
 			})
 			parsedData.splice(indexToRemove, 1)
 			const remindersJsonString = JSON.stringify(parsedData, null, 2)
@@ -93,8 +94,8 @@ export async function viewReminders(messageAuthor, reminderToView) {
 		const parsedData = JSON.parse(data)
 		if (reminderToView) {
 			return remindersArrayToReturnString(
-				getRemindersByAuthor(parsedData, messageAuthor).filter((object) => {
-					return object.reminderNumber === Number(reminderToView)
+				getRemindersByAuthor(parsedData, messageAuthor).filter((reminder) => {
+					return reminder.reminderNumber === Number(reminderToView)
 				})
 			)
 		} else {
@@ -107,6 +108,15 @@ export async function viewReminders(messageAuthor, reminderToView) {
 	}
 }
 
+export async function getAllReminders() {
+	try {
+		const data = await FileSystem.readFile('./assets/reminders.json')
+		return JSON.parse(data)
+	} catch {
+		return
+	}
+}
+
 // TODO: handle making sure number doesnt go past max
 // if (reminderTime > Number.MAX_SAFE_INTEGER || reminderTime === 0) {
 //     return 'fail'
@@ -115,9 +125,6 @@ function getTime(amount, type) {
 	const currentTime = Date.now()
 	const amountConverted = amount * 1000 // so that adding 1 = adding 1 second not 1 ms
 	switch (type) {
-		case 'second':
-		case 'seconds':
-			return currentTime + amountConverted
 		case 'minute':
 		case 'minutes':
 			return currentTime + amountConverted * 60
@@ -155,24 +162,24 @@ function getAvailableReminderNumber(parsedData, messageAuthor) {
 }
 
 function getRemindersByAuthor(parsedData, messageAuthor) {
-	return parsedData.filter((element) => {
-		return element.user === messageAuthor
+	return parsedData.filter((reminder) => {
+		return reminder.user === messageAuthor
 	})
 }
 
 function remindersArrayToReturnString(remindersArray) {
 	let remindersStringArray = []
-	remindersArray.forEach((object) => {
-		const date = new Date(object.time)
+	remindersArray.forEach((reminder) => {
+		const date = new Date(reminder.time)
 		remindersStringArray.push(
 			'Reminder ' +
-				object.reminderNumber +
+				reminder.reminderNumber +
 				': "' +
-				object.message +
+				reminder.message +
 				'" will be sent on: ' +
 				date +
 				' in <#' +
-				object.channel +
+				reminder.channel +
 				'>'
 		)
 	})
