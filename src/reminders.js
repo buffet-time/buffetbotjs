@@ -62,8 +62,8 @@ export async function removeReminder(messageAuthor, reminderNumberToRemove) {
 		const data = await FileSystem.readFile('./assets/reminders.json')
 		const parsedData = JSON.parse(data)
 		const remindersArray = getRemindersByAuthor(parsedData, messageAuthor)
-		const objectToRemoveArray = remindersArray.filter((object) => {
-			return object.reminderNumber === Number(reminderNumberToRemove)
+		const objectToRemoveArray = remindersArray.filter((reminder) => {
+			return reminder.reminderNumber === Number(reminderNumberToRemove)
 		})
 		const reminderToRemove = objectToRemoveArray[0]
 		if (reminderToRemove) {
@@ -150,14 +150,19 @@ function getTime(amount, type) {
 
 // finds the lowest available number to set the reminderNumber as for the given user
 function getAvailableReminderNumber(parsedData, messageAuthor) {
-	let reminderNumberArray = []
-	getRemindersByAuthor(parsedData, messageAuthor).forEach((element) => {
-		reminderNumberArray.push(element.reminderNumber)
+	const reminderNumberArray = getRemindersByAuthor(
+		parsedData,
+		messageAuthor
+	).map((reminder) => {
+		return reminder.reminderNumber
 	})
-	for (let x = 1; x < reminderNumberArray.length + 2; x++) {
-		if (!reminderNumberArray.includes(x)) {
-			return x
+	let n = 1
+	const length = reminderNumberArray.length + 2
+	while (n < length) {
+		if (!reminderNumberArray.includes(n)) {
+			return n
 		}
+		n++
 	}
 }
 
@@ -168,20 +173,8 @@ function getRemindersByAuthor(parsedData, messageAuthor) {
 }
 
 function remindersArrayToReturnString(remindersArray) {
-	let remindersStringArray = []
-	remindersArray.forEach((reminder) => {
+	return remindersArray.map((reminder) => {
 		const date = new Date(reminder.time)
-		remindersStringArray.push(
-			'Reminder ' +
-				reminder.reminderNumber +
-				': "' +
-				reminder.message +
-				'" will be sent on: ' +
-				date +
-				' in <#' +
-				reminder.channel +
-				'>'
-		)
+		return `Reminder ${reminder.reminderNumber}: "${reminder.message}" will be sent on: ${date} in <#${reminder.channel}>`
 	})
-	return remindersStringArray
 }

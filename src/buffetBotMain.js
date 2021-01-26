@@ -9,32 +9,29 @@ import {
 } from './reminders.js'
 
 const client = new Client()
-let messageToSend = ''
-let command = ''
-let commandArray = []
-let firstValue = ''
-let secondValue = ''
-let content = ''
-let currentTime = 1
 let allReminders
 
 client.once('ready', async () => {
-	console.log('Ready\n ')
+	console.log('Ready')
 	allReminders = await getAllReminders()
 	client.user.setActivity('!help')
+
+	// variables pulled out to be slightly more efficient
+	let currentTime = 1
+	let x = 0
 
 	// Reminder Handling
 	setInterval(async () => {
 		if (allReminders && allReminders[0]) {
 			currentTime = Date.now()
-			// goes backwards in the off chance 2 need to be removed.
-			for (let x = allReminders.length - 1; -1 < x; x--) {
+			x = allReminders.length
+			while (x--) {
 				if (currentTime >= allReminders[x].time) {
 					const channelToSendTo = await client.channels.fetch(
 						allReminders[x].channel
 					)
 					channelToSendTo.send(
-						'<@!' + allReminders[x].user + '> : ' + allReminders[x].message
+						`<@!${allReminders[x].user}>: ${allReminders[x].message}`
 					)
 					await removeReminder(
 						allReminders[x].user,
@@ -46,6 +43,14 @@ client.once('ready', async () => {
 		}
 	}, 15000) // 10000 = 10 seconds
 })
+
+// variables pulled out to be slightly more efficient
+let messageToSend = ''
+let command = ''
+let commandArray = []
+let firstValue = ''
+let secondValue = ''
+let content = ''
 
 client.on('message', async (message) => {
 	content = message.content
