@@ -137,6 +137,7 @@ client.on('message', async (message) => {
 			}
 			break
 		default:
+			// doesn't send the below message if Myself or the Bot @ me
 			if (
 				content.includes('<@!136494200391729152>') &&
 				message.author.id !== '136494200391729152' &&

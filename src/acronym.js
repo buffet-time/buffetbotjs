@@ -2,7 +2,6 @@ import { Words } from '../assets/words.js'
 
 let words = Words
 
-// TODO: make async
 export function getAcronym(word) {
 	const generatedAcronym = getWordsFromProvidedAcronym(word)
 		.toString()
@@ -14,6 +13,8 @@ export function getAcronym(word) {
 	}
 }
 
+// takes the word and returns an array of random words
+// starting with each given letter
 function getWordsFromProvidedAcronym(acronym) {
 	const acronymArray = acronym.toLowerCase().split('')
 	let lengthOfWords = 0

@@ -1,7 +1,8 @@
 import FileSystem from 'fs/promises'
 import IsEqual from 'lodash.isequal'
 
-// need to scrub channel coming in incorrect and time being incorrect
+// TODO: clean up incorrect command passing to catch more
+// handles the !reminders add command
 export async function addReminder(message, commandsArray) {
 	try {
 		const messageAuthor = message.author.id
@@ -55,6 +56,7 @@ export async function addReminder(message, commandsArray) {
 	}
 }
 
+// handles the !reminders remove command
 export async function removeReminder(messageAuthor, reminderNumberToRemove) {
 	try {
 		const data = await FileSystem.readFile('./assets/reminders.json', 'utf8')
@@ -84,6 +86,7 @@ export async function removeReminder(messageAuthor, reminderNumberToRemove) {
 	}
 }
 
+// handles the !reminders view command
 export async function viewReminders(messageAuthor, reminderToView) {
 	try {
 		const data = await FileSystem.readFile('./assets/reminders.json', 'utf8')
@@ -106,6 +109,7 @@ export async function viewReminders(messageAuthor, reminderToView) {
 	}
 }
 
+// returns entire array of reminders
 export async function getAllReminders() {
 	try {
 		const data = await FileSystem.readFile('./assets/reminders.json', 'utf8')
@@ -116,10 +120,11 @@ export async function getAllReminders() {
 }
 
 // TODO: handle making sure number doesnt go past max
-// if (reminderTime > Number.MAX_SAFE_INTEGER || reminderTime === 0) {
-//     return 'fail'
-// }
+// Gets the time the reminder should be sent
 function getTime(amount, type) {
+	// if (reminderTime > Number.MAX_SAFE_INTEGER || reminderTime === 0) {
+	//     return 'fail'
+	// }
 	const currentTime = Date.now()
 	const amountConverted = amount * 1000 // so that adding 1 = adding 1 second not 1 ms
 	switch (type) {
@@ -164,12 +169,14 @@ function getAvailableReminderNumber(parsedData, messageAuthor) {
 	}
 }
 
+// Get all Reminder objects for given user
 function getRemindersByAuthor(parsedData, messageAuthor) {
 	return parsedData.filter((reminder) => {
 		return reminder.user === messageAuthor
 	})
 }
 
+// converts the array of reminders for a user to a Discord friendly message
 function remindersArrayToReturnString(remindersArray) {
 	return remindersArray.map((reminder) => {
 		const date = new Date(reminder.time)
