@@ -1,4 +1,6 @@
-import { wordsArray } from '../assets/words.js'
+import { Words } from '../assets/words.js'
+
+let words = Words
 
 // TODO: make async
 export function getAcronym(word) {
@@ -13,29 +15,19 @@ export function getAcronym(word) {
 }
 
 function getWordsFromProvidedAcronym(acronym) {
-	const wordsFromAcronym = []
 	const acronymArray = acronym.toLowerCase().split('')
 	let lengthOfWords = 0
+	let wordsArray
+	let generatedWord = ''
 
-	acronymArray.forEach((letter) => {
+	return acronymArray.map((letter) => {
 		if (lengthOfWords > 2000) {
 			return 'F'
 		} else {
-			const wordsArray = getWordsStartingWith(letter)
-			const generatedWord =
-				wordsArray[Math.floor(Math.random() * wordsArray.length)]
-			wordsFromAcronym.push(generatedWord)
+			wordsArray = words[letter]
+			generatedWord = wordsArray[Math.floor(Math.random() * wordsArray.length)]
 			lengthOfWords += generatedWord.length + 1
-		}
-	})
-
-	return wordsFromAcronym
-}
-
-function getWordsStartingWith(letter) {
-	return wordsArray.filter((word) => {
-		if (word.startsWith(letter)) {
-			return word
+			return generatedWord
 		}
 	})
 }

@@ -30,7 +30,7 @@ export async function addReminder(message, commandsArray) {
 			return 'Incorrect invocation of the add reminders command. See !help'
 		}
 		try {
-			const data = await FileSystem.readFile('./assets/reminders.json')
+			const data = await FileSystem.readFile('./assets/reminders.json', 'utf8')
 			const parsedData = JSON.parse(data)
 			newReminder.reminderNumber = getAvailableReminderNumber(
 				parsedData,
@@ -44,55 +44,53 @@ export async function addReminder(message, commandsArray) {
 			remindersJson = tempArray
 		}
 
-		const remindersJsonString = JSON.stringify(remindersJson, null, 2)
-
 		await FileSystem.writeFile(
 			'./assets/reminders.json',
-			remindersJsonString,
+			JSON.stringify(remindersJson, null, 2),
 			(error) => {}
 		)
 		return 'Reminder added.'
 	} catch (error) {
-		return 'Failed adding reminder.'
+		return 'Error in addReminder().'
 	}
 }
 
 export async function removeReminder(messageAuthor, reminderNumberToRemove) {
 	try {
-		const data = await FileSystem.readFile('./assets/reminders.json')
+		const data = await FileSystem.readFile('./assets/reminders.json', 'utf8')
 		const parsedData = JSON.parse(data)
 		const remindersArray = getRemindersByAuthor(parsedData, messageAuthor)
 		const objectToRemoveArray = remindersArray.filter((reminder) => {
 			return reminder.reminderNumber === Number(reminderNumberToRemove)
 		})
-		const reminderToRemove = objectToRemoveArray[0]
-		if (reminderToRemove) {
-			const indexToRemove = parsedData.findIndex((reminder) => {
-				return IsEqual(reminder, reminderToRemove)
-			})
-			parsedData.splice(indexToRemove, 1)
-			const remindersJsonString = JSON.stringify(parsedData, null, 2)
-
-			await FileSystem.writeFile(
-				'./assets/reminders.json',
-				remindersJsonString,
-				(error) => {}
-			)
-
-			return 'Removed specified reminder.'
-		} else {
-			return 'You have no saved reminders.'
+		if (!objectToRemoveArray[0]) {
+			return "The number passed doesn't exist."
 		}
+		const reminderToRemove = objectToRemoveArray[0]
+		const indexToRemove = parsedData.findIndex((reminder) => {
+			return IsEqual(reminder, reminderToRemove)
+		})
+		parsedData.splice(indexToRemove, 1)
+
+		await FileSystem.writeFile(
+			'./assets/reminders.json',
+			JSON.stringify(parsedData, null, 2),
+			(error) => {}
+		)
+
+		return 'Removed specified reminder.'
 	} catch (error) {
-		return 'You have no saved reminders.'
+		return 'Error in removeReminder().'
 	}
 }
 
 export async function viewReminders(messageAuthor, reminderToView) {
 	try {
-		const data = await FileSystem.readFile('./assets/reminders.json')
+		const data = await FileSystem.readFile('./assets/reminders.json', 'utf8')
 		const parsedData = JSON.parse(data)
-		if (reminderToView) {
+		if (parsedData === [] || !parsedData.includes(messageAuthor)) {
+			return 'You have no saved reminders.'
+		} else if (!isNaN(Number(reminderToView))) {
 			return remindersArrayToReturnString(
 				getRemindersByAuthor(parsedData, messageAuthor).filter((reminder) => {
 					return reminder.reminderNumber === Number(reminderToView)
@@ -104,13 +102,13 @@ export async function viewReminders(messageAuthor, reminderToView) {
 			)
 		}
 	} catch (error) {
-		return 'You have no saved reminders.'
+		return 'Error in viewReminders().'
 	}
 }
 
 export async function getAllReminders() {
 	try {
-		const data = await FileSystem.readFile('./assets/reminders.json')
+		const data = await FileSystem.readFile('./assets/reminders.json', 'utf8')
 		return JSON.parse(data)
 	} catch {
 		return

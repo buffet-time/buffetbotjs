@@ -9,11 +9,10 @@ import {
 } from './reminders.js'
 
 const client = new Client()
-let allReminders
+let allReminders = await getAllReminders()
 
-client.once('ready', async () => {
+client.once('ready', () => {
 	console.log('Ready')
-	allReminders = await getAllReminders()
 	client.user.setActivity('!help')
 
 	// variables pulled out to be slightly more efficient
@@ -22,7 +21,8 @@ client.once('ready', async () => {
 
 	// Reminder Handling
 	setInterval(async () => {
-		if (allReminders && allReminders[0]) {
+		// TODO have the repo by default have reminders.json with []
+		if (allReminders[0]) {
 			currentTime = Date.now()
 			x = allReminders.length
 			while (x--) {
@@ -45,19 +45,18 @@ client.once('ready', async () => {
 })
 
 // variables pulled out to be slightly more efficient
-let messageToSend = ''
+let content = ''
 let command = ''
 let commandArray = []
 let firstValue = ''
 let secondValue = ''
-let content = ''
+let messageToSend = ''
 
 client.on('message', async (message) => {
 	content = message.content
 	command = content.slice()
 	commandArray = command.split(' ')
-	firstValue = commandArray[0]
-	secondValue = commandArray[1]
+	firstValue = commandArray[0].toLowerCase()
 
 	switch (firstValue) {
 		case '!help':
@@ -65,12 +64,13 @@ client.on('message', async (message) => {
 				`**Current commands**:\n!acronym [insert word here]\n` +
 				`!reminders add [number] [minute/ minutes, ..., year/years] [#channel] ["message in quotes"] \n` +
 				`!reminders remove [number to remove] \n` +
-				`!reminders view [Optional: number to view] \n` +
+				`!reminders view [number to view or the word all] \n` +
 				`**Current modifiers**:\n**-d** deletes your message that invoked the command\n` +
 				`**-o** omits the output from the bot\n` +
 				`**Example:** !acronym meme -d`
 			break
 		case '!acronym': // !acronym [word]
+			secondValue = commandArray[1].toLowerCase()
 			if (!secondValue) {
 				messageToSend = 'Must pass a word.'
 				break
@@ -94,13 +94,15 @@ client.on('message', async (message) => {
 			}
 			break
 		case '!reminders': // !reminders [add, remove, view]
+			const thirdValue = commandArray[2]
+			secondValue = commandArray[1].toLowerCase()
 			if (!secondValue) {
 				messageToSend = 'Must pass **add** **remove** or **view**'
 				break
 			}
 			switch (secondValue) {
 				case 'add': {
-					if (commandArray.length > 5 && !isNaN(Number(commandArray[2]))) {
+					if (commandArray.length > 5 && !isNaN(Number(thirdValue))) {
 						messageToSend = await addReminder(message, commandArray)
 						allReminders = await getAllReminders()
 					} else {
@@ -110,22 +112,24 @@ client.on('message', async (message) => {
 					break
 				}
 				case 'remove':
-					if (!isNaN(Number(commandArray[2]))) {
-						messageToSend = await removeReminder(
-							message.author.id,
-							commandArray[2]
-						)
+					if (thirdValue || !isNaN(Number(thirdValue))) {
+						messageToSend = await removeReminder(message.author.id, thirdValue)
 						allReminders = await getAllReminders()
 					} else {
-						messageToSend = 'You must pass a valid number.'
+						messageToSend = 'Must pass a number to remove.'
 					}
 					break
 				case 'view':
-					// need to scrub incorrect invocations
-					messageToSend = await viewReminders(
-						message.author.id,
-						commandArray[2]
-					)
+					if (
+						thirdValue ||
+						!isNaN(Number(thirdValue)) ||
+						thirdValue.toLowerCase() === 'all'
+					) {
+						messageToSend = await viewReminders(message.author.id, thirdValue)
+					} else {
+						messageToSend =
+							'Incorrect invocation of the !reminders command. See !help'
+					}
 					break
 				default:
 					messageToSend =
