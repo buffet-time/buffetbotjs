@@ -121,7 +121,6 @@ client.on('message', async (message) => {
 					break
 				case 'view':
 					if (
-						thirdValue ||
 						!isNaN(Number(thirdValue)) ||
 						thirdValue.toLowerCase() === 'all'
 					) {

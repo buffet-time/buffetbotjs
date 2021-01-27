@@ -91,7 +91,13 @@ export async function viewReminders(messageAuthor, reminderToView) {
 	try {
 		const data = await FileSystem.readFile('./assets/reminders.json', 'utf8')
 		const parsedData = JSON.parse(data)
-		if (parsedData === [] || !parsedData.includes(messageAuthor)) {
+		if (parsedData === []) {
+			return 'You have no saved reminders.'
+		}
+		const arrayOfUsers = parsedData.filter((reminder) => {
+			return reminder.user === messageAuthor
+		})
+		if (!arrayOfUsers[0]) {
 			return 'You have no saved reminders.'
 		} else if (!isNaN(Number(reminderToView))) {
 			return remindersArrayToReturnString(
