@@ -5,7 +5,10 @@ import { Reminder } from './typings.js'
 
 // TODO: clean up incorrect command passing to catch more
 // handles the !reminders add command
-export async function addReminder(message: Message, commandsArray: string[]) {
+export async function addReminder(
+	message: Message,
+	commandsArray: string[]
+): Promise<string> {
 	try {
 		const messageAuthor = message.author.id
 		const content = message.content
@@ -14,7 +17,7 @@ export async function addReminder(message: Message, commandsArray: string[]) {
 			content.lastIndexOf('"')
 		)
 		const timestamp = getTime(Number(commandsArray[2]), commandsArray[3])
-		let newReminder: Reminder = {
+		const newReminder: Reminder = {
 			reminderNumber: 1,
 			time: timestamp,
 			user: messageAuthor,
@@ -66,7 +69,7 @@ export async function addReminder(message: Message, commandsArray: string[]) {
 export async function removeReminder(
 	messageAuthor: string,
 	reminderNumberToRemove: number
-) {
+): Promise<string> {
 	try {
 		const data = await FileSystem.readFile('./assets/reminders.json', 'utf8')
 		const parsedData: Reminder[] = JSON.parse(data)
@@ -98,7 +101,7 @@ export async function removeReminder(
 export async function viewReminders(
 	messageAuthor: string,
 	reminderToView: number
-) {
+): Promise<string> {
 	try {
 		const data = await FileSystem.readFile('./assets/reminders.json', 'utf8')
 		const parsedData: Reminder[] = JSON.parse(data)
@@ -127,12 +130,12 @@ export async function viewReminders(
 }
 
 // returns entire array of reminders
-export async function getAllReminders() {
+export async function getAllReminders(): Promise<Reminder[]> {
 	try {
 		const data = await FileSystem.readFile('./assets/reminders.json', 'utf8')
 		return JSON.parse(data)
 	} catch {
-		return
+		return []
 	}
 }
 

@@ -1,8 +1,8 @@
 import { Words } from '../assets/words.js'
 
-let words = Words
+const words = Words
 
-export function getAcronym(word: string) {
+export function getAcronym(word: string): string {
 	const generatedAcronym = getWordsFromProvidedAcronym(word)
 		.toString()
 		.replace(/,/g, '  ')

@@ -13,15 +13,13 @@ let allReminders = await getAllReminders()
 
 client.once('ready', () => {
 	console.log('Ready')
-	client.user!.setActivity('!help')
+	client.user?.setActivity('!help')
 
-	// variables pulled out to be slightly more efficient
 	let currentTime = 1
 	let x = 0
 
 	// Reminder Handling
 	setInterval(async () => {
-		// TODO have the repo by default have reminders.json with []
 		if (allReminders[0]) {
 			currentTime = Date.now()
 			x = allReminders.length
@@ -30,15 +28,16 @@ client.once('ready', () => {
 					const channelToSendTo = await client.channels.fetch(
 						allReminders[x].channel
 					)
-					// @ts-ignore
-					channelToSendTo.send(
-						`<@!${allReminders[x].user}>: ${allReminders[x].message}`
-					)
-					await removeReminder(
-						allReminders[x].user,
-						allReminders[x].reminderNumber
-					)
-					allReminders = await getAllReminders()
+					if (channelToSendTo.isText()) {
+						channelToSendTo.send(
+							`<@!${allReminders[x].user}>: ${allReminders[x].message}`
+						)
+						await removeReminder(
+							allReminders[x].user,
+							allReminders[x].reminderNumber
+						)
+						allReminders = await getAllReminders()
+					}
 				}
 			}
 		}
@@ -58,6 +57,9 @@ client.on('message', async (message: Message) => {
 	command = content.slice()
 	commandArray = command.split(' ')
 	firstValue = commandArray[0].toLowerCase()
+	let word: string
+	let lowercaseWord: string
+	let thirdValue: string
 
 	switch (firstValue) {
 		case '!help':
@@ -76,8 +78,8 @@ client.on('message', async (message: Message) => {
 				messageToSend = 'Must pass a word.'
 				break
 			}
-			const word = command.slice(9, secondValue.length + 9)
-			const lowercaseWord = word.toLowerCase()
+			word = command.slice(9, secondValue.length + 9)
+			lowercaseWord = word.toLowerCase()
 			if (secondValue.length < 2) {
 				messageToSend = 'Acronym must be more than one letter.'
 				break
@@ -95,7 +97,7 @@ client.on('message', async (message: Message) => {
 			}
 			break
 		case '!reminders': // !reminders [add, remove, view]
-			const thirdValue = commandArray[2]
+			thirdValue = commandArray[2]
 			secondValue = commandArray[1].toLowerCase()
 			if (!secondValue) {
 				messageToSend = 'Must pass **add** **remove** or **view**'
@@ -161,14 +163,18 @@ client.on('message', async (message: Message) => {
 	if (command.includes('-d')) {
 		try {
 			message.delete()
-		} catch (error) {}
+		} catch (error) {
+			// console.log(error)
+		}
 	}
 
 	// -o modifier = omits the bots response
 	else if (command.includes('-o')) {
 		try {
 			return
-		} catch (error) {}
+		} catch (error) {
+			// console.log(error)
+		}
 	}
 
 	// send the message
@@ -177,7 +183,9 @@ client.on('message', async (message: Message) => {
 	} catch (e) {
 		try {
 			message.channel.send('Command Failed: ' + e)
-		} catch (e) {}
+		} catch (e) {
+			// console.log(error)
+		}
 	}
 })
 
