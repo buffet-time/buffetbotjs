@@ -2,7 +2,7 @@ import { Words } from '../assets/words.js'
 
 let words = Words
 
-export function getAcronym(word) {
+export function getAcronym(word: string) {
 	const generatedAcronym = getWordsFromProvidedAcronym(word)
 		.toString()
 		.replace(/,/g, '  ')
@@ -15,13 +15,13 @@ export function getAcronym(word) {
 
 // takes the word and returns an array of random words
 // starting with each given letter
-function getWordsFromProvidedAcronym(acronym) {
+function getWordsFromProvidedAcronym(acronym: string): string[] {
 	const acronymArray = acronym.toLowerCase().split('')
 	let lengthOfWords = 0
-	let wordsArray
+	let wordsArray: string[]
 	let generatedWord = ''
 
-	return acronymArray.map((letter) => {
+	return acronymArray.map((letter: string) => {
 		if (lengthOfWords > 2000) {
 			return 'F'
 		} else {

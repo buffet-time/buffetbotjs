@@ -1,4 +1,4 @@
-import { Client } from 'discord.js'
+import { Client, Message } from 'discord.js'
 import config from '../config.js'
 import { getAcronym } from './acronym.js'
 import {
@@ -13,7 +13,7 @@ let allReminders = await getAllReminders()
 
 client.once('ready', () => {
 	console.log('Ready')
-	client.user.setActivity('!help')
+	client.user!.setActivity('!help')
 
 	// variables pulled out to be slightly more efficient
 	let currentTime = 1
@@ -30,6 +30,7 @@ client.once('ready', () => {
 					const channelToSendTo = await client.channels.fetch(
 						allReminders[x].channel
 					)
+					// @ts-ignore
 					channelToSendTo.send(
 						`<@!${allReminders[x].user}>: ${allReminders[x].message}`
 					)
@@ -47,12 +48,12 @@ client.once('ready', () => {
 // variables pulled out to be slightly more efficient
 let content = ''
 let command = ''
-let commandArray = []
+let commandArray: string[] = []
 let firstValue = ''
 let secondValue = ''
 let messageToSend = ''
 
-client.on('message', async (message) => {
+client.on('message', async (message: Message) => {
 	content = message.content
 	command = content.slice()
 	commandArray = command.split(' ')
@@ -112,8 +113,11 @@ client.on('message', async (message) => {
 					break
 				}
 				case 'remove':
-					if (thirdValue || !isNaN(Number(thirdValue))) {
-						messageToSend = await removeReminder(message.author.id, thirdValue)
+					if (thirdValue && !isNaN(Number(thirdValue))) {
+						messageToSend = await removeReminder(
+							message.author.id,
+							Number(thirdValue)
+						)
 						allReminders = await getAllReminders()
 					} else {
 						messageToSend = 'Must pass a number to remove.'
@@ -121,10 +125,13 @@ client.on('message', async (message) => {
 					break
 				case 'view':
 					if (
-						!isNaN(Number(thirdValue)) ||
-						thirdValue.toLowerCase() === 'all'
+						thirdValue &&
+						(!isNaN(Number(thirdValue)) || thirdValue.toLowerCase() === 'all')
 					) {
-						messageToSend = await viewReminders(message.author.id, thirdValue)
+						messageToSend = await viewReminders(
+							message.author.id,
+							Number(thirdValue)
+						)
 					} else {
 						messageToSend =
 							'Incorrect invocation of the !reminders command. See !help'

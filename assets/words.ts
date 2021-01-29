@@ -1,4 +1,4 @@
-export let Words = {
+export let Words: { [key: string]: string[] } = {
 	a: [
 		'abreact',
 		'abreacted',

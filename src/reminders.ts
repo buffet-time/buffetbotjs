@@ -1,9 +1,11 @@
+import { Message } from 'discord.js'
 import FileSystem from 'fs/promises'
 import IsEqual from 'lodash.isequal'
+import { Reminder } from './typings.js'
 
 // TODO: clean up incorrect command passing to catch more
 // handles the !reminders add command
-export async function addReminder(message, commandsArray) {
+export async function addReminder(message: Message, commandsArray: string[]) {
 	try {
 		const messageAuthor = message.author.id
 		const content = message.content
@@ -12,58 +14,65 @@ export async function addReminder(message, commandsArray) {
 			content.lastIndexOf('"')
 		)
 		const timestamp = getTime(Number(commandsArray[2]), commandsArray[3])
-		let newReminder = {
+		let newReminder: Reminder = {
 			reminderNumber: 1,
 			time: timestamp,
 			user: messageAuthor,
 			message: reminderMessage,
 			channel: commandsArray[4].slice(2, 20)
 		}
-		let remindersJson
+		let remindersJson: Reminder[]
 		if (
 			!newReminder.time &&
 			!reminderMessage &&
 			reminderMessage !== ('' || ' ') &&
 			!newReminder.channel &&
-			newreminder.channel !== ('' || ' ') &&
+			newReminder.channel !== ('' || ' ') &&
 			timestamp === 0
 		) {
 			return 'Incorrect invocation of the add reminders command. See !help'
 		}
 		try {
 			const data = await FileSystem.readFile('./assets/reminders.json', 'utf8')
-			const parsedData = JSON.parse(data)
-			newReminder.reminderNumber = getAvailableReminderNumber(
+			const parsedData: Reminder[] = JSON.parse(data)
+			const availableReminderNumber = getAvailableReminderNumber(
 				parsedData,
 				messageAuthor
 			)
-			parsedData.push(newReminder)
-			remindersJson = parsedData
+			if (availableReminderNumber) {
+				newReminder.reminderNumber = availableReminderNumber
+				parsedData.push(newReminder)
+				remindersJson = parsedData
+			} else {
+				const tempArray = []
+				tempArray.push(newReminder)
+				remindersJson = tempArray
+			}
 		} catch (error) {
-			const tempArray = []
-			tempArray.push(newReminder)
-			remindersJson = tempArray
+			return 'Error 2 in addReminder().'
 		}
 
 		await FileSystem.writeFile(
 			'./assets/reminders.json',
-			JSON.stringify(remindersJson, null, 2),
-			(error) => {}
+			JSON.stringify(remindersJson, null, 2)
 		)
 		return 'Reminder added.'
 	} catch (error) {
-		return 'Error in addReminder().'
+		return 'Error 1 in addReminder().'
 	}
 }
 
 // handles the !reminders remove command
-export async function removeReminder(messageAuthor, reminderNumberToRemove) {
+export async function removeReminder(
+	messageAuthor: string,
+	reminderNumberToRemove: number
+) {
 	try {
 		const data = await FileSystem.readFile('./assets/reminders.json', 'utf8')
-		const parsedData = JSON.parse(data)
+		const parsedData: Reminder[] = JSON.parse(data)
 		const remindersArray = getRemindersByAuthor(parsedData, messageAuthor)
 		const objectToRemoveArray = remindersArray.filter((reminder) => {
-			return reminder.reminderNumber === Number(reminderNumberToRemove)
+			return reminder.reminderNumber === reminderNumberToRemove
 		})
 		if (!objectToRemoveArray[0]) {
 			return "The number passed doesn't exist."
@@ -76,8 +85,7 @@ export async function removeReminder(messageAuthor, reminderNumberToRemove) {
 
 		await FileSystem.writeFile(
 			'./assets/reminders.json',
-			JSON.stringify(parsedData, null, 2),
-			(error) => {}
+			JSON.stringify(parsedData, null, 2)
 		)
 
 		return 'Removed specified reminder.'
@@ -87,10 +95,13 @@ export async function removeReminder(messageAuthor, reminderNumberToRemove) {
 }
 
 // handles the !reminders view command
-export async function viewReminders(messageAuthor, reminderToView) {
+export async function viewReminders(
+	messageAuthor: string,
+	reminderToView: number
+) {
 	try {
 		const data = await FileSystem.readFile('./assets/reminders.json', 'utf8')
-		const parsedData = JSON.parse(data)
+		const parsedData: Reminder[] = JSON.parse(data)
 		if (parsedData === []) {
 			return 'You have no saved reminders.'
 		}
@@ -99,16 +110,16 @@ export async function viewReminders(messageAuthor, reminderToView) {
 		})
 		if (!arrayOfUsers[0]) {
 			return 'You have no saved reminders.'
-		} else if (!isNaN(Number(reminderToView))) {
+		} else if (reminderToView) {
 			return remindersArrayToReturnString(
 				getRemindersByAuthor(parsedData, messageAuthor).filter((reminder) => {
-					return reminder.reminderNumber === Number(reminderToView)
+					return reminder.reminderNumber === reminderToView
 				})
-			)
+			).join(`\n`)
 		} else {
 			return remindersArrayToReturnString(
 				getRemindersByAuthor(parsedData, messageAuthor)
-			)
+			).join(`\n`)
 		}
 	} catch (error) {
 		return 'Error in viewReminders().'
@@ -127,7 +138,7 @@ export async function getAllReminders() {
 
 // TODO: handle making sure number doesnt go past max
 // Gets the time the reminder should be sent
-function getTime(amount, type) {
+function getTime(amount: number, type: string) {
 	// if (reminderTime > Number.MAX_SAFE_INTEGER || reminderTime === 0) {
 	//     return 'fail'
 	// }
@@ -158,7 +169,10 @@ function getTime(amount, type) {
 }
 
 // finds the lowest available number to set the reminderNumber as for the given user
-function getAvailableReminderNumber(parsedData, messageAuthor) {
+function getAvailableReminderNumber(
+	parsedData: Reminder[],
+	messageAuthor: string
+) {
 	const reminderNumberArray = getRemindersByAuthor(
 		parsedData,
 		messageAuthor
@@ -176,14 +190,14 @@ function getAvailableReminderNumber(parsedData, messageAuthor) {
 }
 
 // Get all Reminder objects for given user
-function getRemindersByAuthor(parsedData, messageAuthor) {
+function getRemindersByAuthor(parsedData: Reminder[], messageAuthor: string) {
 	return parsedData.filter((reminder) => {
 		return reminder.user === messageAuthor
 	})
 }
 
 // converts the array of reminders for a user to a Discord friendly message
-function remindersArrayToReturnString(remindersArray) {
+function remindersArrayToReturnString(remindersArray: Reminder[]) {
 	return remindersArray.map((reminder) => {
 		const date = new Date(reminder.time)
 		return `Reminder ${reminder.reminderNumber}: "${reminder.message}" will be sent on: ${date} in <#${reminder.channel}>`
