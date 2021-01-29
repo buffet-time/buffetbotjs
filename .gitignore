@@ -4,7 +4,6 @@ node_modules
 # config.js
 ignoreThis.txt
 exampleMessage.txt
-# assets/reminders.json
 
 # Log files
 npm-debug.log*

@@ -1,14 +1,55 @@
 import { Message } from 'discord.js'
 import FileSystem from 'fs/promises'
 import IsEqual from 'lodash.isequal'
-import { Reminder } from './typings.js'
+import { updateReminders } from '../buffetBotMain.js'
+import { Command, Reminder } from '../typings.js'
+
+export { remindersCommand }
+const remindersFilePath = 'reminders.json'
+
+const remindersCommand: Command = {
+	name: 'reminders',
+	description: 'reminders',
+	async execute(message: Message, args: string[]) {
+		const firstArg = args[0].toLowerCase()
+		const secondArg = args[1]
+		if (!firstArg) {
+			return 'Must pass **add** **remove** or **view**'
+		}
+		switch (firstArg) {
+			case 'add': {
+				if (args.length > 4 && !isNaN(Number(secondArg))) {
+					updateReminders(await getAllReminders())
+					return await addReminder(message, args)
+				} else {
+					return 'Incorrect invocation of the add reminders command. See !help'
+				}
+			}
+			case 'remove':
+				if (secondArg && !isNaN(Number(secondArg))) {
+					updateReminders(await getAllReminders())
+					return await removeReminder(message.author.id, Number(secondArg))
+				} else {
+					return 'Must pass a number to remove.'
+				}
+			case 'view':
+				if (
+					secondArg &&
+					(!isNaN(Number(secondArg)) || secondArg.toLowerCase() === 'all')
+				) {
+					return await viewReminders(message.author.id, Number(secondArg))
+				} else {
+					return 'Incorrect invocation of the !reminders command. See !help'
+				}
+			default:
+				return 'Incorrect invocation of the !reminders command. See !help'
+		}
+	}
+}
 
 // TODO: clean up incorrect command passing to catch more
 // handles the !reminders add command
-export async function addReminder(
-	message: Message,
-	commandsArray: string[]
-): Promise<string> {
+async function addReminder(message: Message, args: string[]): Promise<string> {
 	try {
 		const messageAuthor = message.author.id
 		const content = message.content
@@ -16,13 +57,13 @@ export async function addReminder(
 			content.indexOf('"') + 1,
 			content.lastIndexOf('"')
 		)
-		const timestamp = getTime(Number(commandsArray[2]), commandsArray[3])
+		const timestamp = getTime(Number(args[1]), args[2])
 		const newReminder: Reminder = {
 			reminderNumber: 1,
 			time: timestamp,
 			user: messageAuthor,
 			message: reminderMessage,
-			channel: commandsArray[4].slice(2, 20)
+			channel: args[3].slice(2, 20)
 		}
 		let remindersJson: Reminder[]
 		if (
@@ -36,7 +77,7 @@ export async function addReminder(
 			return 'Incorrect invocation of the add reminders command. See !help'
 		}
 		try {
-			const data = await FileSystem.readFile('./assets/reminders.json', 'utf8')
+			const data = await FileSystem.readFile(remindersFilePath, 'utf8')
 			const parsedData: Reminder[] = JSON.parse(data)
 			const availableReminderNumber = getAvailableReminderNumber(
 				parsedData,
@@ -56,7 +97,7 @@ export async function addReminder(
 		}
 
 		await FileSystem.writeFile(
-			'./assets/reminders.json',
+			remindersFilePath,
 			JSON.stringify(remindersJson, null, 2)
 		)
 		return 'Reminder added.'
@@ -71,7 +112,7 @@ export async function removeReminder(
 	reminderNumberToRemove: number
 ): Promise<string> {
 	try {
-		const data = await FileSystem.readFile('./assets/reminders.json', 'utf8')
+		const data = await FileSystem.readFile(remindersFilePath, 'utf8')
 		const parsedData: Reminder[] = JSON.parse(data)
 		const remindersArray = getRemindersByAuthor(parsedData, messageAuthor)
 		const objectToRemoveArray = remindersArray.filter((reminder) => {
@@ -87,7 +128,7 @@ export async function removeReminder(
 		parsedData.splice(indexToRemove, 1)
 
 		await FileSystem.writeFile(
-			'./assets/reminders.json',
+			remindersFilePath,
 			JSON.stringify(parsedData, null, 2)
 		)
 
@@ -98,12 +139,12 @@ export async function removeReminder(
 }
 
 // handles the !reminders view command
-export async function viewReminders(
+async function viewReminders(
 	messageAuthor: string,
 	reminderToView: number
 ): Promise<string> {
 	try {
-		const data = await FileSystem.readFile('./assets/reminders.json', 'utf8')
+		const data = await FileSystem.readFile(remindersFilePath, 'utf8')
 		const parsedData: Reminder[] = JSON.parse(data)
 		if (parsedData === []) {
 			return 'You have no saved reminders.'
@@ -132,7 +173,7 @@ export async function viewReminders(
 // returns entire array of reminders
 export async function getAllReminders(): Promise<Reminder[]> {
 	try {
-		const data = await FileSystem.readFile('./assets/reminders.json', 'utf8')
+		const data = await FileSystem.readFile(remindersFilePath, 'utf8')
 		return JSON.parse(data)
 	} catch {
 		return []

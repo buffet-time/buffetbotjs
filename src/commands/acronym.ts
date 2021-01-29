@@ -1,8 +1,35 @@
+import { Message } from 'discord.js'
+import { Command } from '../typings.js'
 import { Words } from '../assets/words.js'
 
 const words = Words
 
-export function getAcronym(word: string): string {
+export { acronymCommand }
+
+const acronymCommand: Command = {
+	name: 'acronym',
+	description: 'acronym',
+	async execute(_message: Message, args: string[]) {
+		const word = args[0].toLowerCase()
+		if (!word) {
+			return 'Must pass a word.'
+		}
+		const lowercaseWord = word.toLowerCase()
+		if (word.length < 2) {
+			return 'Acronym must be more than one letter.'
+		} else if (lowercaseWord === 'acab') {
+			return '**ALL** cops are bastards'
+		} else if (lowercaseWord === 'mac') {
+			return 'Linux Stan'
+		} else if (/^[a-zA-Z]+$/.test(word)) {
+			return getAcronym(word)
+		} else {
+			return 'The word you want to become an acronym must only contain letters.'
+		}
+	}
+}
+
+function getAcronym(word: string): string {
 	const generatedAcronym = getWordsFromProvidedAcronym(word)
 		.toString()
 		.replace(/,/g, '  ')

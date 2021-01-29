@@ -1,19 +1,28 @@
-import { Client, Message } from 'discord.js'
+import { Client, Collection, Message } from 'discord.js'
 import config from '../config.js'
-import { getAcronym } from './acronym.js'
 import {
-	addReminder,
 	removeReminder,
-	viewReminders,
-	getAllReminders
-} from './reminders.js'
+	getAllReminders,
+	remindersCommand
+} from './commands/reminders.js'
+import { acronymCommand } from './commands/acronym.js'
+import { Command, Reminder } from './typings.js'
+import { helpCommand } from './commands/simple.js'
 
 const client = new Client()
-let allReminders = await getAllReminders()
+const commands: Collection<string, Command> = new Collection()
 
-client.once('ready', () => {
-	console.log('Ready')
-	client.user?.setActivity('!help')
+let allReminders: Reminder[]
+export function updateReminders(reminders: Reminder[]): void {
+	allReminders = reminders
+}
+
+client.once('ready', async () => {
+	allReminders = await getAllReminders()
+	const arrayOfCommandObjects = [remindersCommand, acronymCommand, helpCommand]
+	arrayOfCommandObjects.forEach((command) => {
+		commands.set(command.name, command)
+	})
 
 	let currentTime = 1
 	let x = 0
@@ -41,151 +50,61 @@ client.once('ready', () => {
 				}
 			}
 		}
-	}, 15000) // 10000 = 10 seconds
+	}, 15000) // 15 seconds
+
+	client.user?.setActivity('!help')
+	console.log('Ready')
 })
 
-// variables pulled out to be slightly more efficient
-let content = ''
-let command = ''
-let commandArray: string[] = []
-let firstValue = ''
-let secondValue = ''
-let messageToSend = ''
-
 client.on('message', async (message: Message) => {
-	content = message.content
-	command = content.slice()
-	commandArray = command.split(' ')
-	firstValue = commandArray[0].toLowerCase()
-	let word: string
-	let lowercaseWord: string
-	let thirdValue: string
-
-	switch (firstValue) {
-		case '!help':
-			messageToSend =
-				`**Current commands**:\n!acronym [insert word here]\n` +
-				`!reminders add [number] [minute/ minutes, ..., year/years] [#channel] ["message in quotes"] \n` +
-				`!reminders remove [number to remove] \n` +
-				`!reminders view [number to view or the word all] \n` +
-				`**Current modifiers**:\n**-d** deletes your message that invoked the command\n` +
-				`**-o** omits the output from the bot\n` +
-				`**Example:** !acronym meme -d`
-			break
-		case '!acronym': // !acronym [word]
-			secondValue = commandArray[1].toLowerCase()
-			if (!secondValue) {
-				messageToSend = 'Must pass a word.'
-				break
-			}
-			word = command.slice(9, secondValue.length + 9)
-			lowercaseWord = word.toLowerCase()
-			if (secondValue.length < 2) {
-				messageToSend = 'Acronym must be more than one letter.'
-				break
-			} else if (lowercaseWord === 'acab') {
-				messageToSend = '**ALL** cops are bastards'
-				break
-			} else if (lowercaseWord === 'mac') {
-				messageToSend = 'Linux Stan'
-				break
-			} else if (/^[a-zA-Z]+$/.test(word)) {
-				messageToSend = getAcronym(word)
-			} else {
-				messageToSend =
-					'The word you want to become an acronym must only contain letters.'
-			}
-			break
-		case '!reminders': // !reminders [add, remove, view]
-			thirdValue = commandArray[2]
-			secondValue = commandArray[1].toLowerCase()
-			if (!secondValue) {
-				messageToSend = 'Must pass **add** **remove** or **view**'
-				break
-			}
-			switch (secondValue) {
-				case 'add': {
-					if (commandArray.length > 5 && !isNaN(Number(thirdValue))) {
-						messageToSend = await addReminder(message, commandArray)
-						allReminders = await getAllReminders()
-					} else {
-						messageToSend =
-							'Incorrect invocation of the add reminders command. See !help'
-					}
-					break
-				}
-				case 'remove':
-					if (thirdValue && !isNaN(Number(thirdValue))) {
-						messageToSend = await removeReminder(
-							message.author.id,
-							Number(thirdValue)
-						)
-						allReminders = await getAllReminders()
-					} else {
-						messageToSend = 'Must pass a number to remove.'
-					}
-					break
-				case 'view':
-					if (
-						thirdValue &&
-						(!isNaN(Number(thirdValue)) || thirdValue.toLowerCase() === 'all')
-					) {
-						messageToSend = await viewReminders(
-							message.author.id,
-							Number(thirdValue)
-						)
-					} else {
-						messageToSend =
-							'Incorrect invocation of the !reminders command. See !help'
-					}
-					break
-				default:
-					messageToSend =
-						'Incorrect invocation of the !reminders command. See !help'
-			}
-			break
-		default:
-			// doesn't send the below message if Myself or the Bot @ me
-			if (
-				content.includes('<@!136494200391729152>') &&
-				message.author.id !== '136494200391729152' &&
-				message.author.id !== '357236531083083778'
-			) {
-				console.log(message.author.id)
-				messageToSend = `dont ever @ me again`
-			} else {
-				return
-			}
-			break
-	}
-
-	// -d modifier = deletes the message that invoked the command
-	if (command.includes('-d')) {
-		try {
-			message.delete()
-		} catch (error) {
-			// console.log(error)
-		}
-	}
-
-	// -o modifier = omits the bots response
-	else if (command.includes('-o')) {
-		try {
+	if (!message.content.startsWith('!') || message.author.bot) {
+		if (
+			message.content.includes('<@!136494200391729152>') &&
+			!message.author.bot &&
+			message.author.id !== '136494200391729152'
+		) {
+			message.channel.send('dont ever @ me again')
+		} else {
 			return
-		} catch (error) {
-			// console.log(error)
 		}
 	}
+	const content = message.content
+	const args = content.slice(1).trim().split(/ +/)
+	const command = args.shift()?.toLowerCase()
 
-	// send the message
+	if (!command || !commands.has(command)) {
+		return
+	}
+
 	try {
-		message.channel.send(messageToSend)
-	} catch (e) {
-		try {
-			message.channel.send('Command Failed: ' + e)
-		} catch (e) {
-			// console.log(error)
+		const messageToSend = await commands.get(command)?.execute(message, args)
+
+		// -d modifier = deletes the message that invoked the command
+		if (content.includes('-d')) {
+			try {
+				message.delete()
+			} catch (error) {
+				// console.log(error)
+			}
 		}
+
+		// -o modifier = omits the bots response
+		else if (content.includes('-o')) {
+			try {
+				return
+			} catch (error) {
+				// console.log(error)
+			}
+		}
+
+		// send the messsage
+		if (messageToSend) {
+			message.channel.send(messageToSend)
+		} else {
+			message.channel.send('Error sending message.')
+		}
+	} catch (error) {
+		message.channel.send('Oof: error.')
 	}
 })
 
