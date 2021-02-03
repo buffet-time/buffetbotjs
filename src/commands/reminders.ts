@@ -19,16 +19,21 @@ const remindersCommand: Command = {
 		switch (firstArg) {
 			case 'add': {
 				if (args.length > 4 && !isNaN(Number(secondArg))) {
+					const returnText = await addReminder(message, args)
 					updateReminders(await getAllReminders())
-					return await addReminder(message, args)
+					return returnText
 				} else {
 					return 'Incorrect invocation of the add reminders command. See !help'
 				}
 			}
 			case 'remove':
 				if (secondArg && !isNaN(Number(secondArg))) {
+					const returnText = await removeReminder(
+						message.author.id,
+						Number(secondArg)
+					)
 					updateReminders(await getAllReminders())
-					return await removeReminder(message.author.id, Number(secondArg))
+					return returnText
 				} else {
 					return 'Must pass a number to remove.'
 				}
