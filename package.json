@@ -11,7 +11,7 @@
 	},
 	"type": "module",
 	"scripts": {
-		"serve": "npm run compile && npm run execute",
+		"serve": "yarn compile && yarn execute",
 		"compile": "npx tsc",
 		"execute": "node ./dist/src/buffetBotMain.js"
 	},
