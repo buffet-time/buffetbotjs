@@ -1,13 +1,14 @@
 import { Client, Collection, Message } from 'discord.js'
-import config from '../config.js'
+import { Command, Reminder } from './typings.js'
+import Config from './config/config.js'
 import {
 	removeReminder,
 	getAllReminders,
 	remindersCommand
 } from './commands/reminders.js'
 import { acronymCommand } from './commands/acronym.js'
-import { Command, Reminder } from './typings.js'
 import { helpCommand } from './commands/simple.js'
+import { emailCommand } from './commands/email.js'
 
 const client = new Client()
 const commands: Collection<string, Command> = new Collection()
@@ -19,7 +20,12 @@ export function updateReminders(reminders: Reminder[]): void {
 
 client.once('ready', async () => {
 	allReminders = await getAllReminders()
-	const arrayOfCommandObjects = [remindersCommand, acronymCommand, helpCommand]
+	const arrayOfCommandObjects = [
+		remindersCommand,
+		acronymCommand,
+		helpCommand,
+		emailCommand
+	]
 	arrayOfCommandObjects.forEach((command) => {
 		commands.set(command.name, command)
 	})
@@ -78,23 +84,14 @@ client.on('message', async (message: Message) => {
 
 	try {
 		const messageToSend = await commands.get(command)?.execute(message, args)
+		const omitModifier = content.includes('-o')
+		const deleteModifier = content.includes('-d')
 
-		// -d modifier = deletes the message that invoked the command
-		if (content.includes('-d')) {
-			try {
-				message.delete()
-			} catch (error) {
-				// console.log(error)
-			}
+		if (deleteModifier) {
+			await message.delete()
 		}
-
-		// -o modifier = omits the bots response
-		else if (content.includes('-o')) {
-			try {
-				return
-			} catch (error) {
-				// console.log(error)
-			}
+		if (omitModifier) {
+			return
 		}
 
 		// send the messsage
@@ -104,8 +101,8 @@ client.on('message', async (message: Message) => {
 			message.channel.send('Error sending message.')
 		}
 	} catch (error) {
-		message.channel.send('Oof: error.')
+		message.channel.send(`Error: ${error}`)
 	}
 })
 
-client.login(config.token)
+client.login(Config.token)

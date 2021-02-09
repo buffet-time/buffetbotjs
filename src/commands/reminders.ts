@@ -9,7 +9,6 @@ const remindersFilePath = 'reminders.json'
 
 const remindersCommand: Command = {
 	name: 'reminders',
-	description: 'reminders',
 	async execute(message: Message, args: string[]) {
 		const firstArg = args[0].toLowerCase()
 		const secondArg = args[1]

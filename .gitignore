@@ -1,12 +1,9 @@
+# folders to ignore
 node_modules
 /dist
 
-# config.js
+# singular files to ignore
 ignoreThis.txt
 exampleMessage.txt
-
-# Log files
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
+token.json
+credentials.json
