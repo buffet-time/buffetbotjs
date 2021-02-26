@@ -7,7 +7,7 @@ import {
 	remindersCommand
 } from './commands/reminders.js'
 import { acronymCommand } from './commands/acronym.js'
-import { helpCommand } from './commands/simple.js'
+import { helpCommand, kissCommand } from './commands/simple.js'
 import { emailCommand } from './commands/email.js'
 
 const client = new Client()
@@ -24,7 +24,8 @@ client.once('ready', async () => {
 		remindersCommand,
 		acronymCommand,
 		helpCommand,
-		emailCommand
+		emailCommand,
+		kissCommand
 	]
 	arrayOfCommandObjects.forEach((command) => {
 		commands.set(command.name, command)

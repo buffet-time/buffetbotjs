@@ -17,7 +17,13 @@ const remindersCommand: Command = {
 		}
 		switch (firstArg) {
 			case 'add': {
-				if (args.length > 4 && !isNaN(Number(secondArg))) {
+				const content = message.content
+				if (
+					args.length > 4 &&
+					!isNaN(Number(secondArg)) &&
+					content.indexOf("'") !== -1 &&
+					content.indexOf("'") !== content.lastIndexOf("'")
+				) {
 					const returnText = await addReminder(message, args)
 					updateReminders(await getAllReminders())
 					return returnText
@@ -58,8 +64,8 @@ async function addReminder(message: Message, args: string[]): Promise<string> {
 		const messageAuthor = message.author.id
 		const content = message.content
 		const reminderMessage = content.slice(
-			content.indexOf('"') + 1,
-			content.lastIndexOf('"')
+			content.indexOf("'") + 1,
+			content.lastIndexOf("'")
 		)
 		const timestamp = getTime(Number(args[1]), args[2])
 		const newReminder: Reminder = {

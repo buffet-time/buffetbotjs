@@ -10,5 +10,5 @@ export interface Reminder {
 
 export interface Command {
 	name: string
-	execute(message: Message, args: string[]): Promise<string>
+	execute(message: Message, args: string[]): Promise<string> | string
 }

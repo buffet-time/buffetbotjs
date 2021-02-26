@@ -21,7 +21,7 @@ try {
 
 const emailCommand: Command = {
 	name: 'email',
-	async execute(message: Message, args: string[]) {
+	execute(message: Message, args: string[]) {
 		const subjectAndBody = message.content.match(/'([^']+)'/g)
 		if (args.length < 3 || !subjectAndBody || subjectAndBody.length !== 2) {
 			return 'Incorrect invocation of Email command.'
@@ -61,7 +61,7 @@ async function authorize(credentials: any) {
 }
 
 // Get and store new token after prompting for user authorization
-async function getNewToken(oAuth2Client: OAuth2Client): Promise<void> {
+function getNewToken(oAuth2Client: OAuth2Client): Promise<void> {
 	const authUrl = oAuth2Client.generateAuthUrl({
 		access_type: 'offline',
 		scope: scopes

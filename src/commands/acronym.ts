@@ -8,7 +8,7 @@ export { acronymCommand }
 
 const acronymCommand: Command = {
 	name: 'acronym',
-	async execute(_message: Message, args: string[]) {
+	execute(_message: Message, args: string[]) {
 		const word = args[0].toLowerCase()
 		if (!word) {
 			return 'Must pass a word.'
