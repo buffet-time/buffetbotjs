@@ -1,5 +1,5 @@
-import { Client, Collection, Message } from 'discord.js'
-import { Command, Reminder } from './typings.js'
+import { Client, Collection, Message, TextChannel } from 'discord.js'
+import { Command, Release, Reminder } from './typings.js'
 import Config from './config/config.js'
 import {
 	removeReminder,
@@ -9,17 +9,25 @@ import {
 import { acronymCommand } from './commands/acronym.js'
 import { helpCommand, kissCommand } from './commands/simple.js'
 import { emailCommand } from './commands/email.js'
+import { getNumberOfRows, getRowByIndex } from './commands/sheets.js'
 
 const client = new Client()
 const commands: Collection<string, Command> = new Collection()
 
+let musicChannel: TextChannel
 let allReminders: Reminder[]
+let sheetsLength = 0
 export function updateReminders(reminders: Reminder[]): void {
 	allReminders = reminders
 }
+export function updateSheetsLength(length: number): void {
+	sheetsLength = length
+}
 
 client.once('ready', async () => {
+	musicChannel = client.channels.cache.get('301931813947965440') as TextChannel
 	allReminders = await getAllReminders()
+	sheetsLength = await getNumberOfRows()
 	const arrayOfCommandObjects = [
 		remindersCommand,
 		acronymCommand,
@@ -58,6 +66,31 @@ client.once('ready', async () => {
 			}
 		}
 	}, 15000) // 15 seconds
+
+	setInterval(async () => {
+		const tempLength = await getNumberOfRows()
+		if (tempLength !== sheetsLength) {
+			sheetsLength = tempLength
+			const row = await getRowByIndex(sheetsLength - 1)
+			if (
+				row[Release.score] &&
+				row[Release.comments] &&
+				row[Release.artist] &&
+				row[Release.name] &&
+				row[Release.type] &&
+				row[Release.year] &&
+				row[Release.genre]
+			) {
+				musicChannel.send(
+					`${row[Release.artist].trim()} - ${row[Release.name].trim()} (${row[
+						Release.year
+					].trim()} ${row[Release.type].trim()}) ${row[
+						Release.score
+					].trim()}/10 ~ ${row[Release.comments].trim()}`
+				)
+			}
+		}
+	}, 300000) // 5 minutes
 
 	client.user?.setActivity('!help')
 	console.log('Ready')

@@ -4,6 +4,8 @@ node_modules
 
 # singular files to ignore
 ignoreThis.txt
-exampleMessage.txt
 token.json
-credentials.json
+emailCredentials.json
+emailToken.json
+sheetsCredentials.json
+sheetsToken.json

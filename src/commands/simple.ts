@@ -12,7 +12,8 @@ const helpCommand: Command = {
 			`!reminders add [number] [minute/ minutes, ..., year/years] [#channel] ['message in single quotes'] \n` +
 			`!reminders remove [number to remove] \n` +
 			`!reminders view [number to view or the word all] \n` +
-			`!email [example@blah.com] ['subject inside of single quotes'] ['body of the email in single quotes']` +
+			`!email [example@blah.com] ['subject inside of single quotes'] ['body of the email in single quotes']\n` +
+			`!kiss @buffet_time\n` +
 			`**Current modifiers**:\n**-d** deletes your message that invoked the command\n` +
 			`**-o** omits the output from the bot\n` +
 			`**Example:** !acronym meme -d`

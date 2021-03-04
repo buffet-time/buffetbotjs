@@ -12,3 +12,13 @@ export interface Command {
 	name: string
 	execute(message: Message, args: string[]): Promise<string> | string
 }
+
+export enum Release {
+	artist,
+	name,
+	score,
+	type,
+	year,
+	genre,
+	comments
+}

@@ -1,22 +1,26 @@
 import { Message } from 'discord.js'
 import { Command } from '../typings.js'
 import { google as Google } from 'googleapis'
-import { default as Readline } from 'readline'
+import { authorize } from '../shared/googleApis.js'
 import FileSystem from 'fs/promises'
 import { OAuth2Client } from 'google-auth-library'
 
 export { emailCommand }
 
 const scopes = ['https://www.googleapis.com/auth/gmail.send']
-const tokenPath = './src/config/token.json'
-const credentialsPath = './src/config/credentials.json'
+const tokenPath = './src/config/emailToken.json'
+const credentialsPath = './src/config/emailCredentials.json'
 let authClient: OAuth2Client
 
 try {
 	const content = await FileSystem.readFile(credentialsPath, 'utf-8')
-	authClient = await authorize(JSON.parse(content))
+	authClient = await authorize({
+		credentials: JSON.parse(content),
+		scopes,
+		tokenPath
+	})
 } catch (error) {
-	throw error('No credentials.json, check readme.md')
+	throw error('No emailCredentials.json, check readme.md')
 }
 
 const emailCommand: Command = {
@@ -38,63 +42,6 @@ const emailCommand: Command = {
 			return 'Error sending email.'
 		}
 	}
-}
-
-// Create an OAuth2 client with the given credentials
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function authorize(credentials: any) {
-	const { client_secret, client_id, redirect_uris } = credentials.installed
-	const oAuth2Client = new Google.auth.OAuth2(
-		client_id,
-		client_secret,
-		redirect_uris[0]
-	)
-
-	// Check if we have previously stored a token.
-	try {
-		const token = await FileSystem.readFile(tokenPath, 'utf-8')
-		oAuth2Client.setCredentials(JSON.parse(token))
-	} catch (error) {
-		await getNewToken(oAuth2Client)
-	}
-	return oAuth2Client
-}
-
-// Get and store new token after prompting for user authorization
-function getNewToken(oAuth2Client: OAuth2Client): Promise<void> {
-	const authUrl = oAuth2Client.generateAuthUrl({
-		access_type: 'offline',
-		scope: scopes
-	})
-	console.log('Authorize this app by visiting this url:', authUrl)
-	const readline = Readline.createInterface({
-		input: process.stdin,
-		output: process.stdout
-	})
-	return new Promise((resolve) =>
-		readline.question('Enter the code from that page here: ', (code) => {
-			readline.close()
-			resolve(
-				new Promise((resolve) =>
-					oAuth2Client.getToken(code, async (err, token) => {
-						if (err || !token) {
-							return console.error('Error retrieving access token', err)
-						}
-						oAuth2Client.setCredentials(token)
-						try {
-							await FileSystem.writeFile(
-								tokenPath,
-								JSON.stringify(token, null, 2)
-							)
-						} catch (error) {
-							// console.log(error)
-						}
-						resolve()
-					})
-				)
-			)
-		})
-	)
 }
 
 function sendEmail(
