@@ -70,8 +70,7 @@ client.once('ready', async () => {
 	setInterval(async () => {
 		const tempLength = await getNumberOfRows()
 		if (tempLength !== sheetsLength) {
-			sheetsLength = tempLength
-			const row = await getRowByIndex(sheetsLength - 1)
+			const row = await getRowByIndex(tempLength - 1)
 			if (
 				row[Release.score] &&
 				row[Release.comments] &&
@@ -88,6 +87,7 @@ client.once('ready', async () => {
 						Release.score
 					].trim()}/10 ~ ${row[Release.comments].trim()}`
 				)
+				sheetsLength = tempLength
 			}
 		}
 	}, 300000) // 5 minutes
