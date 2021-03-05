@@ -10,6 +10,9 @@ const remindersFilePath = 'reminders.json'
 const remindersCommand: Command = {
 	name: 'reminders',
 	async execute(message: Message, args: string[]) {
+		if (args.length < 1) {
+			return 'Incorrect invocation of the reminders command.'
+		}
 		const firstArg = args[0].toLowerCase()
 		const secondArg = args[1]
 		if (!firstArg) {
