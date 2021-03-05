@@ -9,10 +9,10 @@ export { acronymCommand }
 const acronymCommand: Command = {
 	name: 'acronym',
 	execute(_message: Message, args: string[]) {
-		const word = args[0].toLowerCase()
-		if (!word) {
+		if (args.length < 1) {
 			return 'Must pass a word.'
 		}
+		const word = args[0].toLowerCase()
 		const lowercaseWord = word.toLowerCase()
 		if (word.length < 2) {
 			return 'Acronym must be more than one letter.'
