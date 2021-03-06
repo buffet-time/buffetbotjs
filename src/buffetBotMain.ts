@@ -13,21 +13,25 @@ import { getNumberOfRows, getRowByIndex } from './commands/sheets.js'
 
 const client = new Client()
 const commands: Collection<string, Command> = new Collection()
+const buffetSpreadsheetId = '18V5oypFBW3Bu_tHxfTL-iSbb9ALYrCJlMwLhpPmp72M'
+const zachSpreadsheetId = '1gOQsBnd11bU-DkNUlAWoDub6t7eqKhUjy92M5kh2_TQ'
+const buffetRange = 'Main!A2:G'
+const zachRange = 'Sheet1!A2:G'
 
 let musicChannel: TextChannel
 let allReminders: Reminder[]
-let sheetsLength = 0
+let buffetSheetLength = 0
+let zachSheetLength = 0
+
 export function updateReminders(reminders: Reminder[]): void {
 	allReminders = reminders
-}
-export function updateSheetsLength(length: number): void {
-	sheetsLength = length
 }
 
 client.once('ready', async () => {
 	musicChannel = client.channels.cache.get('301931813947965440') as TextChannel
 	allReminders = await getAllReminders()
-	sheetsLength = await getNumberOfRows()
+	buffetSheetLength = await getNumberOfRows(buffetSpreadsheetId, buffetRange)
+	zachSheetLength = await getNumberOfRows(zachSpreadsheetId, zachRange)
 	const arrayOfCommandObjects = [
 		remindersCommand,
 		acronymCommand,
@@ -68,9 +72,16 @@ client.once('ready', async () => {
 	}, 15000) // 15 seconds
 
 	setInterval(async () => {
-		const tempLength = await getNumberOfRows()
-		if (tempLength !== sheetsLength) {
-			const row = await getRowByIndex(tempLength - 1)
+		const buffetTempLength = await getNumberOfRows(
+			buffetSpreadsheetId,
+			buffetRange
+		)
+		if (buffetTempLength !== buffetSheetLength) {
+			const row = await getRowByIndex(
+				buffetTempLength - 1,
+				buffetSpreadsheetId,
+				buffetRange
+			)
 			if (
 				row[Release.score] &&
 				row[Release.comments] &&
@@ -81,13 +92,43 @@ client.once('ready', async () => {
 				row[Release.genre]
 			) {
 				musicChannel.send(
-					`${row[Release.artist].trim()} - ${row[Release.name].trim()} (${row[
-						Release.year
-					].trim()} ${row[Release.type].trim()}) ${row[
-						Release.score
-					].trim()}/10 ~ ${row[Release.comments].trim()}`
+					`Buffet: ${row[Release.artist].trim()} - ${row[
+						Release.name
+					].trim()} (${row[Release.year].trim()} ${row[
+						Release.type
+					].trim()}) ${row[Release.score].trim()}/10 ~ ${row[
+						Release.comments
+					].trim()}`
 				)
-				sheetsLength = tempLength
+				buffetSheetLength = buffetTempLength
+			}
+		}
+		const zachTempLength = await getNumberOfRows(zachSpreadsheetId, zachRange)
+		if (zachTempLength !== zachSheetLength) {
+			const row = await getRowByIndex(
+				zachTempLength - 1,
+				zachSpreadsheetId,
+				zachRange
+			)
+			if (
+				row[Release.score] &&
+				row[Release.comments] &&
+				row[Release.artist] &&
+				row[Release.name] &&
+				row[Release.type] &&
+				row[Release.year] &&
+				row[Release.genre]
+			) {
+				musicChannel.send(
+					`Zach: ${row[Release.artist].trim()} - ${row[
+						Release.name
+					].trim()} (${row[Release.year].trim()} ${row[
+						Release.type
+					].trim()}) ${row[Release.score].trim()}/10 ~ ${row[
+						Release.comments
+					].trim()}`
+				)
+				zachSheetLength = zachTempLength
 			}
 		}
 	}, 300000) // 5 minutes

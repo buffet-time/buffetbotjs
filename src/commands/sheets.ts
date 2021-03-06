@@ -11,8 +11,6 @@ export { getNumberOfRows, getRowByIndex }
 const scopes = ['https://www.googleapis.com/auth/spreadsheets.readonly']
 const tokenPath = './src/config/sheetsToken.json'
 const credentialsPath = './src/config/sheetsCredentials.json'
-const spreadsheetId = '18V5oypFBW3Bu_tHxfTL-iSbb9ALYrCJlMwLhpPmp72M'
-const range = 'Main!A2:G'
 let authClient: OAuth2Client
 
 try {
@@ -28,7 +26,10 @@ try {
 
 const sheets = Google.sheets({ version: 'v4', auth: authClient })
 
-async function getNumberOfRows(): Promise<number> {
+async function getNumberOfRows(
+	spreadsheetId: string,
+	range: string
+): Promise<number> {
 	return new Promise((resolve) => {
 		sheets.spreadsheets.values.get(
 			{
@@ -42,7 +43,11 @@ async function getNumberOfRows(): Promise<number> {
 	})
 }
 
-async function getRowByIndex(index: number): Promise<string[]> {
+async function getRowByIndex(
+	index: number,
+	spreadsheetId: string,
+	range: string
+): Promise<string[]> {
 	return new Promise((resolve) => {
 		sheets.spreadsheets.values.get(
 			{
