@@ -135,7 +135,7 @@ client.once('ready', async () => {
 				zachSheetLength = zachTempLength
 			}
 		}
-	}, 5000) // 5 minutes
+	}, 300000) // 5 minutes
 
 	client.user?.setActivity('!help')
 	console.log('Ready')
