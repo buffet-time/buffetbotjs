@@ -31,7 +31,7 @@ client.once('ready', async () => {
 	musicChannel = client.channels.cache.get('301931813947965440') as TextChannel
 	allReminders = await getAllReminders()
 	buffetSheetLength = await getNumberOfRows(buffetSpreadsheetId, buffetRange)
-	zachSheetLength = await getNumberOfRows(zachSpreadsheetId, zachRange)
+	zachSheetLength = await getNumberOfRows(zachSpreadsheetId, zachRange, true)
 	const arrayOfCommandObjects = [
 		remindersCommand,
 		acronymCommand,
@@ -103,7 +103,11 @@ client.once('ready', async () => {
 				buffetSheetLength = buffetTempLength
 			}
 		}
-		const zachTempLength = await getNumberOfRows(zachSpreadsheetId, zachRange)
+		const zachTempLength = await getNumberOfRows(
+			zachSpreadsheetId,
+			zachRange,
+			true
+		)
 		if (zachTempLength !== zachSheetLength) {
 			const row = await getRowByIndex(
 				zachTempLength - 1,
@@ -131,7 +135,7 @@ client.once('ready', async () => {
 				zachSheetLength = zachTempLength
 			}
 		}
-	}, 300000) // 5 minutes
+	}, 5000) // 5 minutes
 
 	client.user?.setActivity('!help')
 	console.log('Ready')

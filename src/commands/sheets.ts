@@ -4,6 +4,7 @@ import FileSystem from 'fs/promises'
 import { google as Google } from 'googleapis'
 import { OAuth2Client } from 'google-auth-library'
 import { authorize } from '../shared/googleApis.js'
+import { Release } from '../typings.js'
 
 export { getNumberOfRows, getRowByIndex }
 
@@ -28,7 +29,8 @@ const sheets = Google.sheets({ version: 'v4', auth: authClient })
 
 async function getNumberOfRows(
 	spreadsheetId: string,
-	range: string
+	range: string,
+	zach?: boolean // to support different method of checking
 ): Promise<number> {
 	return new Promise((resolve) => {
 		sheets.spreadsheets.values.get(
@@ -37,7 +39,26 @@ async function getNumberOfRows(
 				range: range
 			},
 			(_err, res) => {
-				resolve(res!.data.values!.length)
+				const sheetsArray = res!.data.values!
+				if (zach) {
+					let n = sheetsArray.length - 1
+					while (n > 0) {
+						const row = sheetsArray[n]
+						if (
+							row[Release.score] &&
+							row[Release.comments] &&
+							row[Release.artist] &&
+							row[Release.name] &&
+							row[Release.type] &&
+							row[Release.year] &&
+							row[Release.genre]
+						) {
+							resolve(n + 1)
+						}
+						n--
+					}
+				}
+				resolve(sheetsArray.length)
 			}
 		)
 	})
