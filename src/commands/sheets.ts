@@ -29,8 +29,7 @@ const sheets = Google.sheets({ version: 'v4', auth: authClient })
 
 async function getNumberOfRows(
 	spreadsheetId: string,
-	range: string,
-	zach?: boolean // to support different method of checking
+	range: string
 ): Promise<number> {
 	return new Promise((resolve) => {
 		sheets.spreadsheets.values.get(
@@ -40,25 +39,23 @@ async function getNumberOfRows(
 			},
 			(_err, res) => {
 				const sheetsArray = res!.data.values!
-				if (zach) {
-					let n = sheetsArray.length - 1
-					while (n > 0) {
-						const row = sheetsArray[n]
-						if (
-							row[Release.score] &&
-							row[Release.comments] &&
-							row[Release.artist] &&
-							row[Release.name] &&
-							row[Release.type] &&
-							row[Release.year] &&
-							row[Release.genre]
-						) {
-							resolve(n + 1)
-						}
-						n--
+
+				let n = sheetsArray.length - 1
+				while (n > 0) {
+					const row = sheetsArray[n]
+					if (
+						row[Release.score] &&
+						row[Release.comments] &&
+						row[Release.artist] &&
+						row[Release.name] &&
+						row[Release.type] &&
+						row[Release.year] &&
+						row[Release.genre]
+					) {
+						resolve(n + 1)
 					}
+					n--
 				}
-				resolve(sheetsArray.length)
 			}
 		)
 	})
