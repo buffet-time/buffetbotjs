@@ -28,7 +28,7 @@ const emailCommand: Command = {
 	execute(message: Message, args: string[]) {
 		const subjectAndBody = message.content.match(/'([^']+)'/g)
 		if (args.length < 3 || !subjectAndBody || subjectAndBody.length !== 2) {
-			return 'Incorrect invocation of Email command.'
+			return { content: 'Incorrect invocation of Email command.' }
 		}
 		const emailStatus = sendEmail(
 			args[0],
@@ -37,9 +37,9 @@ const emailCommand: Command = {
 			authClient
 		)
 		if (emailStatus === 'good') {
-			return 'Email sent succesfully.'
+			return { content: 'Email sent succesfully.' }
 		} else {
-			return 'Error sending email.'
+			return { content: 'Error sending email.' }
 		}
 	}
 }

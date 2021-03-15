@@ -5,8 +5,55 @@ import { google as Google } from 'googleapis'
 import { OAuth2Client } from 'google-auth-library'
 import { authorize } from '../shared/googleApis.js'
 import { Release } from '../typings.js'
+import { Message } from 'discord.js'
+import { Command } from '../typings.js'
+import {
+	buffetSpreadsheetId,
+	zachSpreadsheetId,
+	buffetRange,
+	zachRange
+} from '../buffetBotMain.js'
 
-export { getNumberOfRows, getRowByIndex }
+export {
+	getNumberOfRows,
+	getRowByIndex,
+	sheetsCommand,
+	getSheetsRowMessage,
+	rowIsFilledOut
+}
+const sheetsCommand: Command = {
+	name: 'sheets',
+	async execute(message: Message, args: string[]) {
+		if (args.length !== 1 && !Number(args[0])) {
+			return { content: 'Error' }
+		}
+		if (message.author.id === '136494200391729152') {
+			const row = await getRowByIndex(
+				Number(args[0]) - 2,
+				buffetSpreadsheetId,
+				buffetRange
+			)
+			if (rowIsFilledOut(row)) {
+				return { content: `Buffet: ${getSheetsRowMessage(row)}` }
+			} else {
+				return { content: 'Specified row is not filled out' }
+			}
+		} else if (message.author.id === '134862353660379137') {
+			const row = await getRowByIndex(
+				Number(args[0]) - 2,
+				zachSpreadsheetId,
+				zachRange
+			)
+			if (rowIsFilledOut(row)) {
+				return { content: `Zach: ${getSheetsRowMessage(row)}` }
+			} else {
+				return { content: 'Specified row is not filled out' }
+			}
+		} else {
+			return { content: 'Command can only be used by Buffet or Zach' }
+		}
+	}
+}
 
 // If modifying these scopes, delete token.json.
 const scopes = ['https://www.googleapis.com/auth/spreadsheets.readonly']
@@ -43,15 +90,7 @@ async function getNumberOfRows(
 				let n = sheetsArray.length - 1
 				while (n > 0) {
 					const row = sheetsArray[n]
-					if (
-						row[Release.score] &&
-						row[Release.comments] &&
-						row[Release.artist] &&
-						row[Release.name] &&
-						row[Release.type] &&
-						row[Release.year] &&
-						row[Release.genre]
-					) {
+					if (rowIsFilledOut(row)) {
 						resolve(n + 1)
 					}
 					n--
@@ -77,4 +116,28 @@ async function getRowByIndex(
 			}
 		)
 	})
+}
+
+function getSheetsRowMessage(row: string[]): string {
+	return `${row[Release.artist].trim()} - ${row[Release.name].trim()} (${row[
+		Release.year
+	].trim()} ${row[Release.type].trim()}) ${row[
+		Release.score
+	].trim()}/10 ~ ${row[Release.comments].trim()}`
+}
+
+function rowIsFilledOut(row: string[]): boolean {
+	if (
+		row[Release.score] &&
+		row[Release.comments] &&
+		row[Release.artist] &&
+		row[Release.name] &&
+		row[Release.type] &&
+		row[Release.year] &&
+		row[Release.genre]
+	) {
+		return true
+	} else {
+		return false
+	}
 }

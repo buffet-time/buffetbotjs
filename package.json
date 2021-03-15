@@ -17,10 +17,12 @@
 		"execute": "node ./dist/buffetBotMain.js"
 	},
 	"dependencies": {
+		"disconnect": "^1.2.2",
 		"discord.js": "^12.5.1",
 		"file-system": "^2.2.2",
 		"googleapis": "^39.2.0",
-		"lodash.isequal": "^4.5.0"
+		"lodash.isequal": "^4.5.0",
+		"wikijs": "^6.0.1"
 	},
 	"devDependencies": {
 		"@types/lodash.isequal": "^4.5.5",

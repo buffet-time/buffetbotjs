@@ -10,20 +10,23 @@ const acronymCommand: Command = {
 	name: 'acronym',
 	execute(_message: Message, args: string[]) {
 		if (args.length < 1) {
-			return 'Must pass a word.'
+			return { content: 'Must pass a word.' }
 		}
 		const word = args[0].toLowerCase()
 		const lowercaseWord = word.toLowerCase()
 		if (word.length < 2) {
-			return 'Acronym must be more than one letter.'
+			return { content: 'Acronym must be more than one letter.' }
 		} else if (lowercaseWord === 'acab') {
-			return '**ALL** cops are bastards'
+			return { content: '**ALL** cops are bastards' }
 		} else if (lowercaseWord === 'mac') {
-			return 'Linux Stan'
+			return { content: 'Linux Stan' }
 		} else if (/^[a-zA-Z]+$/.test(word)) {
-			return getAcronym(word)
+			return { content: getAcronym(word) }
 		} else {
-			return 'The word you want to become an acronym must only contain letters.'
+			return {
+				content:
+					'The word you want to become an acronym must only contain letters.'
+			}
 		}
 	}
 }

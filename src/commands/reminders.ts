@@ -11,12 +11,12 @@ const remindersCommand: Command = {
 	name: 'reminders',
 	async execute(message: Message, args: string[]) {
 		if (args.length < 1) {
-			return 'Incorrect invocation of the reminders command.'
+			return { content: 'Incorrect invocation of the reminders command.' }
 		}
 		const firstArg = args[0].toLowerCase()
 		const secondArg = args[1]
 		if (!firstArg) {
-			return 'Must pass **add** **remove** or **view**'
+			return { content: 'Must pass **add** **remove** or **view**' }
 		}
 		switch (firstArg) {
 			case 'add': {
@@ -29,9 +29,12 @@ const remindersCommand: Command = {
 				) {
 					const returnText = await addReminder(message, args)
 					updateReminders(await getAllReminders())
-					return returnText
+					return { content: returnText }
 				} else {
-					return 'Incorrect invocation of the add reminders command. See !help'
+					return {
+						content:
+							'Incorrect invocation of the add reminders command. See !help'
+					}
 				}
 			}
 			case 'remove':
@@ -41,21 +44,31 @@ const remindersCommand: Command = {
 						Number(secondArg)
 					)
 					updateReminders(await getAllReminders())
-					return returnText
+					return { content: returnText }
 				} else {
-					return 'Must pass a number to remove.'
+					return { content: 'Must pass a number to remove.' }
 				}
 			case 'view':
 				if (
 					secondArg &&
 					(!isNaN(Number(secondArg)) || secondArg.toLowerCase() === 'all')
 				) {
-					return await viewReminders(message.author.id, Number(secondArg))
+					const reminderView = await viewReminders(
+						message.author.id,
+						Number(secondArg)
+					)
+					return {
+						content: reminderView
+					}
 				} else {
-					return 'Incorrect invocation of the !reminders command. See !help'
+					return {
+						content: 'Incorrect invocation of the !reminders command. See !help'
+					}
 				}
 			default:
-				return 'Incorrect invocation of the !reminders command. See !help'
+				return {
+					content: 'Incorrect invocation of the !reminders command. See !help'
+				}
 		}
 	}
 }

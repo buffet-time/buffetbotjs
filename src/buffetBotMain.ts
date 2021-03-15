@@ -1,5 +1,5 @@
 import { Client, Collection, Message, TextChannel } from 'discord.js'
-import { Command, Release, Reminder } from './typings.js'
+import { Command, Reminder } from './typings.js'
 import Config from './config/config.js'
 import {
 	removeReminder,
@@ -7,9 +7,23 @@ import {
 	remindersCommand
 } from './commands/reminders.js'
 import { acronymCommand } from './commands/acronym.js'
-import { helpCommand, kissCommand } from './commands/simple.js'
+import {
+	crocCommand,
+	helpCommand,
+	kissCommand,
+	parentsCommand,
+	cheemsCommand
+} from './commands/simple.js'
 import { emailCommand } from './commands/email.js'
-import { getNumberOfRows, getRowByIndex } from './commands/sheets.js'
+import {
+	getNumberOfRows,
+	getRowByIndex,
+	getSheetsRowMessage,
+	rowIsFilledOut,
+	sheetsCommand
+} from './commands/sheets.js'
+
+export { buffetSpreadsheetId, zachSpreadsheetId, buffetRange, zachRange }
 
 const client = new Client()
 const commands: Collection<string, Command> = new Collection()
@@ -27,7 +41,7 @@ export function updateReminders(reminders: Reminder[]): void {
 	allReminders = reminders
 }
 
-client.once('ready', async () => {
+client.on('ready', async () => {
 	musicChannel = client.channels.cache.get('301931813947965440') as TextChannel
 	allReminders = await getAllReminders()
 	buffetSheetLength = await getNumberOfRows(buffetSpreadsheetId, buffetRange)
@@ -37,7 +51,11 @@ client.once('ready', async () => {
 		acronymCommand,
 		helpCommand,
 		emailCommand,
-		kissCommand
+		kissCommand,
+		parentsCommand,
+		sheetsCommand,
+		crocCommand,
+		cheemsCommand
 	]
 	arrayOfCommandObjects.forEach((command) => {
 		commands.set(command.name, command)
@@ -82,24 +100,8 @@ client.once('ready', async () => {
 				buffetSpreadsheetId,
 				buffetRange
 			)
-			if (
-				row[Release.score] &&
-				row[Release.comments] &&
-				row[Release.artist] &&
-				row[Release.name] &&
-				row[Release.type] &&
-				row[Release.year] &&
-				row[Release.genre]
-			) {
-				musicChannel.send(
-					`Buffet: ${row[Release.artist].trim()} - ${row[
-						Release.name
-					].trim()} (${row[Release.year].trim()} ${row[
-						Release.type
-					].trim()}) ${row[Release.score].trim()}/10 ~ ${row[
-						Release.comments
-					].trim()}`
-				)
+			if (rowIsFilledOut(row)) {
+				musicChannel.send(`Buffet: ${getSheetsRowMessage(row)}`)
 				buffetSheetLength = buffetTempLength
 			}
 		}
@@ -110,24 +112,8 @@ client.once('ready', async () => {
 				zachSpreadsheetId,
 				zachRange
 			)
-			if (
-				row[Release.score] &&
-				row[Release.comments] &&
-				row[Release.artist] &&
-				row[Release.name] &&
-				row[Release.type] &&
-				row[Release.year] &&
-				row[Release.genre]
-			) {
-				musicChannel.send(
-					`Zach: ${row[Release.artist].trim()} - ${row[
-						Release.name
-					].trim()} (${row[Release.year].trim()} ${row[
-						Release.type
-					].trim()}) ${row[Release.score].trim()}/10 ~ ${row[
-						Release.comments
-					].trim()}`
-				)
+			if (rowIsFilledOut(row)) {
+				musicChannel.send(`Zach: ${getSheetsRowMessage(row)}`)
 				zachSheetLength = zachTempLength
 			}
 		}
@@ -162,7 +148,12 @@ client.on('message', async (message: Message) => {
 		const omitModifier = content.includes('-o')
 		const deleteModifier = content.includes('-d')
 
-		if (deleteModifier) {
+		if (
+			deleteModifier ||
+			command === 'croc' ||
+			command === 'cheems' ||
+			command === 'kiss'
+		) {
 			await message.delete()
 		}
 		if (omitModifier) {
@@ -170,8 +161,10 @@ client.on('message', async (message: Message) => {
 		}
 
 		// send the messsage
-		if (messageToSend) {
-			message.channel.send(messageToSend)
+		if (messageToSend && messageToSend.options) {
+			message.channel.send(messageToSend.content, messageToSend.options)
+		} else if (messageToSend && messageToSend.content) {
+			message.channel.send(messageToSend.content)
 		} else {
 			message.channel.send('Error sending message.')
 		}

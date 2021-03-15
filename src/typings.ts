@@ -1,4 +1,10 @@
-import { Message } from 'discord.js'
+/* eslint-disable no-mixed-spaces-and-tabs */
+import {
+	APIMessageContentResolvable,
+	Message,
+	MessageAdditions,
+	MessageOptions
+} from 'discord.js'
 
 export interface Reminder {
 	reminderNumber: number
@@ -10,7 +16,26 @@ export interface Reminder {
 
 export interface Command {
 	name: string
-	execute(message: Message, args: string[]): Promise<string> | string
+	execute(
+		message: Message,
+		args: string[]
+	):
+		| Promise<{
+				content: MessageAdditions | APIMessageContentResolvable
+				options?:
+					| MessageAdditions
+					| (MessageOptions & {
+							split?: false | undefined
+					  })
+		  }>
+		| {
+				content: MessageAdditions | APIMessageContentResolvable
+				options?:
+					| MessageAdditions
+					| (MessageOptions & {
+							split?: false | undefined
+					  })
+		  }
 }
 
 export enum Release {
