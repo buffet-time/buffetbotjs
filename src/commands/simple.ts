@@ -74,9 +74,9 @@ const parentsCommand: Command = {
 
 const crocCommand: Command = {
 	name: 'croc',
-	execute() {
+	execute(message: Message) {
 		return {
-			content: '',
+			content: `${message.author} exploded`,
 			options: {
 				files: [
 					'https://cdn.discordapp.com/attachments/480969957438390273/819965221744803870/crocodile.mp4'

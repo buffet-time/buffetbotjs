@@ -85,15 +85,19 @@ async function getNumberOfRows(
 				range: range
 			},
 			(_err, res) => {
-				const sheetsArray = res!.data.values!
+				if (res && res.data.values) {
+					const sheetsArray = res.data.values
 
-				let n = sheetsArray.length - 1
-				while (n > 0) {
-					const row = sheetsArray[n]
-					if (rowIsFilledOut(row)) {
-						resolve(n + 1)
+					let n = sheetsArray.length - 1
+					while (n > 0) {
+						const row = sheetsArray[n]
+						if (rowIsFilledOut(row)) {
+							resolve(n + 1)
+						}
+						n--
 					}
-					n--
+				} else {
+					console.log('Res or Res Values was undefined in getNumberOfRows.')
 				}
 			}
 		)
@@ -112,7 +116,11 @@ async function getRowByIndex(
 				range: range
 			},
 			(_err, res) => {
-				resolve(res!.data.values![index])
+				if (res && res.data.values) {
+					resolve(res.data.values[index])
+				}
+				console.log('Res or Res values not defined in getRowByIndex')
+				resolve([])
 			}
 		)
 	})
