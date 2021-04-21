@@ -125,7 +125,11 @@ client.on('ready', async () => {
 
 client.on('message', async (message: Message) => {
 	if (!message.content.startsWith('!') || message.author.bot) {
-		if (
+		if (message.author.id === '356928790565224460') {
+			message.channel.send(
+				'I love you deeply and will always support you Lilli <3'
+			)
+		} else if (
 			message.content.includes('<@!136494200391729152>') &&
 			!message.author.bot &&
 			message.author.id !== '136494200391729152'

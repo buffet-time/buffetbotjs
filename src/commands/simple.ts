@@ -40,10 +40,16 @@ const kissCommand: Command = {
 		const imageToSend =
 			arrayOfImages[Math.floor(Math.random() * arrayOfImages.length)]
 
-		return {
-			content: `${message.author} kissed ${args[0]}`,
-			options: {
-				files: [imageToSend]
+		if (args[0]) {
+			return {
+				content: `${message.author} kissed ${args[0]}`,
+				options: {
+					files: [imageToSend]
+				}
+			}
+		} else {
+			return {
+				content: `${message.author} add a person to kiss ree`
 			}
 		}
 	}
