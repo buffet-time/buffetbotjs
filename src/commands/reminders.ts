@@ -24,6 +24,7 @@ const remindersCommand: Command = {
 				if (
 					args.length > 4 &&
 					!isNaN(Number(secondArg)) &&
+					args[3].slice(0, 2) === '<#' &&
 					content.indexOf("'") !== -1 &&
 					content.indexOf("'") !== content.lastIndexOf("'")
 				) {
@@ -93,11 +94,10 @@ async function addReminder(message: Message, args: string[]): Promise<string> {
 		}
 		let remindersJson: Reminder[]
 		if (
-			!newReminder.time &&
-			!reminderMessage &&
-			reminderMessage !== ('' || ' ') &&
-			!newReminder.channel &&
-			newReminder.channel !== ('' || ' ') &&
+			!newReminder ||
+			!newReminder.time ||
+			!reminderMessage ||
+			!newReminder.channel ||
 			timestamp === 0
 		) {
 			return 'Incorrect invocation of the add reminders command. See !help'
