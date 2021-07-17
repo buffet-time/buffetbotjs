@@ -1,12 +1,7 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import FileSystem from 'fs/promises'
-import { google as Google } from 'googleapis'
-import { OAuth2Client } from 'google-auth-library'
-import { authorize } from '../shared/googleApis.js'
 import { Release } from '../typings.js'
 import { Message } from 'discord.js'
 import { Command } from '../typings.js'
+import nodeFetch from 'node-fetch'
 import {
 	buffetSpreadsheetId,
 	zachSpreadsheetId,
@@ -55,75 +50,24 @@ const sheetsCommand: Command = {
 	}
 }
 
-// If modifying these scopes, delete token.json.
-const scopes = ['https://www.googleapis.com/auth/spreadsheets.readonly']
-const tokenPath = './src/config/sheetsToken.json'
-const credentialsPath = './src/config/sheetsCredentials.json'
-let authClient: OAuth2Client
-
-try {
-	const content = await FileSystem.readFile(credentialsPath, 'utf-8')
-	authClient = await authorize({
-		credentials: JSON.parse(content),
-		scopes,
-		tokenPath
-	})
-} catch (error) {
-	throw error('No sheetsCredentials.json, check readme.md')
-}
-
-const sheets = Google.sheets({ version: 'v4', auth: authClient })
-
-async function getNumberOfRows(
-	spreadsheetId: string,
-	range: string
-): Promise<number> {
-	return new Promise((resolve) => {
-		sheets.spreadsheets.values.get(
-			{
-				spreadsheetId: spreadsheetId,
-				range: range
-			},
-			(_err, res) => {
-				if (res && res.data.values) {
-					const sheetsArray = res.data.values
-
-					let n = sheetsArray.length - 1
-					while (n > 0) {
-						const row = sheetsArray[n]
-						if (rowIsFilledOut(row)) {
-							resolve(n + 1)
-						}
-						n--
-					}
-				} else {
-					console.log('Res or Res Values was undefined in getNumberOfRows.')
-				}
-			}
+async function getNumberOfRows(id: string, range: string): Promise<number> {
+	return (
+		await nodeFetch(
+			`http://localhost:3000/Sheets?id=${id}&range=${range}&rows=true`
 		)
-	})
+	).json()
 }
 
 async function getRowByIndex(
 	index: number,
-	spreadsheetId: string,
+	id: string,
 	range: string
 ): Promise<string[]> {
-	return new Promise((resolve) => {
-		sheets.spreadsheets.values.get(
-			{
-				spreadsheetId: spreadsheetId,
-				range: range
-			},
-			(_err, res) => {
-				if (res && res.data.values) {
-					resolve(res.data.values[index])
-				}
-				console.log('Res or Res values not defined in getRowByIndex')
-				resolve([])
-			}
+	return (
+		await nodeFetch(
+			`http://localhost:3000/Sheets?id=${id}&range=${range}&index=${index}`
 		)
-	})
+	).json()
 }
 
 function getSheetsRowMessage(row: string[]): string {

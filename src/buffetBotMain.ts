@@ -42,6 +42,7 @@ export function updateReminders(reminders: Reminder[]): void {
 }
 
 client.on('ready', async () => {
+	console.log('Starting up...')
 	musicChannel = client.channels.cache.get('301931813947965440') as TextChannel
 	allReminders = await getAllReminders()
 	buffetSheetLength = await getNumberOfRows(buffetSpreadsheetId, buffetRange)
