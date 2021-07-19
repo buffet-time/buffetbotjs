@@ -7,30 +7,33 @@ export { emailCommand }
 const emailCommand: Command = {
 	name: 'email',
 	async execute(message: Message, args: string[]) {
-		const subjectAndBody = message.content.match(/'([^']+)'/g)
-		if (args.length < 3 || !subjectAndBody || subjectAndBody.length !== 2) {
+		const subjectAndMessage = message.content.match(/'([^']+)'/g)
+		if (
+			args.length < 3 ||
+			!subjectAndMessage ||
+			subjectAndMessage.length !== 2
+		) {
 			return { content: 'Incorrect invocation of Email command.' }
 		}
-		const emailStatus = await sendEmail(
-			args[0],
-			subjectAndBody[0].replaceAll(`'`, ''),
-			subjectAndBody[1].replaceAll(`'`, '')
-		)
+
+		const emailTo = args[0],
+			emailSubject = subjectAndMessage[0].replaceAll(`'`, ''),
+			emailMessage = subjectAndMessage[1].replaceAll(`'`, '')
+
+		let emailStatus
+		try {
+			await nodeFetch(
+				`http://localhost:3000/Email?to=${emailTo}&subject=${emailSubject}&message=${emailMessage}`
+			)
+			emailStatus = 'good'
+		} catch (error) {
+			emailStatus = `error: ${error}`
+		}
+
 		if (emailStatus === 'good') {
 			return { content: 'Email sent succesfully.' }
 		} else {
 			return { content: 'Error sending email.' }
 		}
-	}
-}
-
-async function sendEmail(to: string, subject: string, message: string) {
-	try {
-		await nodeFetch(
-			`http://localhost:3000/Email?to=${to}&subject=${subject}&message=${message}`
-		)
-		return 'good'
-	} catch (error) {
-		return `error: ${error}`
 	}
 }
