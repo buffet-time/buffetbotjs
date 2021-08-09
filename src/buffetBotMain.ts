@@ -1,4 +1,4 @@
-import { Client, Collection, Message, TextChannel } from 'discord.js'
+import { Client, Collection, Intents, Message, TextChannel } from 'discord.js'
 import { Command, Reminder } from './typings.js'
 import Config from './config/config.js'
 import {
@@ -22,10 +22,13 @@ import {
 	rowIsFilledOut,
 	sheetsCommand
 } from './commands/sheets.js'
+import { femboyCommand } from './commands/reddit.js'
 
 export { buffetSpreadsheetId, zachSpreadsheetId, buffetRange, zachRange }
 
-const client = new Client()
+const client = new Client({
+	intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES]
+})
 const commands: Collection<string, Command> = new Collection()
 const buffetSpreadsheetId = '18V5oypFBW3Bu_tHxfTL-iSbb9ALYrCJlMwLhpPmp72M'
 const zachSpreadsheetId = '1gOQsBnd11bU-DkNUlAWoDub6t7eqKhUjy92M5kh2_TQ'
@@ -56,7 +59,8 @@ client.on('ready', async () => {
 		parentsCommand,
 		sheetsCommand,
 		crocCommand,
-		cheemsCommand
+		cheemsCommand,
+		femboyCommand
 	]
 	arrayOfCommandObjects.forEach((command) => {
 		commands.set(command.name, command)
@@ -75,7 +79,7 @@ client.on('ready', async () => {
 					const channelToSendTo = await client.channels.fetch(
 						allReminders[x].channel
 					)
-					if (channelToSendTo.isText()) {
+					if (channelToSendTo && channelToSendTo.isText()) {
 						channelToSendTo.send(
 							`<@!${allReminders[x].user}>: ${allReminders[x].message}`
 						)
@@ -169,8 +173,12 @@ client.on('message', async (message: Message) => {
 		}
 
 		// send the messsage
-		if (messageToSend && messageToSend.options) {
-			message.channel.send(messageToSend.content, messageToSend.options)
+		if (messageToSend && messageToSend.files) {
+			message.channel.send({
+				content: messageToSend.content,
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				files: messageToSend.files
+			})
 		} else if (messageToSend && messageToSend.content) {
 			message.channel.send(messageToSend.content)
 		} else {

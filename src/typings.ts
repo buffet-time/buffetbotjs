@@ -1,10 +1,11 @@
 /* eslint-disable no-mixed-spaces-and-tabs */
 import {
-	APIMessageContentResolvable,
+	BufferResolvable,
+	FileOptions,
 	Message,
-	MessageAdditions,
-	MessageOptions
+	MessageAttachment
 } from 'discord.js'
+import { Stream } from 'stream'
 
 export interface Reminder {
 	reminderNumber: number
@@ -21,20 +22,12 @@ export interface Command {
 		args: string[]
 	):
 		| Promise<{
-				content: MessageAdditions | APIMessageContentResolvable
-				options?:
-					| MessageAdditions
-					| (MessageOptions & {
-							split?: false | undefined
-					  })
+				content?: string | null
+				files?: (FileOptions | BufferResolvable | Stream | MessageAttachment)[]
 		  }>
 		| {
-				content: MessageAdditions | APIMessageContentResolvable
-				options?:
-					| MessageAdditions
-					| (MessageOptions & {
-							split?: false | undefined
-					  })
+				content: string | null
+				files?: (FileOptions | BufferResolvable | Stream | MessageAttachment)[]
 		  }
 }
 

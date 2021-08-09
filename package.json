@@ -18,7 +18,7 @@
 	},
 	"dependencies": {
 		"disconnect": "^1.2.2",
-		"discord.js": "^12.5.1",
+		"discord.js": "^13.0.1",
 		"file-system": "^2.2.2",
 		"lodash.isequal": "^4.5.0",
 		"node-fetch": "^2.6.1",
