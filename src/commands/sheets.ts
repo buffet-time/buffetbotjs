@@ -1,5 +1,5 @@
 import { Release } from '../typings.js'
-import { Message } from 'discord.js'
+import { CommandInteraction } from 'discord.js'
 import { Command } from '../typings.js'
 import nodeFetch from 'node-fetch'
 import {
@@ -18,13 +18,23 @@ export {
 }
 const sheetsCommand: Command = {
 	name: 'sheets',
-	async execute(message: Message, args: string[]) {
-		if (args.length !== 1 && !Number(args[0])) {
-			return { content: 'Error' }
+	description: 'For Buffet and Zacoholic to share scores of music',
+	options: [
+		{
+			name: 'row',
+			description: 'Which row to retrieve',
+			type: 'INTEGER',
+			required: true
 		}
-		if (message.author.id === '136494200391729152') {
+	],
+	async execute(interaction: CommandInteraction) {
+		const rowNum = interaction.options.getInteger('row')
+		if (!rowNum) {
+			return { content: 'Must pass a number' }
+		}
+		if (interaction.user.id === '136494200391729152') {
 			const row = await getRowByIndex(
-				Number(args[0]) - 2,
+				rowNum - 2,
 				buffetSpreadsheetId,
 				buffetRange
 			)
@@ -33,12 +43,8 @@ const sheetsCommand: Command = {
 			} else {
 				return { content: 'Specified row is not filled out' }
 			}
-		} else if (message.author.id === '134862353660379137') {
-			const row = await getRowByIndex(
-				Number(args[0]) - 2,
-				zachSpreadsheetId,
-				zachRange
-			)
+		} else if (interaction.user.id === '134862353660379137') {
+			const row = await getRowByIndex(rowNum - 2, zachSpreadsheetId, zachRange)
 			if (rowIsFilledOut(row)) {
 				return { content: `Zach: ${getSheetsRowMessage(row)}` }
 			} else {

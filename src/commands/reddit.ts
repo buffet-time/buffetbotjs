@@ -1,21 +1,20 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Command } from '../typings.js'
 import nodeFetch from 'node-fetch'
 
 export { femboyCommand }
 
+// works
 const femboyCommand: Command = {
 	name: 'femboy',
+	description: 'Posts the latest femboy',
 	async execute() {
 		try {
 			return {
-				options: {
-					files: [
-						await (
-							await nodeFetch(`http://localhost:3000/Reddit/Top/Femboy`)
-						).json()
-					]
-				}
+				files: [
+					await (
+						await nodeFetch(`http://localhost:3000/Reddit/Top/Femboy`)
+					).json()
+				]
 			}
 		} catch (error) {
 			console.log(`Error in Femboy command: ${error}`)

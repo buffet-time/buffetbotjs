@@ -1,31 +1,20 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { Message } from 'discord.js'
+import { CommandInteraction } from 'discord.js'
 import { Command } from '../typings.js'
 
-export { helpCommand, kissCommand, parentsCommand, crocCommand, cheemsCommand }
-
-const helpCommand: Command = {
-	name: 'help',
-	execute() {
-		const messageToSend =
-			`**Current commands**:\n!acronym [insert word here]\n` +
-			`!reminders add [number] [minute/ minutes, ..., year/years] [#channel] ['message in single quotes'] \n` +
-			`!reminders remove [number to remove] \n` +
-			`!reminders view [number to view or the word all] \n` +
-			`!email [example@blah.com] ['subject inside of single quotes'] ['body of the email in single quotes']\n` +
-			`!kiss @buffet_time\n` +
-			`!croc\n` +
-			`!cheems\n` +
-			`**Current modifiers**:\n**-d** deletes your message that invoked the command\n` +
-			`**-o** omits the output from the bot\n` +
-			`**Example:** !acronym meme -d`
-		return { content: messageToSend }
-	}
-}
+export { kissCommand, parentsCommand, crocCommand, cheemsCommand }
 
 const kissCommand: Command = {
 	name: 'kiss',
-	execute(message: Message, args: string[]) {
+	description: 'UwU Kiss',
+	options: [
+		{
+			name: 'person',
+			description: 'Whomstdve to kiss',
+			type: 'MENTIONABLE',
+			required: true
+		}
+	],
+	execute(interaction: CommandInteraction) {
 		const arrayOfImages = [
 			'https://www.daysoftheyear.com/wp-content/uploads/international-kissing-day.jpg',
 			'https://previews.123rf.com/images/auremar/auremar1201/auremar120105074/11947172-kiss-on-the-cheek.jpg',
@@ -40,23 +29,19 @@ const kissCommand: Command = {
 		const imageToSend =
 			arrayOfImages[Math.floor(Math.random() * arrayOfImages.length)]
 
-		if (args[0]) {
-			return {
-				content: `${message.author} kissed ${args[0]}`,
-				options: {
-					files: [imageToSend]
-				}
-			}
-		} else {
-			return {
-				content: `${message.author} add a person to kiss ree`
-			}
+		return {
+			// content: `${message.author} kissed ${args[0]}`,
+			content: `${interaction.user} kissed ${interaction.options.getMentionable(
+				'person'
+			)}`,
+			files: [imageToSend]
 		}
 	}
 }
 
 const parentsCommand: Command = {
 	name: 'parents',
+	description: 'Fuck parents aaaaa',
 	execute() {
 		const arrayOfImages = [
 			'https://drjamesgjohnson.org/wp-content/uploads/2016/10/when-anger-seperates-family.jpg',
@@ -71,29 +56,28 @@ const parentsCommand: Command = {
 
 		return {
 			content: 'MY PARENTS SUCK ASS',
-			options: {
-				files: [imageToSend]
-			}
+			files: [imageToSend]
 		}
 	}
 }
 
 const crocCommand: Command = {
 	name: 'croc',
-	execute(message: Message) {
+	description: 'Posts exploding croc',
+	execute(interaction: CommandInteraction) {
+		console.log(2, interaction, interaction.user, interaction.member)
 		return {
-			content: `${message.author} exploded`,
-			options: {
-				files: [
-					'https://cdn.discordapp.com/attachments/480969957438390273/819965221744803870/crocodile.mp4'
-				]
-			}
+			content: `${interaction.user} exploded`,
+			files: [
+				'https://cdn.discordapp.com/attachments/480969957438390273/819965221744803870/crocodile.mp4'
+			]
 		}
 	}
 }
 
 const cheemsCommand: Command = {
 	name: 'cheems',
+	description: 'Posts Cheems',
 	execute() {
 		return {
 			content:

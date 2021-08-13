@@ -1,4 +1,4 @@
-import { Message } from 'discord.js'
+import { CommandInteraction } from 'discord.js'
 import { Command } from '../typings.js'
 import nodeFetch from 'node-fetch'
 
@@ -6,20 +6,37 @@ export { emailCommand }
 
 const emailCommand: Command = {
 	name: 'email',
-	async execute(message: Message, args: string[]) {
-		const subjectAndMessage = message.content.match(/'([^']+)'/g)
-		if (
-			args.length < 3 ||
-			!subjectAndMessage ||
-			subjectAndMessage.length !== 2
-		) {
-			return { content: 'Incorrect invocation of Email command.' }
+	description: 'Send an email but from discord for some reason, idk',
+	options: [
+		{
+			name: 'emailto',
+			description: 'Email to send to',
+			type: 'STRING',
+			required: true
+		},
+		{
+			name: 'emailsubject',
+			description: 'Email Subject',
+			type: 'STRING',
+			required: true
+		},
+		{
+			name: 'emailmessage',
+			description: 'Email Message',
+			type: 'STRING',
+			required: true
 		}
+	],
+	async execute(interaction: CommandInteraction) {
+		const emailTo = interaction.options.getString('emailto'),
+			emailSubject = interaction.options.getString('emailsubject'),
+			emailMessage = interaction.options.getString('emailmessage')
 
-		const emailTo = args[0],
-			emailSubject = subjectAndMessage[0].replaceAll(`'`, ''),
-			emailMessage = subjectAndMessage[1].replaceAll(`'`, '')
-
+		if (!emailTo || !emailSubject || !emailMessage) {
+			return {
+				content: 'Error: Email to, subject, or message was not defined.'
+			}
+		}
 		let emailStatus
 		try {
 			await nodeFetch(
@@ -27,13 +44,13 @@ const emailCommand: Command = {
 			)
 			emailStatus = 'good'
 		} catch (error) {
-			emailStatus = `error: ${error}`
+			emailStatus = `${error}`
 		}
 
 		if (emailStatus === 'good') {
 			return { content: 'Email sent succesfully.' }
 		} else {
-			return { content: 'Error sending email.' }
+			return { content: `Error sending email: ${emailStatus}` }
 		}
 	}
 }

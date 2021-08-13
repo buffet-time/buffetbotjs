@@ -1,4 +1,4 @@
-import { Message } from 'discord.js'
+import { CommandInteraction } from 'discord.js'
 import { Command } from '../typings.js'
 import { Words } from '../assets/words.js'
 
@@ -8,13 +8,22 @@ export { acronymCommand }
 
 const acronymCommand: Command = {
 	name: 'acronym',
-	execute(_message: Message, args: string[]) {
-		if (args.length < 1) {
+	description: 'Creates a randomized acronym from what you enter',
+	options: [
+		{
+			name: 'acronym',
+			description: 'Word to create an ancronym from.',
+			type: 'STRING',
+			required: true
+		}
+	],
+	execute(interaction: CommandInteraction) {
+		const word = interaction.options.getString('acronym')
+		if (!word) {
 			return { content: 'Must pass a word.' }
 		}
-		const word = args[0].toLowerCase()
 		const lowercaseWord = word.toLowerCase()
-		if (word.length < 2) {
+		if (lowercaseWord.length < 2) {
 			return { content: 'Acronym must be more than one letter.' }
 		} else if (lowercaseWord === 'acab') {
 			return { content: '**ALL** cops are bastards' }

@@ -1,5 +1,5 @@
-import { Client, Collection, Intents, Message, TextChannel } from 'discord.js'
-import { Command, Reminder } from './typings.js'
+import { Client, Intents, TextChannel } from 'discord.js'
+import { Reminder } from './typings.js'
 import Config from './config/config.js'
 import {
 	removeReminder,
@@ -9,7 +9,6 @@ import {
 import { acronymCommand } from './commands/acronym.js'
 import {
 	crocCommand,
-	helpCommand,
 	kissCommand,
 	parentsCommand,
 	cheemsCommand
@@ -27,18 +26,28 @@ import { femboyCommand } from './commands/reddit.js'
 export { buffetSpreadsheetId, zachSpreadsheetId, buffetRange, zachRange }
 
 const client = new Client({
-	intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES]
-})
-const commands: Collection<string, Command> = new Collection()
-const buffetSpreadsheetId = '18V5oypFBW3Bu_tHxfTL-iSbb9ALYrCJlMwLhpPmp72M'
-const zachSpreadsheetId = '1gOQsBnd11bU-DkNUlAWoDub6t7eqKhUjy92M5kh2_TQ'
-const buffetRange = 'Main!A2:G'
-const zachRange = 'Sheet1!A2:G'
+		intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES]
+	}),
+	buffetSpreadsheetId = '18V5oypFBW3Bu_tHxfTL-iSbb9ALYrCJlMwLhpPmp72M',
+	zachSpreadsheetId = '1gOQsBnd11bU-DkNUlAWoDub6t7eqKhUjy92M5kh2_TQ',
+	buffetRange = 'Main!A2:G',
+	zachRange = 'Sheet1!A2:G',
+	arrayOfCommandObjects = [
+		remindersCommand,
+		acronymCommand,
+		emailCommand,
+		kissCommand,
+		parentsCommand,
+		sheetsCommand,
+		crocCommand,
+		cheemsCommand,
+		femboyCommand
+	]
 
-let musicChannel: TextChannel
-let allReminders: Reminder[]
-let buffetSheetLength = 0
-let zachSheetLength = 0
+let musicChannel: TextChannel,
+	allReminders: Reminder[],
+	buffetSheetLength = 0,
+	zachSheetLength = 0
 
 export function updateReminders(reminders: Reminder[]): void {
 	allReminders = reminders
@@ -50,20 +59,20 @@ client.on('ready', async () => {
 	allReminders = await getAllReminders()
 	buffetSheetLength = await getNumberOfRows(buffetSpreadsheetId, buffetRange)
 	zachSheetLength = await getNumberOfRows(zachSpreadsheetId, zachRange)
-	const arrayOfCommandObjects = [
-		remindersCommand,
-		acronymCommand,
-		helpCommand,
-		emailCommand,
-		kissCommand,
-		parentsCommand,
-		sheetsCommand,
-		crocCommand,
-		cheemsCommand,
-		femboyCommand
-	]
+
 	arrayOfCommandObjects.forEach((command) => {
-		commands.set(command.name, command)
+		if (command.options) {
+			client.application?.commands.create({
+				name: command.name,
+				description: command.description,
+				options: command.options
+			})
+		} else {
+			client.application?.commands.create({
+				name: command.name,
+				description: command.description
+			})
+		}
 	})
 
 	let currentTime = 1
@@ -123,69 +132,33 @@ client.on('ready', async () => {
 			}
 		}
 	}, 300000) // 5 minutes
-
-	client.user?.setActivity('!help')
+	!client.user?.setActivity('When is hotline?')
 	console.log('Ready')
 })
 
-client.on('message', async (message: Message) => {
-	if (!message.content.startsWith('!') || message.author.bot) {
-		if (
-			message.content.includes('<@!136494200391729152>') &&
-			message.author.id === '356928790565224460'
-		) {
-			message.channel.send(
-				'I love you deeply and will always support you Lilli <3'
-			)
-		} else if (
-			message.content.includes('<@!136494200391729152>') &&
-			!message.author.bot &&
-			message.author.id !== '136494200391729152'
-		) {
-			message.channel.send('dont ever @ me again')
-		} else {
-			return
-		}
-	}
-	const content = message.content
-	const args = content.slice(1).trim().split(/ +/)
-	const command = args.shift()?.toLowerCase()
-
-	if (!command || !commands.has(command)) {
+client.on('interactionCreate', async (interaction) => {
+	if (!interaction.isCommand()) {
 		return
 	}
 
 	try {
-		const messageToSend = await commands.get(command)?.execute(message, args)
-		const omitModifier = content.includes('-o')
-		const deleteModifier = content.includes('-d')
-
-		if (
-			deleteModifier ||
-			command === 'croc' ||
-			command === 'cheems' ||
-			command === 'kiss'
-		) {
-			await message.delete()
-		}
-		if (omitModifier) {
-			return
+		const commandToBeExecuted = arrayOfCommandObjects.find((command) => {
+			if (interaction.commandName === command.name) {
+				return command
+			}
+		})
+		let messageToSend
+		if (commandToBeExecuted) {
+			messageToSend = await commandToBeExecuted.execute(interaction)
 		}
 
-		// send the messsage
-		if (messageToSend && messageToSend.files) {
-			message.channel.send({
-				content: messageToSend.content,
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				files: messageToSend.files
-			})
-		} else if (messageToSend && messageToSend.content) {
-			message.channel.send(messageToSend.content)
+		if (messageToSend) {
+			interaction.reply(messageToSend)
 		} else {
-			message.channel.send('Error sending message.')
+			interaction.reply('Error sending message.')
 		}
 	} catch (error) {
-		message.channel.send(`Error: ${error}`)
+		interaction.reply(`Error: ${error}`)
 	}
 })
 

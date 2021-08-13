@@ -1,4 +1,5 @@
-import { Message } from 'discord.js'
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { CommandInteraction } from 'discord.js'
 import FileSystem from 'fs/promises'
 import IsEqual from 'lodash.isequal'
 import { updateReminders } from '../buffetBotMain.js'
@@ -9,66 +10,102 @@ const remindersFilePath = 'reminders.json'
 
 const remindersCommand: Command = {
 	name: 'reminders',
-	async execute(message: Message, args: string[]) {
-		if (args.length < 1) {
-			return { content: 'Incorrect invocation of the reminders command.' }
+	description:
+		'Command to make, edit, delete, etc reminders for yourself or others.',
+	options: [
+		{
+			name: 'add',
+			description: 'Add Reminders sub command',
+			type: 'SUB_COMMAND',
+			options: [
+				{
+					name: 'amount',
+					description: 'The number of minutes/ seconds/ etc',
+					type: 'INTEGER',
+					required: true
+				},
+				{
+					name: 'timetype',
+					description: 'asdf',
+					type: 'STRING',
+					choices: [
+						{ name: 'seconds', value: 'seconds' },
+						{ name: 'minutes', value: 'minutes' },
+						{ name: 'hours', value: 'hours' },
+						{ name: 'days', value: 'days' },
+						{ name: 'weeks', value: 'weeks' },
+						{ name: 'months', value: 'months' },
+						{ name: 'years', value: 'years' }
+					],
+					required: true
+				},
+				{
+					name: 'channel',
+					description: 'Which reminder number to remove',
+					type: 'CHANNEL',
+					required: true
+				},
+				{
+					name: 'message',
+					description: 'Which reminder number to remove',
+					type: 'STRING',
+					required: true
+				}
+			]
+		},
+		{
+			name: 'remove',
+			description: 'Remove Reminders sub command',
+			type: 'SUB_COMMAND',
+			options: [
+				{
+					name: 'reminder',
+					description: 'Which reminder number to remove',
+					type: 'INTEGER',
+					required: true
+				}
+			]
+		},
+		{
+			name: 'view',
+			description: 'View Reminders sub command',
+			type: 'SUB_COMMAND',
+			options: [
+				{
+					name: 'reminder',
+					description: 'Which reminder to view',
+					type: 'INTEGER',
+					required: true
+				}
+			]
 		}
-		const firstArg = args[0].toLowerCase()
-		const secondArg = args[1]
-		if (!firstArg) {
-			return { content: 'Must pass **add** **remove** or **view**' }
-		}
-		switch (firstArg) {
+	],
+	async execute(interaction: CommandInteraction) {
+		const subCommandName = interaction.options.getSubcommand()
+
+		switch (subCommandName) {
 			case 'add': {
-				const content = message.content
-				if (
-					args.length > 4 &&
-					!isNaN(Number(secondArg)) &&
-					args[3].slice(0, 2) === '<#' &&
-					content.indexOf("'") !== -1 &&
-					content.indexOf("'") !== content.lastIndexOf("'")
-				) {
-					const returnText = await addReminder(message, args)
-					updateReminders(await getAllReminders())
-					return { content: returnText }
-				} else {
-					return {
-						content:
-							'Incorrect invocation of the add reminders command. See !help'
-					}
+				const returnText = await addReminder(interaction)
+				updateReminders(await getAllReminders())
+				return { content: returnText }
+			}
+			case 'remove': {
+				const returnText = await removeReminder(
+					interaction.user.id,
+					interaction.options.getInteger('reminder')!
+				)
+				updateReminders(await getAllReminders())
+				return { content: returnText }
+			}
+			case 'view': {
+				const reminderView = await viewReminders(interaction)
+				return {
+					content: reminderView
 				}
 			}
-			case 'remove':
-				if (secondArg && !isNaN(Number(secondArg))) {
-					const returnText = await removeReminder(
-						message.author.id,
-						Number(secondArg)
-					)
-					updateReminders(await getAllReminders())
-					return { content: returnText }
-				} else {
-					return { content: 'Must pass a number to remove.' }
-				}
-			case 'view':
-				if (
-					secondArg &&
-					(!isNaN(Number(secondArg)) || secondArg.toLowerCase() === 'all')
-				) {
-					const reminderView = await viewReminders(
-						message.author.id,
-						Number(secondArg)
-					)
-					return {
-						content: reminderView
-					}
-				} else {
-					return {
-						content: 'Incorrect invocation of the !reminders command. See !help'
-					}
-				}
 			default:
 				return {
-					content: 'Incorrect invocation of the !reminders command. See !help'
+					content: 'Incorrect invocation of the !reminders command.'
 				}
 		}
 	}
@@ -76,39 +113,36 @@ const remindersCommand: Command = {
 
 // TODO: clean up incorrect command passing to catch more
 // handles the !reminders add command
-async function addReminder(message: Message, args: string[]): Promise<string> {
+async function addReminder(interaction: CommandInteraction): Promise<string> {
 	try {
-		const messageAuthor = message.author.id
-		const content = message.content
-		const reminderMessage = content.slice(
-			content.indexOf("'") + 1,
-			content.lastIndexOf("'")
-		)
-		const timestamp = getTime(Number(args[1]), args[2])
-		const newReminder: Reminder = {
-			reminderNumber: 1,
-			time: timestamp,
-			user: messageAuthor,
-			message: reminderMessage,
-			channel: args[3].slice(2, 20)
-		}
+		const messageText = interaction.options.getString('message')!,
+			messageTimeType = interaction.options.getString('timetype')!,
+			messageTimeAmount = interaction.options.getInteger('amount')!,
+			messageAuthor = interaction.user.id,
+			timestamp = getTime(messageTimeAmount, messageTimeType),
+			newReminder: Reminder = {
+				reminderNumber: 1,
+				time: timestamp,
+				user: messageAuthor,
+				message: messageText,
+				channel: interaction.options.getChannel('channel')!.id
+			}
 		let remindersJson: Reminder[]
 		if (
 			!newReminder ||
 			!newReminder.time ||
-			!reminderMessage ||
 			!newReminder.channel ||
 			timestamp === 0
 		) {
 			return 'Incorrect invocation of the add reminders command. See !help'
 		}
 		try {
-			const data = await FileSystem.readFile(remindersFilePath, 'utf8')
-			const parsedData: Reminder[] = JSON.parse(data)
-			const availableReminderNumber = getAvailableReminderNumber(
-				parsedData,
-				messageAuthor
-			)
+			const data = await FileSystem.readFile(remindersFilePath, 'utf8'),
+				parsedData: Reminder[] = JSON.parse(data),
+				availableReminderNumber = getAvailableReminderNumber(
+					parsedData,
+					messageAuthor
+				)
 			if (availableReminderNumber) {
 				newReminder.reminderNumber = availableReminderNumber
 				parsedData.push(newReminder)
@@ -138,19 +172,19 @@ export async function removeReminder(
 	reminderNumberToRemove: number
 ): Promise<string> {
 	try {
-		const data = await FileSystem.readFile(remindersFilePath, 'utf8')
-		const parsedData: Reminder[] = JSON.parse(data)
-		const remindersArray = getRemindersByAuthor(parsedData, messageAuthor)
-		const objectToRemoveArray = remindersArray.filter((reminder) => {
-			return reminder.reminderNumber === reminderNumberToRemove
-		})
+		const data = await FileSystem.readFile(remindersFilePath, 'utf8'),
+			parsedData: Reminder[] = JSON.parse(data),
+			remindersArray = getRemindersByAuthor(parsedData, messageAuthor),
+			objectToRemoveArray = remindersArray.filter((reminder) => {
+				return reminder.reminderNumber === reminderNumberToRemove
+			})
 		if (!objectToRemoveArray[0]) {
 			return "The number passed doesn't exist."
 		}
-		const reminderToRemove = objectToRemoveArray[0]
-		const indexToRemove = parsedData.findIndex((reminder) => {
-			return IsEqual(reminder, reminderToRemove)
-		})
+		const reminderToRemove = objectToRemoveArray[0],
+			indexToRemove = parsedData.findIndex((reminder) => {
+				return IsEqual(reminder, reminderToRemove)
+			})
 		parsedData.splice(indexToRemove, 1)
 
 		await FileSystem.writeFile(
@@ -165,30 +199,32 @@ export async function removeReminder(
 }
 
 // handles the !reminders view command
-async function viewReminders(
-	messageAuthor: string,
-	reminderToView: number
-): Promise<string> {
+async function viewReminders(interaction: CommandInteraction): Promise<string> {
 	try {
-		const data = await FileSystem.readFile(remindersFilePath, 'utf8')
-		const parsedData: Reminder[] = JSON.parse(data)
+		const data = await FileSystem.readFile(remindersFilePath, 'utf8'),
+			parsedData: Reminder[] = JSON.parse(data)
 		if (parsedData === []) {
 			return 'You have no saved reminders.'
 		}
 		const arrayOfUsers = parsedData.filter((reminder) => {
-			return reminder.user === messageAuthor
+			return reminder.user === interaction.user.id
 		})
 		if (!arrayOfUsers[0]) {
 			return 'You have no saved reminders.'
-		} else if (reminderToView) {
+		} else if (interaction.options.getInteger('reminder')) {
 			return remindersArrayToReturnString(
-				getRemindersByAuthor(parsedData, messageAuthor).filter((reminder) => {
-					return reminder.reminderNumber === reminderToView
-				})
+				getRemindersByAuthor(parsedData, interaction.user.id).filter(
+					(reminder) => {
+						return (
+							reminder.reminderNumber ===
+							interaction.options.getInteger('reminder')
+						)
+					}
+				)
 			).join(`\n`)
 		} else {
 			return remindersArrayToReturnString(
-				getRemindersByAuthor(parsedData, messageAuthor)
+				getRemindersByAuthor(parsedData, interaction.user.id)
 			).join(`\n`)
 		}
 	} catch (error) {
@@ -212,25 +248,21 @@ function getTime(amount: number, type: string) {
 	// if (reminderTime > Number.MAX_SAFE_INTEGER || reminderTime === 0) {
 	//     return 'fail'
 	// }
-	const currentTime = Date.now()
-	const amountConverted = amount * 1000 // so that adding 1 = adding 1 second not 1 ms
+	const currentTime = Date.now(),
+		amountConverted = amount * 1000 // so that adding 1 = adding 1 second not 1 ms
 	switch (type) {
-		case 'minute':
+		case 'seconds':
+			return currentTime + amountConverted
 		case 'minutes':
 			return currentTime + amountConverted * 60
-		case 'hour':
 		case 'hours':
 			return currentTime + amountConverted * 3600
-		case 'day':
 		case 'days':
 			return currentTime + amountConverted * 86400
-		case 'week':
 		case 'weeks':
 			return currentTime + amountConverted * 604800
-		case 'month':
 		case 'months': // 30 days
 			return currentTime + amountConverted * 2592000
-		case 'year':
 		case 'years': // 365 days
 			return currentTime + amountConverted * 31536000
 		default:

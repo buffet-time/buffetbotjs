@@ -1,8 +1,9 @@
 /* eslint-disable no-mixed-spaces-and-tabs */
 import {
+	ApplicationCommandOption,
 	BufferResolvable,
+	CommandInteraction,
 	FileOptions,
-	Message,
 	MessageAttachment
 } from 'discord.js'
 import { Stream } from 'stream'
@@ -17,10 +18,9 @@ export interface Reminder {
 
 export interface Command {
 	name: string
-	execute(
-		message: Message,
-		args: string[]
-	):
+	description: string
+	options?: ApplicationCommandOption[]
+	execute(options?: CommandInteraction):
 		| Promise<{
 				content?: string | null
 				files?: (FileOptions | BufferResolvable | Stream | MessageAttachment)[]
