@@ -65,7 +65,6 @@ const crocCommand: Command = {
 	name: 'croc',
 	description: 'Posts exploding croc',
 	execute(interaction: CommandInteraction) {
-		console.log(2, interaction, interaction.user, interaction.member)
 		return {
 			content: `${interaction.user} exploded`,
 			files: [

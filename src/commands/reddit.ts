@@ -3,7 +3,6 @@ import nodeFetch from 'node-fetch'
 
 export { femboyCommand }
 
-// works
 const femboyCommand: Command = {
 	name: 'femboy',
 	description: 'Posts the latest femboy',
@@ -17,8 +16,7 @@ const femboyCommand: Command = {
 				]
 			}
 		} catch (error) {
-			console.log(`Error in Femboy command: ${error}`)
-			return { content: `Error` }
+			return { content: `Error: ${error}` }
 		}
 	}
 }

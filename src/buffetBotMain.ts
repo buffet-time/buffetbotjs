@@ -60,6 +60,15 @@ client.on('ready', async () => {
 	buffetSheetLength = await getNumberOfRows(buffetSpreadsheetId, buffetRange)
 	zachSheetLength = await getNumberOfRows(zachSpreadsheetId, zachRange)
 
+	// code block to remove a command.
+	// const liveCommands = await client.application?.commands.fetch()
+	// // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+	// liveCommands!.forEach((element) => {
+	// 	if (element.name === 'help') {
+	// 		client.application?.commands.delete(element)
+	// 	}
+	// })
+
 	arrayOfCommandObjects.forEach((command) => {
 		if (command.options) {
 			client.application?.commands.create({
@@ -132,7 +141,8 @@ client.on('ready', async () => {
 			}
 		}
 	}, 300000) // 5 minutes
-	!client.user?.setActivity('When is hotline?')
+
+	client.user?.setActivity('When is hotline?')
 	console.log('Ready')
 })
 
