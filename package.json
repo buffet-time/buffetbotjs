@@ -6,7 +6,7 @@
 	"main": "./dist/src/buffetBotMain.js",
 	"description": "Simple bot I created for my private Discord, that I host on an OVH hosted Ubuntu 21.04 machine",
 	"author": {
-		"email": "me@danielTurcich.com",
+		"email": "packageJson@danielTurcich.com",
 		"name": "Daniel Turcich",
 		"url": "https://danielTurcich.com"
 	},

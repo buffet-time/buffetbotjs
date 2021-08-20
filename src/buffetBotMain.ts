@@ -155,20 +155,22 @@ client.on('interactionCreate', async (interaction) => {
 		const commandToBeExecuted = arrayOfCommandObjects.find((command) => {
 			if (interaction.commandName === command.name) {
 				return command
+			} else {
+				return undefined
 			}
 		})
-		let messageToSend
 		if (commandToBeExecuted) {
-			messageToSend = await commandToBeExecuted.execute(interaction)
-		}
-
-		if (messageToSend) {
-			interaction.reply(messageToSend)
+			const messageToSend = await commandToBeExecuted.execute(interaction)
+			if (messageToSend) {
+				interaction.reply(messageToSend)
+			} else {
+				interaction.reply('Error Code: 3')
+			}
 		} else {
-			interaction.reply('Error sending message.')
+			interaction.reply('Error Code: 2')
 		}
 	} catch (error) {
-		interaction.reply(`Error: ${error}`)
+		interaction.reply(`Error Code 1: ${error}`)
 	}
 })
 
