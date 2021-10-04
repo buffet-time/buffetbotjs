@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { CommandInteraction } from 'discord.js'
 import FileSystem from 'fs/promises'
 import IsEqual from 'lodash.isequal'
@@ -90,9 +89,15 @@ const remindersCommand: Command = {
 				return { content: returnText }
 			}
 			case 'remove': {
+				const reminderInt = interaction.options.getInteger('reminder')
+				if (!reminderInt) {
+					return {
+						content: 'Error in Reminders: 52'
+					}
+				}
 				const returnText = await removeReminder(
 					interaction.user.id,
-					interaction.options.getInteger('reminder')!
+					reminderInt
 				)
 				updateReminders(await getAllReminders())
 				return { content: returnText }
@@ -115,18 +120,22 @@ const remindersCommand: Command = {
 // handles the !reminders add command
 async function addReminder(interaction: CommandInteraction): Promise<string> {
 	try {
-		const messageText = interaction.options.getString('message')!,
-			messageTimeType = interaction.options.getString('timetype')!,
-			messageTimeAmount = interaction.options.getInteger('amount')!,
-			messageAuthor = interaction.user.id,
-			timestamp = getTime(messageTimeAmount, messageTimeType),
-			newReminder: Reminder = {
-				reminderNumber: 1,
-				time: timestamp,
-				user: messageAuthor,
-				message: messageText,
-				channel: interaction.options.getChannel('channel')!.id
-			}
+		const messageText = interaction.options.getString('message')
+		const messageTimeType = interaction.options.getString('timetype')
+		const messageTimeAmount = interaction.options.getInteger('amount')
+		const messageAuthor = interaction.user.id
+		const channelId = interaction.options.getChannel('channel')?.id
+		if (!messageText || !messageTimeType || !messageTimeAmount || !channelId) {
+			return 'Error 31 in Reminders'
+		}
+		const timestamp = getTime(messageTimeAmount, messageTimeType)
+		const newReminder: Reminder = {
+			reminderNumber: 1,
+			time: timestamp,
+			user: messageAuthor,
+			message: messageText,
+			channel: channelId
+		}
 		let remindersJson: Reminder[]
 		if (
 			!newReminder ||

@@ -1,7 +1,7 @@
 import { Release } from '../typings.js'
 import { CommandInteraction } from 'discord.js'
 import { Command } from '../typings.js'
-import nodeFetch from 'node-fetch'
+import fetch from 'node-fetch'
 import {
 	buffetSpreadsheetId,
 	zachSpreadsheetId,
@@ -38,14 +38,14 @@ const sheetsCommand: Command = {
 				buffetSpreadsheetId,
 				buffetRange
 			)
-			if (rowIsFilledOut(row)) {
+			if (row && rowIsFilledOut(row)) {
 				return { content: `Buffet: ${getSheetsRowMessage(row)}` }
 			} else {
 				return { content: 'Specified row is not filled out' }
 			}
 		} else if (interaction.user.id === '134862353660379137') {
 			const row = await getRowByIndex(rowNum - 2, zachSpreadsheetId, zachRange)
-			if (rowIsFilledOut(row)) {
+			if (row && rowIsFilledOut(row)) {
 				return { content: `Zach: ${getSheetsRowMessage(row)}` }
 			} else {
 				return { content: 'Specified row is not filled out' }
@@ -56,24 +56,35 @@ const sheetsCommand: Command = {
 	}
 }
 
-async function getNumberOfRows(id: string, range: string): Promise<number> {
-	return (
-		await nodeFetch(
+async function getNumberOfRows(
+	id: string,
+	range: string
+): Promise<number | undefined> {
+	try {
+		const response = await fetch(
 			`http://localhost:3000/Sheets?id=${id}&range=${range}&rows=true`
 		)
-	).json()
+		return (await response.json()) as number
+	} catch (error) {
+		console.log(error)
+		return undefined
+	}
 }
 
 async function getRowByIndex(
 	index: number,
 	id: string,
 	range: string
-): Promise<string[]> {
-	return (
-		await nodeFetch(
+): Promise<string[] | undefined> {
+	try {
+		const response = await fetch(
 			`http://localhost:3000/Sheets?id=${id}&range=${range}&index=${index}`
 		)
-	).json()
+		return (await response.json()) as string[]
+	} catch (error) {
+		console.log(error)
+		return undefined
+	}
 }
 
 function getSheetsRowMessage(row: string[]): string {

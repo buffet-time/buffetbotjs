@@ -44,10 +44,10 @@ const client = new Client({
 		femboyCommand
 	]
 
-let musicChannel: TextChannel,
-	allReminders: Reminder[],
-	buffetSheetLength = 0,
-	zachSheetLength = 0
+let musicChannel: TextChannel
+let allReminders: Reminder[]
+let buffetSheetLength: number | undefined
+let zachSheetLength: number | undefined
 
 export function updateReminders(reminders: Reminder[]): void {
 	allReminders = reminders
@@ -118,24 +118,30 @@ client.on('ready', async () => {
 			buffetRange
 		)
 		if (buffetTempLength !== buffetSheetLength) {
+			if (!buffetTempLength) {
+				return
+			}
 			const row = await getRowByIndex(
 				buffetTempLength - 1,
 				buffetSpreadsheetId,
 				buffetRange
 			)
-			if (rowIsFilledOut(row)) {
+			if (row && rowIsFilledOut(row)) {
 				musicChannel.send(`Buffet: ${getSheetsRowMessage(row)}`)
 				buffetSheetLength = buffetTempLength
 			}
 		}
 		const zachTempLength = await getNumberOfRows(zachSpreadsheetId, zachRange)
 		if (zachTempLength !== zachSheetLength) {
+			if (!zachTempLength) {
+				return
+			}
 			const row = await getRowByIndex(
 				zachTempLength - 1,
 				zachSpreadsheetId,
 				zachRange
 			)
-			if (rowIsFilledOut(row)) {
+			if (row && rowIsFilledOut(row)) {
 				musicChannel.send(`Zach: ${getSheetsRowMessage(row)}`)
 				zachSheetLength = zachTempLength
 			}
