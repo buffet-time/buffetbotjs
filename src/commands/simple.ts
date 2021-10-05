@@ -87,3 +87,13 @@ const cheemsCommand: Command = {
 		}
 	}
 }
+
+const macCommand: Command = {
+	name: 'mac',
+	description: 'Should be used whenever people talk about windows',
+	execute() {
+		return {
+			content: 'Stop using Windows'
+		}
+	}
+}
