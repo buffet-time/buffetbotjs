@@ -1,7 +1,7 @@
 import { CommandInteraction } from 'discord.js'
 import { Command } from '../typings.js'
 
-export { kissCommand, parentsCommand, crocCommand, cheemsCommand }
+export { kissCommand, parentsCommand, crocCommand, cheemsCommand, macCommand }
 
 const kissCommand: Command = {
 	name: 'kiss',
@@ -84,6 +84,16 @@ const cheemsCommand: Command = {
 				'<:cheems2:755465429832433684>\n' +
 				'<:cheems3:755465436199387216>' +
 				'<:cheems4:755465442553888959>'
+		}
+	}
+}
+
+const macCommand: Command = {
+	name: 'mac',
+	description: 'Should be used whenever people talk about windows',
+	execute() {
+		return {
+			content: 'Stop using Windows'
 		}
 	}
 }

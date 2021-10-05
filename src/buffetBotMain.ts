@@ -11,7 +11,8 @@ import {
 	crocCommand,
 	kissCommand,
 	parentsCommand,
-	cheemsCommand
+	cheemsCommand,
+	macCommand
 } from './commands/simple.js'
 import { emailCommand } from './commands/email.js'
 import {
@@ -41,7 +42,8 @@ const client = new Client({
 		sheetsCommand,
 		crocCommand,
 		cheemsCommand,
-		femboyCommand
+		femboyCommand,
+		macCommand
 	]
 
 let musicChannel: TextChannel
