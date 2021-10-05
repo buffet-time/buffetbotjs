@@ -1,7 +1,7 @@
 import { CommandInteraction } from 'discord.js'
 import { Command } from '../typings.js'
 
-export { kissCommand, parentsCommand, crocCommand, cheemsCommand }
+export { kissCommand, parentsCommand, crocCommand, cheemsCommand, macCommand }
 
 const kissCommand: Command = {
 	name: 'kiss',
