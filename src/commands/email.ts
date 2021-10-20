@@ -47,10 +47,7 @@ const emailCommand: Command = {
 			emailStatus = `${error}`
 		}
 
-		if (emailStatus === 'good') {
-			return { content: 'Email sent succesfully.' }
-		} else {
-			return { content: `Error sending email: ${emailStatus}` }
-		}
+		if (emailStatus === 'good') return { content: 'Email sent succesfully.' }
+		else return { content: `Error sending email: ${emailStatus}` }
 	}
 }

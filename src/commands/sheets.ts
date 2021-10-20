@@ -29,9 +29,8 @@ const sheetsCommand: Command = {
 	],
 	async execute(interaction: CommandInteraction) {
 		const rowNum = interaction.options.getInteger('row')
-		if (!rowNum) {
-			return { content: 'Must pass a number' }
-		}
+		if (!rowNum) return { content: 'Must pass a number' }
+
 		if (interaction.user.id === '136494200391729152') {
 			const row = await getRowByIndex(
 				rowNum - 2,
@@ -106,7 +105,5 @@ function rowIsFilledOut(row: string[]): boolean {
 		row[Release.genre]
 	) {
 		return true
-	} else {
-		return false
-	}
+	} else return false
 }

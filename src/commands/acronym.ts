@@ -44,25 +44,22 @@ function getAcronym(word: string): string {
 	const generatedAcronym = getWordsFromProvidedAcronym(word)
 		.toString()
 		.replace(/,/g, '  ')
-	if (generatedAcronym.length > 2000 || generatedAcronym === 'F') {
+	if (generatedAcronym.length > 2000 || generatedAcronym === 'F')
 		return "Yo gamer, that acronym was too larnge for discord. When's hotline?"
-	} else {
-		return generatedAcronym
-	}
+	else return generatedAcronym
 }
 
 // takes the word and returns an array of random words
 // starting with each given letter
 function getWordsFromProvidedAcronym(acronym: string): string[] {
 	const acronymArray = acronym.toLowerCase().split('')
-	let lengthOfWords = 0
-	let wordsArray: string[]
-	let generatedWord = ''
+	let lengthOfWords = 0,
+		wordsArray: string[],
+		generatedWord = ''
 
 	return acronymArray.map((letter: string) => {
-		if (lengthOfWords > 2000) {
-			return 'F'
-		} else {
+		if (lengthOfWords > 2000) return 'F'
+		else {
 			wordsArray = words[letter]
 			generatedWord = wordsArray[Math.floor(Math.random() * wordsArray.length)]
 			lengthOfWords += generatedWord.length + 1

@@ -1,6 +1,6 @@
 /* eslint-disable no-mixed-spaces-and-tabs */
 import {
-	ApplicationCommandOption,
+	ApplicationCommandOptionData,
 	BufferResolvable,
 	CommandInteraction,
 	FileOptions,
@@ -19,7 +19,7 @@ export interface Reminder {
 export interface Command {
 	name: string
 	description: string
-	options?: ApplicationCommandOption[]
+	options?: ApplicationCommandOptionData[]
 	execute(options?: CommandInteraction):
 		| Promise<{
 				content?: string | null

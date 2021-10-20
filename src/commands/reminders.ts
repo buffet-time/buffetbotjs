@@ -184,16 +184,16 @@ export async function removeReminder(
 		const data = await FileSystem.readFile(remindersFilePath, 'utf8'),
 			parsedData: Reminder[] = JSON.parse(data),
 			remindersArray = getRemindersByAuthor(parsedData, messageAuthor),
-			objectToRemoveArray = remindersArray.filter((reminder) => {
-				return reminder.reminderNumber === reminderNumberToRemove
-			})
+			objectToRemoveArray = remindersArray.filter(
+				(reminder) => reminder.reminderNumber === reminderNumberToRemove
+			)
 		if (!objectToRemoveArray[0]) {
 			return "The number passed doesn't exist."
 		}
 		const reminderToRemove = objectToRemoveArray[0],
-			indexToRemove = parsedData.findIndex((reminder) => {
-				return IsEqual(reminder, reminderToRemove)
-			})
+			indexToRemove = parsedData.findIndex((reminder) =>
+				IsEqual(reminder, reminderToRemove)
+			)
 		parsedData.splice(indexToRemove, 1)
 
 		await FileSystem.writeFile(
@@ -215,20 +215,17 @@ async function viewReminders(interaction: CommandInteraction): Promise<string> {
 		if (parsedData === []) {
 			return 'You have no saved reminders.'
 		}
-		const arrayOfUsers = parsedData.filter((reminder) => {
-			return reminder.user === interaction.user.id
-		})
+		const arrayOfUsers = parsedData.filter(
+			(reminder) => reminder.user === interaction.user.id
+		)
 		if (!arrayOfUsers[0]) {
 			return 'You have no saved reminders.'
 		} else if (interaction.options.getInteger('reminder')) {
 			return remindersArrayToReturnString(
 				getRemindersByAuthor(parsedData, interaction.user.id).filter(
-					(reminder) => {
-						return (
-							reminder.reminderNumber ===
-							interaction.options.getInteger('reminder')
-						)
-					}
+					(reminder) =>
+						reminder.reminderNumber ===
+						interaction.options.getInteger('reminder')
 				)
 			).join(`\n`)
 		} else {
@@ -287,30 +284,24 @@ function getAvailableReminderNumber(
 	const reminderNumberArray = getRemindersByAuthor(
 		parsedData,
 		messageAuthor
-	).map((reminder) => {
-		return reminder.reminderNumber
-	})
-	let n = 1
-	const length = reminderNumberArray.length + 2
-	while (n < length) {
-		if (!reminderNumberArray.includes(n)) {
-			return n
-		}
-		n++
-	}
+	).map((reminder) => reminder.reminderNumber)
+	for (let n = 1; n < reminderNumberArray.length + 2; n++)
+		if (!reminderNumberArray.includes(n)) return n
+
+	return length + 1
 }
 
 // Get all Reminder objects for given user
 function getRemindersByAuthor(parsedData: Reminder[], messageAuthor: string) {
-	return parsedData.filter((reminder) => {
-		return reminder.user === messageAuthor
-	})
+	return parsedData.filter((reminder) => reminder.user === messageAuthor)
 }
 
 // converts the array of reminders for a user to a Discord friendly message
 function remindersArrayToReturnString(remindersArray: Reminder[]) {
-	return remindersArray.map((reminder) => {
-		const date = new Date(reminder.time)
-		return `Reminder ${reminder.reminderNumber}: "${reminder.message}" will be sent on: ${date} in <#${reminder.channel}>`
-	})
+	return remindersArray.map(
+		(reminder) =>
+			`Reminder ${reminder.reminderNumber}: "${
+				reminder.message
+			}" will be sent on: ${new Date(reminder.time)} in <#${reminder.channel}>`
+	)
 }
