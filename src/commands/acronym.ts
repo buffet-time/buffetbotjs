@@ -18,24 +18,23 @@ const acronymCommand: Command = {
 		}
 	],
 	execute(interaction: CommandInteraction) {
-		const word = interaction.options.getString('acronym')
-		if (!word) {
-			return { content: 'Must pass a word.' }
-		}
-		const lowercaseWord = word.toLowerCase()
-		if (lowercaseWord.length < 2) {
-			return { content: 'Acronym must be more than one letter.' }
-		} else if (lowercaseWord === 'acab') {
-			return { content: '**ALL** cops are bastards' }
-		} else if (lowercaseWord === 'mac') {
-			return { content: 'Linux Stan' }
-		} else if (/^[a-zA-Z]+$/.test(word)) {
-			return { content: getAcronym(word) }
-		} else {
-			return {
-				content:
-					'The word you want to become an acronym must only contain letters.'
-			}
+		const word = interaction.options.getString('acronym')?.toLocaleLowerCase()
+		if (!word) return { content: 'Must pass a word.' }
+
+		switch (true) {
+			case word.length < 2:
+				return { content: 'Acronym must be more than one letter.' }
+			case word === 'acab':
+				return { content: '**ALL** cops are bastards' }
+			case word === 'mac':
+				return { content: 'Linux Stan' }
+			case /^[a-zA-Z]+$/.test(word):
+				return { content: getAcronym(word) }
+			default:
+				return {
+					content:
+						'The word you want to become an acronym must only contain letters.'
+				}
 		}
 	}
 }
@@ -45,25 +44,28 @@ function getAcronym(word: string): string {
 		.toString()
 		.replace(/,/g, '  ')
 	if (generatedAcronym.length > 2000 || generatedAcronym === 'F')
-		return "Yo gamer, that acronym was too larnge for discord. When's hotline?"
+		return 'That acronym was too large for discord.'
 	else return generatedAcronym
 }
 
 // takes the word and returns an array of random words
 // starting with each given letter
 function getWordsFromProvidedAcronym(acronym: string): string[] {
-	const acronymArray = acronym.toLowerCase().split('')
 	let lengthOfWords = 0,
 		wordsArray: string[],
 		generatedWord = ''
 
-	return acronymArray.map((letter: string) => {
-		if (lengthOfWords > 2000) return 'F'
-		else {
-			wordsArray = words[letter]
-			generatedWord = wordsArray[Math.floor(Math.random() * wordsArray.length)]
-			lengthOfWords += generatedWord.length + 1
-			return generatedWord
-		}
-	})
+	return acronym
+		.toLowerCase()
+		.split('')
+		.map((letter: string) => {
+			if (lengthOfWords > 2000) return 'f'
+			else {
+				wordsArray = words[letter]
+				generatedWord =
+					wordsArray[Math.floor(Math.random() * wordsArray.length)]
+				lengthOfWords += generatedWord.length + 1
+				return generatedWord
+			}
+		})
 }

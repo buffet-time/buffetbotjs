@@ -18,6 +18,7 @@
 	"rules": {
 		"prefer-const": "error",
 		"prettier/prettier": "error",
+		"no-mixed-spaces-and-tabs": 0,
 		"@typescript-eslint/no-extra-semi": "off",
 		"@typescript-eslint/no-explicit-any": "off"
 	}

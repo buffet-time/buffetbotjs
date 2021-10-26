@@ -1,6 +1,6 @@
 import { Client, Intents, TextChannel } from 'discord.js'
 import { Reminder } from './typings.js'
-import Config from './config/config.js'
+import { token } from './config/config.js'
 import {
 	removeReminder,
 	getAllReminders,
@@ -46,10 +46,10 @@ const client = new Client({
 		macCommand
 	]
 
-let musicChannel: TextChannel
-let allReminders: Reminder[]
-let buffetSheetLength: number | undefined
-let zachSheetLength: number | undefined
+let musicChannel: TextChannel,
+	allReminders: Reminder[],
+	buffetSheetLength: number | undefined,
+	zachSheetLength: number | undefined
 
 export function updateReminders(reminders: Reminder[]): void {
 	allReminders = reminders
@@ -62,6 +62,7 @@ client.on('ready', async () => {
 	buffetSheetLength = await getNumberOfRows(buffetSpreadsheetId, buffetRange)
 	zachSheetLength = await getNumberOfRows(zachSpreadsheetId, zachRange)
 
+	// TODO: Create a remove command command that only I can use
 	// code block to remove a command.
 	// const liveCommands = await client.application?.commands.fetch()
 	// // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -120,9 +121,8 @@ client.on('ready', async () => {
 			buffetRange
 		)
 		if (buffetTempLength !== buffetSheetLength) {
-			if (!buffetTempLength) {
-				return
-			}
+			if (!buffetTempLength) return
+
 			const row = await getRowByIndex(
 				buffetTempLength - 1,
 				buffetSpreadsheetId,
@@ -135,9 +135,8 @@ client.on('ready', async () => {
 		}
 		const zachTempLength = await getNumberOfRows(zachSpreadsheetId, zachRange)
 		if (zachTempLength !== zachSheetLength) {
-			if (!zachTempLength) {
-				return
-			}
+			if (!zachTempLength) return
+
 			const row = await getRowByIndex(
 				zachTempLength - 1,
 				zachSpreadsheetId,
@@ -155,31 +154,21 @@ client.on('ready', async () => {
 })
 
 client.on('interactionCreate', async (interaction) => {
-	if (!interaction.isCommand()) {
-		return
-	}
+	if (!interaction.isCommand()) return
 
 	try {
 		const commandToBeExecuted = arrayOfCommandObjects.find((command) => {
-			if (interaction.commandName === command.name) {
-				return command
-			} else {
-				return undefined
-			}
+			if (interaction.commandName === command.name) return command
+			else return undefined
 		})
 		if (commandToBeExecuted) {
 			const messageToSend = await commandToBeExecuted.execute(interaction)
-			if (messageToSend) {
-				interaction.reply(messageToSend)
-			} else {
-				interaction.reply('Error Code: 3')
-			}
-		} else {
-			interaction.reply('Error Code: 2')
-		}
+			if (messageToSend) interaction.reply(messageToSend)
+			else interaction.reply('Error Code: 3')
+		} else interaction.reply('Error Code: 2')
 	} catch (error) {
 		interaction.reply(`Error Code 1: ${error}`)
 	}
 })
 
-client.login(Config.token)
+client.login(token)

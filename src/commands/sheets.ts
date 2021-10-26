@@ -31,27 +31,25 @@ const sheetsCommand: Command = {
 		const rowNum = interaction.options.getInteger('row')
 		if (!rowNum) return { content: 'Must pass a number' }
 
-		if (interaction.user.id === '136494200391729152') {
-			const row = await getRowByIndex(
-				rowNum - 2,
-				buffetSpreadsheetId,
-				buffetRange
-			)
-			if (row && rowIsFilledOut(row)) {
-				return { content: `Buffet: ${getSheetsRowMessage(row)}` }
-			} else {
-				return { content: 'Specified row is not filled out' }
-			}
-		} else if (interaction.user.id === '134862353660379137') {
-			const row = await getRowByIndex(rowNum - 2, zachSpreadsheetId, zachRange)
-			if (row && rowIsFilledOut(row)) {
-				return { content: `Zach: ${getSheetsRowMessage(row)}` }
-			} else {
-				return { content: 'Specified row is not filled out' }
-			}
-		} else {
-			return { content: 'Command can only be used by Buffet or Zach' }
+		let row: string[] | undefined
+		let name = ''
+
+		switch (interaction.user.id) {
+			case '136494200391729152':
+				name = 'Buffet'
+				row = await getRowByIndex(rowNum - 2, buffetSpreadsheetId, buffetRange)
+				break
+			case '134862353660379137':
+				name = 'Zach'
+				row = await getRowByIndex(rowNum - 2, zachSpreadsheetId, zachRange)
+				break
+			default:
+				return { content: 'Command can only be used by Buffet or Zach' }
 		}
+
+		if (row && rowIsFilledOut(row))
+			return { content: `${name}: ${getSheetsRowMessage(row)}` }
+		else return { content: 'Specified row is not filled out' }
 	}
 }
 
@@ -60,10 +58,11 @@ async function getNumberOfRows(
 	range: string
 ): Promise<number | undefined> {
 	try {
-		const response = await fetch(
-			`http://localhost:3000/Sheets?id=${id}&range=${range}&rows=true`
-		)
-		return (await response.json()) as number
+		return (await (
+			await fetch(
+				`http://localhost:3000/Sheets?id=${id}&range=${range}&rows=true`
+			)
+		).json()) as number
 	} catch (error) {
 		console.log(error)
 		return undefined
@@ -76,10 +75,11 @@ async function getRowByIndex(
 	range: string
 ): Promise<string[] | undefined> {
 	try {
-		const response = await fetch(
-			`http://localhost:3000/Sheets?id=${id}&range=${range}&index=${index}`
-		)
-		return (await response.json()) as string[]
+		return (await (
+			await fetch(
+				`http://localhost:3000/Sheets?id=${id}&range=${range}&index=${index}`
+			)
+		).json()) as string[]
 	} catch (error) {
 		console.log(error)
 		return undefined
@@ -94,8 +94,9 @@ function getSheetsRowMessage(row: string[]): string {
 	].trim()}/10 ~ ${row[Release.comments].trim()}`
 }
 
-function rowIsFilledOut(row: string[]): boolean {
+function rowIsFilledOut(row: string[] | undefined): boolean {
 	if (
+		row &&
 		row[Release.score] &&
 		row[Release.comments] &&
 		row[Release.artist] &&

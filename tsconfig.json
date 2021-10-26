@@ -6,7 +6,6 @@
 
 		"strict": true,
 		"pretty": true,
-		"sourceMap": true,
 		"skipLibCheck": true,
 		"importHelpers": true,
 		"removeComments": true,
@@ -17,13 +16,14 @@
 		"experimentalDecorators": true,
 		"useDefineForClassFields": true,
 
-		"noEmit": true,
+		"noEmit": false,
 		"noImplicitReturns": true,
 		"noUnusedParameters": true,
 		"allowUnreachableCode": false,
 		"noFallthroughCasesInSwitch": true,
 		"allowSyntheticDefaultImports": true,
 
+		"outDir": "dist",
 		"baseUrl": ".",
 		"types": ["node"],
 		"lib": ["esnext", "dom", "scripthost"]
