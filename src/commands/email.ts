@@ -39,15 +39,19 @@ const emailCommand: Command = {
 		}
 		let emailStatus
 		try {
+			// TODO fix this
 			await nodeFetch(
-				`http://localhost:3000/Email?to=${emailTo}&subject=${emailSubject}&message=${emailMessage}`
+				`http://localhost:3001/Email?to=${emailTo}&subject=${emailSubject}&message=${emailMessage}`
 			)
 			emailStatus = 'good'
 		} catch (error) {
 			emailStatus = `${error}`
 		}
 
-		if (emailStatus === 'good') return { content: 'Email sent succesfully.' }
-		else return { content: `Error sending email: ${emailStatus}` }
+		if (emailStatus === 'good') {
+			return { content: 'Email sent succesfully.' }
+		} else {
+			return { content: `Error sending email: ${emailStatus}` }
+		}
 	}
 }

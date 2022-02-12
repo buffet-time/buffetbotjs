@@ -6,7 +6,9 @@ import {
 	buffetSpreadsheetId,
 	zachSpreadsheetId,
 	buffetRange,
-	zachRange
+	zachRange,
+	stoneRange,
+	stoneSpreadsheetId
 } from '../buffetBotMain.js'
 
 export {
@@ -29,7 +31,10 @@ const sheetsCommand: Command = {
 	],
 	async execute(interaction: CommandInteraction) {
 		const rowNum = interaction.options.getInteger('row')
-		if (!rowNum) return { content: 'Must pass a number' }
+		if (!rowNum) {
+			return { content: 'Must pass a number' }
+		}
+		const massagedRowNum = rowNum - 2
 
 		let row: string[] | undefined
 		let name = ''
@@ -37,19 +42,36 @@ const sheetsCommand: Command = {
 		switch (interaction.user.id) {
 			case '136494200391729152':
 				name = 'Buffet'
-				row = await getRowByIndex(rowNum - 2, buffetSpreadsheetId, buffetRange)
+				row = await getRowByIndex(
+					massagedRowNum,
+					buffetSpreadsheetId,
+					buffetRange
+				)
 				break
 			case '134862353660379137':
 				name = 'Zach'
-				row = await getRowByIndex(rowNum - 2, zachSpreadsheetId, zachRange)
+				row = await getRowByIndex(massagedRowNum, zachSpreadsheetId, zachRange)
+				break
+			case '130804955014627328':
+				name = 'Stonepaq'
+				row = await getRowByIndex(
+					massagedRowNum,
+					stoneSpreadsheetId,
+					stoneRange
+				)
 				break
 			default:
-				return { content: 'Command can only be used by Buffet or Zach' }
+				return {
+					content:
+						'Command can only be used by: Buffet, Zachohlic, and Stonepaq. If you want to access talk to Buffet'
+				}
 		}
 
-		if (row && rowIsFilledOut(row))
+		if (row && rowIsFilledOut(row)) {
 			return { content: `${name}: ${getSheetsRowMessage(row)}` }
-		else return { content: 'Specified row is not filled out' }
+		} else {
+			return { content: 'Specified row is not filled out' }
+		}
 	}
 }
 
@@ -58,6 +80,7 @@ async function getNumberOfRows(
 	range: string
 ): Promise<number | undefined> {
 	try {
+		// TODO: cleanup hardcoded ports
 		return (await (
 			await fetch(
 				`http://localhost:3000/Sheets?id=${id}&range=${range}&rows=true`
@@ -106,5 +129,7 @@ function rowIsFilledOut(row: string[] | undefined): boolean {
 		row[Release.genre]
 	) {
 		return true
-	} else return false
+	} else {
+		return false
+	}
 }

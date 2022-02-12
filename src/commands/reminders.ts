@@ -119,9 +119,9 @@ async function addReminder(interaction: CommandInteraction): Promise<string> {
 			messageTimeAmount = interaction.options.getInteger('amount'),
 			messageAuthor = interaction.user.id,
 			channelId = interaction.options.getChannel('channel')?.id
-		if (!messageText || !messageTimeType || !messageTimeAmount || !channelId) {
+		if (!messageText || !messageTimeType || !messageTimeAmount || !channelId)
 			return 'Error 31 in Reminders'
-		}
+
 		const timestamp = getTime(messageTimeAmount, messageTimeType)
 		const newReminder: Reminder = {
 			reminderNumber: 1,
@@ -136,9 +136,9 @@ async function addReminder(interaction: CommandInteraction): Promise<string> {
 			!newReminder.time ||
 			!newReminder.channel ||
 			timestamp === 0
-		) {
+		)
 			return 'Incorrect invocation of the add reminders command. See !help'
-		}
+
 		try {
 			const parsedData: Reminder[] = JSON.parse(
 					await FileSystem.readFile(remindersFilePath, 'utf8')

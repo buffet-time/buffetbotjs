@@ -28,6 +28,5 @@
 		"types": ["node"],
 		"lib": ["esnext", "dom", "scripthost"]
 	},
-	"include": ["src/*.ts", "src/assets/*.ts", "src/commands/*.ts"],
 	"exclude": ["node_modules", "*.js"]
 }

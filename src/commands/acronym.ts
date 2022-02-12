@@ -1,6 +1,6 @@
 import { CommandInteraction } from 'discord.js'
 import { Command } from '../typings.js'
-import Words from '../assets/acronymWords.json'
+import Words from '../assets/acronymWords.js'
 
 const words: { [key: string]: string[] } = Words
 

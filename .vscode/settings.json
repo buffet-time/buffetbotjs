@@ -6,13 +6,10 @@
 	"editor.tabSize": 2,
 	"editor.insertSpaces": false,
 	"search.exclude": {
-		"**/.firebase": true,
-		"**/.github": true,
 		"**/dist": true,
 		"**/node_modules": true,
-		"**/.yarn": true,
 		"**acronymWords.json": true,
 		".eslintcache": true,
-		"yarn.lock": true
+		"pnpm-lock.yaml": true
 	}
 }
