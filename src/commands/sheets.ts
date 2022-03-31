@@ -8,8 +8,11 @@ import {
 	buffetRange,
 	zachRange,
 	stoneRange,
-	stoneSpreadsheetId
+	stoneSpreadsheetId,
+	lilliSpreadsheetId,
+	lilliRange
 } from '../buffetBotMain.js'
+import { siteEndpoint } from '../assets/endpoints.js'
 
 export {
 	getNumberOfRows,
@@ -60,10 +63,18 @@ const sheetsCommand: Command = {
 					stoneRange
 				)
 				break
+			case '356928790565224460':
+				name = 'Lilli'
+				row = await getRowByIndex(
+					massagedRowNum,
+					lilliSpreadsheetId,
+					lilliRange
+				)
+				break
 			default:
 				return {
 					content:
-						'Command can only be used by: Buffet, Zachohlic, and Stonepaq. If you want to access talk to Buffet'
+						'Command can only be used by: Buffet, Zachohlic, Stonepaq, Lilli. If you want to access talk to Buffet'
 				}
 		}
 
@@ -82,9 +93,7 @@ async function getNumberOfRows(
 	try {
 		// TODO: cleanup hardcoded ports
 		return (await (
-			await fetch(
-				`http://localhost:3000/Sheets?id=${id}&range=${range}&rows=true`
-			)
+			await fetch(`${siteEndpoint}/Sheets?id=${id}&range=${range}&rows=true`)
 		).json()) as number
 	} catch (error) {
 		console.log(error)
@@ -100,7 +109,7 @@ async function getRowByIndex(
 	try {
 		return (await (
 			await fetch(
-				`http://localhost:3000/Sheets?id=${id}&range=${range}&index=${index}`
+				`${siteEndpoint}/Sheets?id=${id}&range=${range}&index=${index}`
 			)
 		).json()) as string[]
 	} catch (error) {

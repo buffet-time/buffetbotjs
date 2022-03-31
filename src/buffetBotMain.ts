@@ -24,20 +24,33 @@ import {
 } from './commands/sheets.js'
 import { femboyCommand } from './commands/reddit.js'
 
+//
+//
+//
+// just realized, i should make @~Buffet Bot command to be able to just pull that info of how many messages
+// someone made, maybe even a breakdown of channels, and like a leaderboard
+// :eyeShake:
+//
+//
+
 //TODO refactor this so i dont have to manually change every year!
 const buffetSpreadsheetId = '1lyFD7uLMT0mRdGkKwvbIm_2pqk2YJU7rtRQVhHq-nwU'
 const zachSpreadsheetId = '1gOQsBnd11bU-DkNUlAWoDub6t7eqKhUjy92M5kh2_TQ'
 const stoneSpreadsheetId = '1ZAAtds78UsGh2yYfiyDuX7gqL_4ZEtC6_njco6t7F44'
+const lilliSpreadsheetId = '1aLMe-scY_yqUcZ0qWuFh9LcE5NydrkOlAza23Ia-fzY'
 const buffetRange = 'Main!A2:G'
 const zachRange = 'Sheet1!A2:G'
 const stoneRange = 'Main!A2:G'
+const lilliRange = 'Main!A2:G'
 export {
 	buffetSpreadsheetId,
 	zachSpreadsheetId,
 	stoneSpreadsheetId,
+	lilliSpreadsheetId,
 	buffetRange,
 	zachRange,
-	stoneRange
+	stoneRange,
+	lilliRange
 }
 
 const client = new Client({
@@ -61,6 +74,7 @@ let allReminders: Reminder[]
 let buffetSheetLength: number | undefined
 let zachSheetLength: number | undefined
 let stoneSheetLength: number | undefined
+let lilliSheetLength: number | undefined
 
 export function updateReminders(reminders: Reminder[]): void {
 	allReminders = reminders
@@ -125,6 +139,7 @@ client.on('ready', async () => {
 		}
 	}, 15000) // 15 seconds
 
+	// omg refactor this!!!
 	setInterval(async () => {
 		const buffetTempLength = await getNumberOfRows(
 			buffetSpreadsheetId,
@@ -180,6 +195,26 @@ client.on('ready', async () => {
 			if (row && rowIsFilledOut(row)) {
 				musicChannel.send(`Stonepaq: ${getSheetsRowMessage(row)}`)
 				stoneSheetLength = stoneTempLength
+			}
+		}
+
+		const lilliTempLength = await getNumberOfRows(
+			lilliSpreadsheetId,
+			lilliRange
+		)
+		if (lilliTempLength !== lilliSheetLength) {
+			if (!lilliTempLength) {
+				return
+			}
+
+			const row = await getRowByIndex(
+				lilliTempLength - 1,
+				lilliSpreadsheetId,
+				lilliRange
+			)
+			if (row && rowIsFilledOut(row)) {
+				musicChannel.send(`Lilli: ${getSheetsRowMessage(row)}`)
+				lilliSheetLength = lilliTempLength
 			}
 		}
 	}, 300000) // 5 minutes

@@ -1,6 +1,7 @@
 import { CommandInteraction } from 'discord.js'
 import { Command } from '../typings.js'
 import nodeFetch from 'node-fetch'
+import { botEndpoint } from '../assets/endpoints.js'
 
 export { emailCommand }
 
@@ -41,7 +42,7 @@ const emailCommand: Command = {
 		try {
 			// TODO fix this
 			await nodeFetch(
-				`http://localhost:3001/Email?to=${emailTo}&subject=${emailSubject}&message=${emailMessage}`
+				`${botEndpoint}/Email?to=${emailTo}&subject=${emailSubject}&message=${emailMessage}`
 			)
 			emailStatus = 'good'
 		} catch (error) {

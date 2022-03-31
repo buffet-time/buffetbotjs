@@ -8,8 +8,10 @@
 	"search.exclude": {
 		"**/dist": true,
 		"**/node_modules": true,
-		"**acronymWords.json": true,
+		"**acronymWords.ts": true,
 		".eslintcache": true,
-		"pnpm-lock.yaml": true
+		"pnpm-lock.yaml": true,
+		"LICENSE": true,
+		"reminders.json": true
 	}
 }

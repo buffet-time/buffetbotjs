@@ -1,5 +1,6 @@
 import { Command } from '../typings.js'
 import nodeFetch from 'node-fetch'
+import { siteEndpoint } from '../assets/endpoints.js'
 
 export { femboyCommand }
 
@@ -9,14 +10,14 @@ const femboyCommand: Command = {
 	async execute() {
 		try {
 			const returnedObject = (await (
-				await nodeFetch(`http://localhost:3001/Reddit/Top/Femboy`)
+				await nodeFetch(`${siteEndpoint}/Reddit/Top/Femboy`)
 			).json()) as { url: string }
 
 			return {
 				files: [returnedObject.url]
 			}
 		} catch (error) {
-			return { content: `Error: ${error}` }
+			return { content: `Error in /femboy command: ${error}` }
 		}
 	}
 }
