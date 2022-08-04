@@ -27,7 +27,8 @@ import { femboyCommand } from './commands/reddit.js'
 //
 //
 //
-// just realized, i should make @~Buffet Bot command to be able to just pull that info of how many messages
+// just realized, i should make @~Buffet Bot command to be able to just pull that info
+// of how many messages
 // someone made, maybe even a breakdown of channels, and like a leaderboard
 // :eyeShake:
 //

@@ -272,7 +272,7 @@ function getAvailableReminderNumber(
 	for (let n = 1; n < reminderNumberArray.length + 2; n++)
 		if (!reminderNumberArray.includes(n)) return n
 
-	return length + 1
+	return reminderNumberArray.length + 1
 }
 
 // Get all Reminder objects for given user

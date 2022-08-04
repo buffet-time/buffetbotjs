@@ -1,1 +1,16 @@
 acronymWords.ts
+pnpm-lock.yaml
+/dist
+/.vscode
+/.husky
+/.github
+/node_modules
+.npmrc
+.nvmrc
+.pnpmrc
+.prettierignore
+.gitignore
+.DS_Store
+LICENSE
+/src/assets/*
+ignoreThis.txt
