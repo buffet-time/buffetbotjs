@@ -1,0 +1,9 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+# Run ESLint and Prettier on all files to ensure no bad commits
+pnpm type-check
+pnpm lint-fix
+pnpm format-fix
+# add any changed files from the lint and format fixs
+git add -A

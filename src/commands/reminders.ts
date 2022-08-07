@@ -1,4 +1,7 @@
-import { CommandInteraction } from 'discord.js'
+import {
+	ApplicationCommandOptionType,
+	ChatInputCommandInteraction
+} from 'discord.js'
 import FileSystem from 'fs/promises'
 import IsEqual from 'lodash.isequal'
 import { updateReminders } from '../buffetBotMain.js'
@@ -15,18 +18,18 @@ const remindersCommand: Command = {
 		{
 			name: 'add',
 			description: 'Add Reminders sub command',
-			type: 'SUB_COMMAND',
+			type: ApplicationCommandOptionType.Subcommand,
 			options: [
 				{
 					name: 'amount',
 					description: 'The number of minutes/ seconds/ etc',
-					type: 'INTEGER',
+					type: ApplicationCommandOptionType.Integer,
 					required: true
 				},
 				{
 					name: 'timetype',
 					description: 'asdf',
-					type: 'STRING',
+					type: ApplicationCommandOptionType.String,
 					choices: [
 						{ name: 'seconds', value: 'seconds' },
 						{ name: 'minutes', value: 'minutes' },
@@ -41,13 +44,13 @@ const remindersCommand: Command = {
 				{
 					name: 'channel',
 					description: 'Which reminder number to remove',
-					type: 'CHANNEL',
+					type: ApplicationCommandOptionType.Channel,
 					required: true
 				},
 				{
 					name: 'message',
 					description: 'Which reminder number to remove',
-					type: 'STRING',
+					type: ApplicationCommandOptionType.String,
 					required: true
 				}
 			]
@@ -55,12 +58,12 @@ const remindersCommand: Command = {
 		{
 			name: 'remove',
 			description: 'Remove Reminders sub command',
-			type: 'SUB_COMMAND',
+			type: ApplicationCommandOptionType.Subcommand,
 			options: [
 				{
 					name: 'reminder',
 					description: 'Which reminder number to remove',
-					type: 'INTEGER',
+					type: ApplicationCommandOptionType.Integer,
 					required: true
 				}
 			]
@@ -68,18 +71,18 @@ const remindersCommand: Command = {
 		{
 			name: 'view',
 			description: 'View Reminders sub command',
-			type: 'SUB_COMMAND',
+			type: ApplicationCommandOptionType.Subcommand,
 			options: [
 				{
 					name: 'reminder',
 					description: 'Which reminder to view',
-					type: 'INTEGER',
+					type: ApplicationCommandOptionType.Integer,
 					required: false
 				}
 			]
 		}
 	],
-	async execute(interaction: CommandInteraction) {
+	async execute(interaction: ChatInputCommandInteraction) {
 		switch (interaction.options.getSubcommand()) {
 			case 'add': {
 				updateReminders(await getAllReminders())
@@ -112,7 +115,9 @@ const remindersCommand: Command = {
 
 // TODO: clean up incorrect command passing to catch more
 // handles the !reminders add command
-async function addReminder(interaction: CommandInteraction): Promise<string> {
+async function addReminder(
+	interaction: ChatInputCommandInteraction
+): Promise<string> {
 	try {
 		const messageText = interaction.options.getString('message'),
 			messageTimeType = interaction.options.getString('timetype'),
@@ -201,7 +206,9 @@ export async function removeReminder(
 }
 
 // handles the !reminders view command
-async function viewReminders(interaction: CommandInteraction): Promise<string> {
+async function viewReminders(
+	interaction: ChatInputCommandInteraction
+): Promise<string> {
 	try {
 		const parsedData: Reminder[] = JSON.parse(
 			await FileSystem.readFile(remindersFilePath, 'utf8')
@@ -239,23 +246,26 @@ export async function getAllReminders(): Promise<Reminder[]> {
 // Gets the time the reminder should be sent
 function getTime(amount: number, type: string) {
 	// so that adding 1 = adding 1 second not 1 ms
-	const amountConverted = amount * 1000
+	const seconds = amount * 1000
+	const timestamp = Date.now()
+
 	switch (type) {
 		case 'seconds':
-			return Date.now() + amountConverted
+			return timestamp + seconds
 		case 'minutes':
-			return Date.now() + amountConverted * 60
+			return timestamp + seconds * 60
 		case 'hours':
-			return Date.now() + amountConverted * 3600
+			return timestamp + seconds * 3600
 		case 'days':
-			return Date.now() + amountConverted * 86400
+			return timestamp + seconds * 86400
 		case 'weeks':
-			return Date.now() + amountConverted * 604800
+			return timestamp + seconds * 604800
 		case 'months': // 30 days
-			return Date.now() + amountConverted * 2592000
+			return timestamp + seconds * 2592000
 		case 'years': // 365 days
-			return Date.now() + amountConverted * 31536000
+			return timestamp + seconds * 31536000
 		default:
+			console.error('Error in getTime(): ', seconds, timestamp, amount, type)
 			return 0
 	}
 }
@@ -272,7 +282,7 @@ function getAvailableReminderNumber(
 	for (let n = 1; n < reminderNumberArray.length + 2; n++)
 		if (!reminderNumberArray.includes(n)) return n
 
-	return length + 1
+	return reminderNumberArray.length + 1
 }
 
 // Get all Reminder objects for given user

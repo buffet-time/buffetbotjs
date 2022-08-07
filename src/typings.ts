@@ -1,12 +1,8 @@
 /* eslint-disable no-mixed-spaces-and-tabs */
 import {
 	ApplicationCommandOptionData,
-	BufferResolvable,
-	CommandInteraction,
-	FileOptions,
-	MessageAttachment
+	ChatInputCommandInteraction
 } from 'discord.js'
-import { Stream } from 'stream'
 
 export interface Reminder {
 	reminderNumber: number
@@ -20,14 +16,14 @@ export interface Command {
 	name: string
 	description: string
 	options?: ApplicationCommandOptionData[]
-	execute(options?: CommandInteraction):
+	execute(options?: ChatInputCommandInteraction):
 		| Promise<{
 				content?: string | null
-				files?: (FileOptions | BufferResolvable | Stream | MessageAttachment)[]
+				files?: string[]
 		  }>
 		| {
 				content: string | null
-				files?: (FileOptions | BufferResolvable | Stream | MessageAttachment)[]
+				files?: string[]
 		  }
 }
 

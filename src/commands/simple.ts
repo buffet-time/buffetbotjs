@@ -1,4 +1,7 @@
-import { CommandInteraction } from 'discord.js'
+import {
+	ApplicationCommandOptionType,
+	ChatInputCommandInteraction
+} from 'discord.js'
 import { Command } from '../typings.js'
 
 export { kissCommand, parentsCommand, crocCommand, cheemsCommand, macCommand }
@@ -30,11 +33,11 @@ const kissCommand: Command = {
 		{
 			name: 'person',
 			description: 'Whomstdve to kiss',
-			type: 'MENTIONABLE',
+			type: ApplicationCommandOptionType.Mentionable,
 			required: true
 		}
 	],
-	execute(interaction: CommandInteraction) {
+	execute(interaction: ChatInputCommandInteraction) {
 		return {
 			content: `${interaction.user} kissed ${interaction.options.getMentionable(
 				'person'
@@ -58,7 +61,7 @@ const parentsCommand: Command = {
 const crocCommand: Command = {
 	name: 'croc',
 	description: 'Posts exploding croc',
-	execute(interaction: CommandInteraction) {
+	execute(interaction: ChatInputCommandInteraction) {
 		return {
 			content: `${interaction.user} exploded`,
 			files: [

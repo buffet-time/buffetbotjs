@@ -1,4 +1,7 @@
-import { CommandInteraction } from 'discord.js'
+import {
+	ApplicationCommandOptionType,
+	ChatInputCommandInteraction
+} from 'discord.js'
 import { Command } from '../typings.js'
 import nodeFetch from 'node-fetch'
 import { botEndpoint } from '../assets/endpoints.js'
@@ -12,26 +15,26 @@ const emailCommand: Command = {
 		{
 			name: 'emailto',
 			description: 'Email to send to',
-			type: 'STRING',
+			type: ApplicationCommandOptionType.String,
 			required: true
 		},
 		{
 			name: 'emailsubject',
 			description: 'Email Subject',
-			type: 'STRING',
+			type: ApplicationCommandOptionType.String,
 			required: true
 		},
 		{
 			name: 'emailmessage',
 			description: 'Email Message',
-			type: 'STRING',
+			type: ApplicationCommandOptionType.String,
 			required: true
 		}
 	],
-	async execute(interaction: CommandInteraction) {
-		const emailTo = interaction.options.getString('emailto'),
-			emailSubject = interaction.options.getString('emailsubject'),
-			emailMessage = interaction.options.getString('emailmessage')
+	async execute(interaction: ChatInputCommandInteraction) {
+		const emailTo = interaction.options.getString('emailto')
+		const emailSubject = interaction.options.getString('emailsubject')
+		const emailMessage = interaction.options.getString('emailmessage')
 
 		if (!emailTo || !emailSubject || !emailMessage) {
 			return {
