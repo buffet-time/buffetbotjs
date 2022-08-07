@@ -1,4 +1,7 @@
-import { CommandInteraction } from 'discord.js'
+import {
+	ApplicationCommandOptionType,
+	ChatInputCommandInteraction
+} from 'discord.js'
 import { Command } from '../typings.js'
 import Words from '../assets/acronymWords.js'
 
@@ -13,11 +16,11 @@ const acronymCommand: Command = {
 		{
 			name: 'acronym',
 			description: 'Word to create an ancronym from.',
-			type: 'STRING',
+			type: ApplicationCommandOptionType.String,
 			required: true
 		}
 	],
-	execute(interaction: CommandInteraction) {
+	execute(interaction: ChatInputCommandInteraction) {
 		const word = interaction.options.getString('acronym')?.toLocaleLowerCase()
 		if (!word) return { content: 'Must pass a word.' }
 

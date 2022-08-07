@@ -1,5 +1,8 @@
 import { Release } from '../typings.js'
-import { CommandInteraction } from 'discord.js'
+import {
+	ApplicationCommandOptionType,
+	ChatInputCommandInteraction
+} from 'discord.js'
 import { Command } from '../typings.js'
 import fetch from 'node-fetch'
 import {
@@ -28,11 +31,11 @@ const sheetsCommand: Command = {
 		{
 			name: 'row',
 			description: 'Which row to retrieve',
-			type: 'INTEGER',
+			type: ApplicationCommandOptionType.Integer,
 			required: true
 		}
 	],
-	async execute(interaction: CommandInteraction) {
+	async execute(interaction: ChatInputCommandInteraction) {
 		const rowNum = interaction.options.getInteger('row')
 		if (!rowNum) {
 			return { content: 'Must pass a number' }

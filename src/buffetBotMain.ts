@@ -1,4 +1,10 @@
-import { Client, Intents, TextChannel } from 'discord.js'
+import {
+	ChannelType,
+	ChatInputCommandInteraction,
+	Client,
+	GatewayIntentBits,
+	TextChannel
+} from 'discord.js'
 import { Reminder } from './typings.js'
 import { token } from './config/config.js'
 import {
@@ -55,7 +61,7 @@ export {
 }
 
 const client = new Client({
-	intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES]
+	intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages]
 })
 const arrayOfCommandObjects = [
 	remindersCommand,
@@ -125,7 +131,7 @@ client.on('ready', async () => {
 					const channelToSendTo = await client.channels.fetch(
 						allReminders[x].channel
 					)
-					if (channelToSendTo?.isText()) {
+					if (channelToSendTo?.type === ChannelType.GuildText) {
 						channelToSendTo.send(
 							`<@!${allReminders[x].user}>: ${allReminders[x].message}`
 						)
@@ -234,7 +240,9 @@ client.on('interactionCreate', async (interaction) => {
 			interaction.commandName === command.name ? command : undefined
 		)
 		if (commandToBeExecuted) {
-			const messageToSend = await commandToBeExecuted.execute(interaction)
+			const messageToSend = await commandToBeExecuted.execute(
+				interaction as ChatInputCommandInteraction
+			)
 			messageToSend
 				? interaction.reply(messageToSend)
 				: interaction.reply('Error Code: 3')
