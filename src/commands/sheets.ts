@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Release } from '../typings.js'
 import {
 	ApplicationCommandOptionType,
@@ -5,17 +6,12 @@ import {
 } from 'discord.js'
 import { Command } from '../typings.js'
 import fetch from 'node-fetch'
-import {
-	buffetSpreadsheetId,
-	zachSpreadsheetId,
-	buffetRange,
-	zachRange,
-	stoneRange,
-	stoneSpreadsheetId,
-	lilliSpreadsheetId,
-	lilliRange
-} from '../buffetBotMain.js'
 import { siteEndpoint } from '../assets/endpoints.js'
+import {
+	currentPeople,
+	MediaSpreadsheetsInfo,
+	MusicSpreadsheetInfo
+} from '../spreadsheetInfo.js'
 
 export {
 	getNumberOfRows,
@@ -44,47 +40,29 @@ const sheetsCommand: Command = {
 
 		let row: string[] | undefined
 		let name = ''
+		let music: MusicSpreadsheetInfo | undefined
 
-		switch (interaction.user.id) {
-			case '136494200391729152':
-				name = 'Buffet'
-				row = await getRowByIndex(
-					massagedRowNum,
-					buffetSpreadsheetId,
-					buffetRange
-				)
-				break
-			case '134862353660379137':
-				name = 'Zach'
-				row = await getRowByIndex(massagedRowNum, zachSpreadsheetId, zachRange)
-				break
-			case '130804955014627328':
-				name = 'Stonepaq'
-				row = await getRowByIndex(
-					massagedRowNum,
-					stoneSpreadsheetId,
-					stoneRange
-				)
-				break
-			case '356928790565224460':
-				name = 'Lilli'
-				row = await getRowByIndex(
-					massagedRowNum,
-					lilliSpreadsheetId,
-					lilliRange
-				)
-				break
-			default:
-				return {
-					content:
-						'Command can only be used by: Buffet, Zachohlic, Stonepaq, Lilli. If you want to access talk to Buffet'
+		if (
+			MediaSpreadsheetsInfo.some((person) => {
+				if (interaction.user.id === person.userId) {
+					music = person.music
+					name = person.personsName
+					return true
 				}
+				return false
+			})
+		) {
+			row = await getRowByIndex(massagedRowNum, music!.id, music!.range)
+
+			if (row && rowIsFilledOut(row)) {
+				return { content: `${name}: ${getSheetsRowMessage(row)}` }
+			} else {
+				return { content: 'Specified row is not filled out' }
+			}
 		}
 
-		if (row && rowIsFilledOut(row)) {
-			return { content: `${name}: ${getSheetsRowMessage(row)}` }
-		} else {
-			return { content: 'Specified row is not filled out' }
+		return {
+			content: `Command can only be used by: ${currentPeople}. If you want to access talk to Buffet`
 		}
 	}
 }
