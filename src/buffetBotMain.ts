@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
 	ChannelType,
 	ChatInputCommandInteraction,
@@ -13,13 +14,7 @@ import {
 	remindersCommand
 } from './commands/reminders.js'
 import { acronymCommand } from './commands/acronym.js'
-import {
-	crocCommand,
-	kissCommand,
-	parentsCommand,
-	cheemsCommand,
-	macCommand
-} from './commands/simple.js'
+import { SimpleCommands } from './commands/simple.js'
 import { emailCommand } from './commands/email.js'
 import {
 	getNumberOfRows,
@@ -29,36 +24,28 @@ import {
 	sheetsCommand
 } from './commands/sheets.js'
 import { femboyCommand } from './commands/reddit.js'
+import { MediaSpreadsheetsInfo } from './spreadsheetInfo.js'
 
-//
-//
-//
-// just realized, i should make @~Buffet Bot command to be able to just pull that info
-// of how many messages
-// someone made, maybe even a breakdown of channels, and like a leaderboard
-// :eyeShake:
-//
-//
+// TODO:
+// 1) Do some code cleanup
+// 2) Add /stats command to get various stats on a person or
+//    the whole server for things like number of messages and shit
+//    maybe even a breakdown of channels, and like a leaderboard
+// 3) Add /wordcount to get how many times a passed word has been sent in the discord
+// 4) Dictionary definition lookup
+// 5) Thesaurus synonyms of word
+// 6) /commie random commie quotes
+// 7) Movie and Game review sheet thing like the music one
+// 8) Create a remove command command that only I can use
+// 			code block to remove a command.
+// 			const liveCommands = await client.application?.commands.fetch()
+// 			for (element of liveCommands!) {
+// 				if (element.name === 'help') {
+// 					client.application?.commands.delete(element)
+// 				}
+// 			}
 
 //TODO refactor this so i dont have to manually change every year!
-const buffetSpreadsheetId = '1lyFD7uLMT0mRdGkKwvbIm_2pqk2YJU7rtRQVhHq-nwU'
-const zachSpreadsheetId = '1gOQsBnd11bU-DkNUlAWoDub6t7eqKhUjy92M5kh2_TQ'
-const stoneSpreadsheetId = '1ZAAtds78UsGh2yYfiyDuX7gqL_4ZEtC6_njco6t7F44'
-const lilliSpreadsheetId = '1aLMe-scY_yqUcZ0qWuFh9LcE5NydrkOlAza23Ia-fzY'
-const buffetRange = 'Main!A2:G'
-const zachRange = 'Sheet1!A2:G'
-const stoneRange = 'Main!A2:G'
-const lilliRange = 'Main!A2:G'
-export {
-	buffetSpreadsheetId,
-	zachSpreadsheetId,
-	stoneSpreadsheetId,
-	lilliSpreadsheetId,
-	buffetRange,
-	zachRange,
-	stoneRange,
-	lilliRange
-}
 
 const client = new Client({
 	intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages]
@@ -67,21 +54,13 @@ const arrayOfCommandObjects = [
 	remindersCommand,
 	acronymCommand,
 	emailCommand,
-	kissCommand,
-	parentsCommand,
 	sheetsCommand,
-	crocCommand,
-	cheemsCommand,
 	femboyCommand,
-	macCommand
+	...SimpleCommands
 ]
 
 let musicChannel: TextChannel
 let allReminders: Reminder[]
-let buffetSheetLength: number | undefined
-let zachSheetLength: number | undefined
-let stoneSheetLength: number | undefined
-let lilliSheetLength: number | undefined
 
 export function updateReminders(reminders: Reminder[]): void {
 	allReminders = reminders
@@ -91,19 +70,6 @@ client.on('ready', async () => {
 	console.log('Starting up...')
 	musicChannel = client.channels.cache.get('301931813947965440') as TextChannel
 	allReminders = await getAllReminders()
-	buffetSheetLength = await getNumberOfRows(buffetSpreadsheetId, buffetRange)
-	zachSheetLength = await getNumberOfRows(zachSpreadsheetId, zachRange)
-	stoneSheetLength = await getNumberOfRows(stoneSpreadsheetId, stoneRange)
-
-	// TODO: Create a remove command command that only I can use
-	// code block to remove a command.
-	// const liveCommands = await client.application?.commands.fetch()
-	// // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-	// for (element of liveCommands!) {
-	// 	if (element.name === 'help') {
-	// 		client.application?.commands.delete(element)
-	// 	}
-	// }
 
 	for (const command of arrayOfCommandObjects) {
 		command.options
@@ -146,87 +112,44 @@ client.on('ready', async () => {
 		}
 	}, 15000) // 15 seconds
 
-	// omg refactor this!!!
-	setInterval(async () => {
-		const buffetTempLength = await getNumberOfRows(
-			buffetSpreadsheetId,
-			buffetRange
-		)
-		if (buffetTempLength !== buffetSheetLength) {
-			if (!buffetTempLength) {
-				return
-			}
+	const lengthArray: number[] = []
+	MediaSpreadsheetsInfo.forEach(() => lengthArray.push(0))
 
-			const row = await getRowByIndex(
-				buffetTempLength - 1,
-				buffetSpreadsheetId,
-				buffetRange
+	function musicSheetInterval() {
+		// For the music sheets currently
+		MediaSpreadsheetsInfo.forEach(async (info, index) => {
+			const tempLength = await getNumberOfRows(
+				info.music!.id,
+				info.music!.range
 			)
-			if (row && rowIsFilledOut(row)) {
-				musicChannel.send(`Buffet: ${getSheetsRowMessage(row)}`)
-				buffetSheetLength = buffetTempLength
-			}
-		}
+			if (tempLength !== lengthArray[index]) {
+				if (!tempLength) {
+					return
+				}
 
-		const zachTempLength = await getNumberOfRows(zachSpreadsheetId, zachRange)
-		if (zachTempLength !== zachSheetLength) {
-			if (!zachTempLength) {
-				return
+				const row = await getRowByIndex(
+					tempLength - 1,
+					info.music!.id,
+					info.music!.range
+				)
+				if (row && rowIsFilledOut(row)) {
+					// Prevents sending the first time the bot starts up
+					if (lengthArray[index] !== 0) {
+						musicChannel.send(
+							`${info.personsName}: ${getSheetsRowMessage(row)}`
+						)
+					}
+					lengthArray[index] = tempLength
+				}
 			}
+		})
+	}
 
-			const row = await getRowByIndex(
-				zachTempLength - 1,
-				zachSpreadsheetId,
-				zachRange
-			)
-			if (row && rowIsFilledOut(row)) {
-				musicChannel.send(`Zach: ${getSheetsRowMessage(row)}`)
-				zachSheetLength = zachTempLength
-			}
-		}
+	musicSheetInterval()
+	// setInterval(musicSheetInterval, 5000) // 5 seconds
+	setInterval(musicSheetInterval, 300000) // 5 minutes
 
-		const stoneTempLength = await getNumberOfRows(
-			stoneSpreadsheetId,
-			stoneRange
-		)
-		if (stoneTempLength !== stoneSheetLength) {
-			if (!stoneTempLength) {
-				return
-			}
-
-			const row = await getRowByIndex(
-				stoneTempLength - 1,
-				stoneSpreadsheetId,
-				stoneRange
-			)
-			if (row && rowIsFilledOut(row)) {
-				musicChannel.send(`Stonepaq: ${getSheetsRowMessage(row)}`)
-				stoneSheetLength = stoneTempLength
-			}
-		}
-
-		const lilliTempLength = await getNumberOfRows(
-			lilliSpreadsheetId,
-			lilliRange
-		)
-		if (lilliTempLength !== lilliSheetLength) {
-			if (!lilliTempLength) {
-				return
-			}
-
-			const row = await getRowByIndex(
-				lilliTempLength - 1,
-				lilliSpreadsheetId,
-				lilliRange
-			)
-			if (row && rowIsFilledOut(row)) {
-				musicChannel.send(`Lilli: ${getSheetsRowMessage(row)}`)
-				lilliSheetLength = lilliTempLength
-			}
-		}
-	}, 300000) // 5 minutes
-
-	client.user?.setActivity('When is hotline?')
+	client.user?.setActivity('Team Fortress 2')
 	console.log('Ready')
 })
 

@@ -279,8 +279,11 @@ function getAvailableReminderNumber(
 		parsedData,
 		messageAuthor
 	).map((reminder) => reminder.reminderNumber)
-	for (let n = 1; n < reminderNumberArray.length + 2; n++)
-		if (!reminderNumberArray.includes(n)) return n
+	for (let n = 1; n < reminderNumberArray.length + 2; n++) {
+		if (!reminderNumberArray.includes(n)) {
+			return n
+		}
+	}
 
 	return reminderNumberArray.length + 1
 }
