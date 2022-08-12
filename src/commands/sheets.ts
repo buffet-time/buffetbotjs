@@ -1,5 +1,9 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { Release } from '../typings.js'
+import {
+	type MusicSpreadsheetInfo,
+	Release,
+	type MediaChannels
+} from '../typings.js'
 import {
 	ApplicationCommandOptionType,
 	ChatInputCommandInteraction
@@ -7,11 +11,7 @@ import {
 import { Command } from '../typings.js'
 import fetch from 'node-fetch'
 import { siteEndpoint } from '../assets/endpoints.js'
-import {
-	currentPeople,
-	MediaSpreadsheetsInfo,
-	MusicSpreadsheetInfo
-} from '../spreadsheetInfo.js'
+import { currentPeople, mediaSpreadsheetUsers } from '../spreadsheetUsers.js'
 
 export {
 	getNumberOfRows,
@@ -43,9 +43,9 @@ const sheetsCommand: Command = {
 		let music: MusicSpreadsheetInfo | undefined
 
 		if (
-			MediaSpreadsheetsInfo.some((person) => {
+			mediaSpreadsheetUsers.some((person) => {
 				if (interaction.user.id === person.userId) {
-					music = person.music
+					music = person.Music
 					name = person.personsName
 					return true
 				}
@@ -55,7 +55,7 @@ const sheetsCommand: Command = {
 			row = await getRowByIndex(massagedRowNum, music!.id, music!.range)
 
 			if (row && rowIsFilledOut(row)) {
-				return { content: `${name}: ${getSheetsRowMessage(row)}` }
+				return { content: `${name}: ${getSheetsRowMessage('Music', row)}` }
 			} else {
 				return { content: 'Specified row is not filled out' }
 			}
@@ -74,7 +74,9 @@ async function getNumberOfRows(
 	try {
 		// TODO: cleanup hardcoded ports
 		return (await (
-			await fetch(`${siteEndpoint}/Sheets?id=${id}&range=${range}&rows=true`)
+			await fetch(
+				`${siteEndpoint}/Sheets?id=${id}&range=${range}&rows=true&nonmusic=true`
+			)
 		).json()) as number
 	} catch (error) {
 		console.log(error)
@@ -99,15 +101,33 @@ async function getRowByIndex(
 	}
 }
 
-function getSheetsRowMessage(row: string[]): string {
-	return `${row[Release.artist].trim()} - ${row[Release.name].trim()} (${row[
-		Release.year
-	].trim()} ${row[Release.type].trim()}) ${row[
-		Release.score
-	].trim()}/10 ~ ${row[Release.comments].trim()}`
+function getSheetsRowMessage(type: MediaChannels, row: string[]): string {
+	switch (type) {
+		case 'Music':
+			return `${row[Release.artist].trim()} - ${row[
+				Release.name
+			].trim()} (${row[Release.year].trim()} ${row[Release.type].trim()}) ${row[
+				Release.score
+			].trim()}/10 ~ ${row[Release.comments].trim()}`
+		case 'Games':
+			return `${row[0]} (${row[3]} - ${row[1]}) ${row[2]}/10 ~ ${row[4]}`
+		case 'Movies':
+		case 'TV':
+			return `${row[0]} (${row[2]}) ${row[1]}/10 ~ ${row[3]}`
+	}
 }
 
-function rowIsFilledOut(row: string[] | undefined): boolean {
+function rowIsFilledOut(
+	row: string[] | undefined,
+	nonMusic?: boolean
+): boolean {
+	if (nonMusic) {
+		if (row && row[0] && row[1] && row[2] && row[3] && row[4]) {
+			return true
+		}
+		return false
+	}
+
 	if (
 		row &&
 		row[Release.score] &&
@@ -119,7 +139,6 @@ function rowIsFilledOut(row: string[] | undefined): boolean {
 		row[Release.genre]
 	) {
 		return true
-	} else {
-		return false
 	}
+	return false
 }

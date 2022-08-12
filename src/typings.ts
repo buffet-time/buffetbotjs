@@ -36,3 +36,38 @@ export enum Release {
 	genre,
 	comments
 }
+
+export interface MusicSpreadsheetInfo {
+	id: string
+	range: string
+}
+
+export interface MediaSpreadsheetsUsers {
+	personsName: string
+	userId: string
+	['Music']?: {
+		id: string
+		range: string
+	}
+	['Games']?: {
+		id: string
+		range: string
+	}
+	['Movies']?: {
+		id: string
+		range: string
+	}
+	['TV']?: {
+		id: string
+		range: string
+	}
+}
+
+export type MediaChannels = 'Music' | 'Games' | 'Movies' | 'TV'
+
+export type SpreadsheetLengths = {
+	['Music']: number
+	['Games']: number
+	['Movies']: number
+	['TV']: number
+}[]
