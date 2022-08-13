@@ -64,6 +64,16 @@ client.on('ready', async () => {
 	console.log('Starting up...')
 	setupMediaSheetsAndChannels(client)
 
+	// Delete a live command.
+	// const commandToDelete = 'sheets'
+	// const liveCommands = await client.application?.commands.fetch()
+	// console.log(1, liveCommands)
+	// for (const element of liveCommands!) {
+	// 	if (element[1].name === commandToDelete) {
+	// 		client.application?.commands.delete(element[1])
+	// 	}
+	// }
+
 	allReminders = await getAllReminders()
 
 	for (const command of arrayOfCommandObjects) {
@@ -130,8 +140,8 @@ client.on('ready', async () => {
 	}
 
 	mediaSheetCheck()
-	setInterval(mediaSheetCheck, 20000) // 20 seconds
-	// setInterval(mediaSheetCheck, 120000) // 2 minutes
+	// setInterval(mediaSheetCheck, 20000) // 20 seconds
+	setInterval(mediaSheetCheck, 120000) // 2 minutes
 
 	client.user?.setActivity('Team Fortress 2')
 	console.log('Ready')

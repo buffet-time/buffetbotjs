@@ -27,6 +27,18 @@ export const mediaSpreadsheetUsers: MediaSpreadsheetsUsers[] = [
 		Music: {
 			id: '1gOQsBnd11bU-DkNUlAWoDub6t7eqKhUjy92M5kh2_TQ',
 			range: 'Sheet1!A2:G'
+		},
+		TV: {
+			id: '16KT0PPF3xdMM4QOu2dDAKZh2fJ186-x15Up1VtERb84',
+			range: 'Sheet1!A2:E'
+		},
+		Games: {
+			id: '1UHaE-Opxxc9Bi31YL1egTVy_-W8jluECL2tRu37-gNM',
+			range: 'Sheet1!A2:E'
+		},
+		Movies: {
+			id: '1vOLr-A3MuExr-7Cg8RZRj2pRiZ08adVCtkBc8Xg8Yjk',
+			range: 'Sheet1!A2:E'
 		}
 	},
 	{

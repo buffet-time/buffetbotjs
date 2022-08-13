@@ -37,7 +37,7 @@ export enum Release {
 	comments
 }
 
-export interface MusicSpreadsheetInfo {
+export interface MediaTypeInfoObject {
 	id: string
 	range: string
 }
@@ -45,22 +45,10 @@ export interface MusicSpreadsheetInfo {
 export interface MediaSpreadsheetsUsers {
 	personsName: string
 	userId: string
-	['Music']?: {
-		id: string
-		range: string
-	}
-	['Games']?: {
-		id: string
-		range: string
-	}
-	['Movies']?: {
-		id: string
-		range: string
-	}
-	['TV']?: {
-		id: string
-		range: string
-	}
+	['Music']?: MediaTypeInfoObject
+	['Games']?: MediaTypeInfoObject
+	['Movies']?: MediaTypeInfoObject
+	['TV']?: MediaTypeInfoObject
 }
 
 export type MediaChannels = 'Music' | 'Games' | 'Movies' | 'TV'
