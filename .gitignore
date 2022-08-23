@@ -2,8 +2,10 @@
 node_modules
 /dist
 
+# local files for dev purposes
+ignore.*
+
 # singular files to ignore
-ignoreThis.txt
 token.json
 emailCredentials.json
 emailToken.json

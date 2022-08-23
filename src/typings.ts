@@ -36,3 +36,38 @@ export enum Release {
 	genre,
 	comments
 }
+
+export interface MediaTypeInfoObject {
+	id: string
+	range: string
+}
+
+export interface MediaSpreadsheetsUsers {
+	personsName: string
+	userId: string
+	['Music']?: MediaTypeInfoObject
+	['Games']?: MediaTypeInfoObject
+	['Movies']?: MediaTypeInfoObject
+	['TV']?: MediaTypeInfoObject
+}
+
+export type MediaChannels = 'Music' | 'Games' | 'Movies' | 'TV'
+
+export type SpreadsheetLengths = {
+	['Music']: number
+	['Games']: number
+	['Movies']: number
+	['TV']: number
+}[]
+
+export interface WordApiResponse {
+	word: string
+	antonyms?: string[]
+	synonyms?: string[]
+	definitions?: {
+		definition: string
+		partOfSpeech: string
+	}[]
+}
+
+export type WordsApiTypes = 'synonyms' | 'antonyms'

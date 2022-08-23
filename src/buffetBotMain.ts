@@ -3,8 +3,7 @@ import {
 	ChannelType,
 	ChatInputCommandInteraction,
 	Client,
-	GatewayIntentBits,
-	TextChannel
+	GatewayIntentBits
 } from 'discord.js'
 import { Reminder } from './typings.js'
 import { token } from './config/config.js'
@@ -13,53 +12,43 @@ import {
 	getAllReminders,
 	remindersCommand
 } from './commands/reminders.js'
+import { AdminCommands } from './commands/admin.js'
 import { acronymCommand } from './commands/acronym.js'
 import { SimpleCommands } from './commands/simple.js'
 import { emailCommand } from './commands/email.js'
-import {
-	getNumberOfRows,
-	getRowByIndex,
-	getSheetsRowMessage,
-	rowIsFilledOut,
-	sheetsCommand
-} from './commands/sheets.js'
+import { sheetsCommand } from './commands/sheets.js'
 import { femboyCommand } from './commands/reddit.js'
-import { MediaSpreadsheetsInfo } from './spreadsheetInfo.js'
+import { DictionaryCommands } from './commands/dictionary.js'
+import { mediaSpreadsheetUsers } from './spreadsheetUsers.js'
+import { getMediaSheetRow, setupMediaSheetsAndChannels } from './mediaSheet.js'
 
 // TODO:
-// 1) Do some code cleanup
-// 2) Add /stats command to get various stats on a person or
+// 1) Add /stats command to get various stats on a person or
 //    the whole server for things like number of messages and shit
 //    maybe even a breakdown of channels, and like a leaderboard
-// 3) Add /wordcount to get how many times a passed word has been sent in the discord
-// 4) Dictionary definition lookup
-// 5) Thesaurus synonyms of word
-// 6) /commie random commie quotes
-// 7) Movie and Game review sheet thing like the music one
-// 8) Create a remove command command that only I can use
-// 			code block to remove a command.
-// 			const liveCommands = await client.application?.commands.fetch()
-// 			for (element of liveCommands!) {
-// 				if (element.name === 'help') {
-// 					client.application?.commands.delete(element)
-// 				}
-// 			}
+// 2) Add /wordcount to get how many times a passed word has been sent in the discord
+// 3) /commie random commie quotes
+// 4) Movie and Game review sheet thing like the music one
 
 //TODO refactor this so i dont have to manually change every year!
 
-const client = new Client({
+export const client = new Client({
 	intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages]
 })
+
 const arrayOfCommandObjects = [
 	remindersCommand,
 	acronymCommand,
 	emailCommand,
 	sheetsCommand,
 	femboyCommand,
+	...AdminCommands,
+	...DictionaryCommands,
 	...SimpleCommands
 ]
 
-let musicChannel: TextChannel
+// TODO: Refactor
+
 let allReminders: Reminder[]
 
 export function updateReminders(reminders: Reminder[]): void {
@@ -68,7 +57,8 @@ export function updateReminders(reminders: Reminder[]): void {
 
 client.on('ready', async () => {
 	console.log('Starting up...')
-	musicChannel = client.channels.cache.get('301931813947965440') as TextChannel
+	setupMediaSheetsAndChannels(client)
+
 	allReminders = await getAllReminders()
 
 	for (const command of arrayOfCommandObjects) {
@@ -112,42 +102,22 @@ client.on('ready', async () => {
 		}
 	}, 15000) // 15 seconds
 
-	const lengthArray: number[] = []
-	MediaSpreadsheetsInfo.forEach(() => lengthArray.push(0))
-
-	function musicSheetInterval() {
+	function mediaSheetCheck() {
 		// For the music sheets currently
-		MediaSpreadsheetsInfo.forEach(async (info, index) => {
-			const tempLength = await getNumberOfRows(
-				info.music!.id,
-				info.music!.range
-			)
-			if (tempLength !== lengthArray[index]) {
-				if (!tempLength) {
-					return
-				}
+		mediaSpreadsheetUsers.forEach(async (info, index) => {
+			if (info.Music) getMediaSheetRow(info, 'Music', index)
 
-				const row = await getRowByIndex(
-					tempLength - 1,
-					info.music!.id,
-					info.music!.range
-				)
-				if (row && rowIsFilledOut(row)) {
-					// Prevents sending the first time the bot starts up
-					if (lengthArray[index] !== 0) {
-						musicChannel.send(
-							`${info.personsName}: ${getSheetsRowMessage(row)}`
-						)
-					}
-					lengthArray[index] = tempLength
-				}
-			}
+			if (info.Games) getMediaSheetRow(info, 'Games', index)
+
+			if (info.Movies) getMediaSheetRow(info, 'Movies', index)
+
+			if (info.TV) getMediaSheetRow(info, 'TV', index)
 		})
 	}
 
-	musicSheetInterval()
-	// setInterval(musicSheetInterval, 5000) // 5 seconds
-	setInterval(musicSheetInterval, 300000) // 5 minutes
+	mediaSheetCheck()
+	// setInterval(mediaSheetCheck, 20000) // 20 seconds
+	setInterval(mediaSheetCheck, 120000) // 2 minutes
 
 	client.user?.setActivity('Team Fortress 2')
 	console.log('Ready')

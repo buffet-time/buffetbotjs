@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { Release } from '../typings.js'
+import { MediaTypeInfoObject, Release, type MediaChannels } from '../typings.js'
 import {
 	ApplicationCommandOptionType,
 	ChatInputCommandInteraction
@@ -7,11 +7,7 @@ import {
 import { Command } from '../typings.js'
 import fetch from 'node-fetch'
 import { siteEndpoint } from '../assets/endpoints.js'
-import {
-	currentPeople,
-	MediaSpreadsheetsInfo,
-	MusicSpreadsheetInfo
-} from '../spreadsheetInfo.js'
+import { currentPeople, mediaSpreadsheetUsers } from '../spreadsheetUsers.js'
 
 export {
 	getNumberOfRows,
@@ -22,40 +18,69 @@ export {
 }
 const sheetsCommand: Command = {
 	name: 'sheets',
-	description: 'For Buffet and Zacoholic to share scores of music',
+	description:
+		'Spits out the row you specify if you have media spreadsheets setup for the server',
 	options: [
 		{
 			name: 'row',
 			description: 'Which row to retrieve',
 			type: ApplicationCommandOptionType.Integer,
 			required: true
+		},
+		{
+			name: 'sheettype',
+			description:
+				'The media type of the spreadsheet you want to retrieve from',
+			type: ApplicationCommandOptionType.String,
+			required: true,
+			choices: [
+				{ name: 'Music', value: 'Music' },
+				{ name: 'Games', value: 'Games' },
+				{ name: 'Movies', value: 'Movies' },
+				{ name: 'TV', value: 'tv' }
+			]
 		}
 	],
 	async execute(interaction: ChatInputCommandInteraction) {
 		const rowNum = interaction.options.getInteger('row')
 		if (!rowNum) {
-			return { content: 'Must pass a number' }
+			return { content: 'Must pass a number for the row variable.' }
 		}
+
+		const sheetType = interaction.options.getString(
+			'sheettype'
+		) as MediaChannels
+		if (!sheetType) {
+			return {
+				content: 'Must pass one of the valid options for sheetType variable.'
+			}
+		}
+
 		const massagedRowNum = rowNum - 2
 
 		let row: string[] | undefined
 		let name = ''
-		let music: MusicSpreadsheetInfo | undefined
+		let mediaInfo: MediaTypeInfoObject | undefined
+		let notMusic = false
 
 		if (
-			MediaSpreadsheetsInfo.some((person) => {
+			mediaSpreadsheetUsers.some((person) => {
 				if (interaction.user.id === person.userId) {
-					music = person.music
+					mediaInfo = person[sheetType]
 					name = person.personsName
 					return true
 				}
 				return false
 			})
 		) {
-			row = await getRowByIndex(massagedRowNum, music!.id, music!.range)
+			row = await getRowByIndex(massagedRowNum, mediaInfo!.id, mediaInfo!.range)
 
-			if (row && rowIsFilledOut(row)) {
-				return { content: `${name}: ${getSheetsRowMessage(row)}` }
+			if (row && sheetType !== 'Music') {
+				notMusic = true
+			}
+
+			if (row && rowIsFilledOut(row, notMusic)) {
+				return { content: `${name}: ${getSheetsRowMessage(sheetType, row)}` }
 			} else {
 				return { content: 'Specified row is not filled out' }
 			}
@@ -74,7 +99,9 @@ async function getNumberOfRows(
 	try {
 		// TODO: cleanup hardcoded ports
 		return (await (
-			await fetch(`${siteEndpoint}/Sheets?id=${id}&range=${range}&rows=true`)
+			await fetch(
+				`${siteEndpoint}/Sheets?id=${id}&range=${range}&rows=true&nonmusic=true`
+			)
 		).json()) as number
 	} catch (error) {
 		console.log(error)
@@ -99,15 +126,33 @@ async function getRowByIndex(
 	}
 }
 
-function getSheetsRowMessage(row: string[]): string {
-	return `${row[Release.artist].trim()} - ${row[Release.name].trim()} (${row[
-		Release.year
-	].trim()} ${row[Release.type].trim()}) ${row[
-		Release.score
-	].trim()}/10 ~ ${row[Release.comments].trim()}`
+function getSheetsRowMessage(type: MediaChannels, row: string[]): string {
+	switch (type) {
+		case 'Music':
+			return `${row[Release.artist].trim()} - ${row[
+				Release.name
+			].trim()} (${row[Release.year].trim()} ${row[Release.type].trim()}) ${row[
+				Release.score
+			].trim()}/10 ~ ${row[Release.comments].trim()}`
+		case 'Games':
+			return `${row[0]} (${row[3]} - ${row[1]}) ${row[2]}/10 ~ ${row[4]}`
+		case 'Movies':
+		case 'TV':
+			return `${row[0]} (${row[2]}) ${row[1]}/10 ~ ${row[3]}`
+	}
 }
 
-function rowIsFilledOut(row: string[] | undefined): boolean {
+function rowIsFilledOut(
+	row: string[] | undefined,
+	nonMusic?: boolean
+): boolean {
+	if (nonMusic) {
+		if (row && row[0] && row[1] && row[2] && row[3] && row[4]) {
+			return true
+		}
+		return false
+	}
+
 	if (
 		row &&
 		row[Release.score] &&
@@ -119,7 +164,6 @@ function rowIsFilledOut(row: string[] | undefined): boolean {
 		row[Release.genre]
 	) {
 		return true
-	} else {
-		return false
 	}
+	return false
 }
