@@ -8,18 +8,29 @@ import { rapidApiToken } from '../config/config.js'
 import {
 	type WordsApiTypes,
 	type Command,
-	type DictionaryResponse,
 	type WordApiResponse
 } from '../typings.js'
 
-const dictionaryApi = 'https://api.dictionaryapi.dev/api/v2/entries/en/'
+const wordsApiUrl = 'https://wordsapiv1.p.rapidapi.com/words/'
 
-async function getDefinition(
-	word: string
-): Promise<DictionaryResponse | undefined> {
-	return (await fetch(`${dictionaryApi}${word}`)) as any as
-		| DictionaryResponse
-		| undefined
+async function getDefinition(word: string): Promise<WordApiResponse | 'Error'> {
+	try {
+		const response = await fetch(`${wordsApiUrl}${word}/definitions`, {
+			method: 'GET',
+			headers: {
+				'X-RapidAPI-Key': rapidApiToken,
+				'X-RapidAPI-Host': 'wordsapiv1.p.rapidapi.com'
+			}
+		})
+		return (await response.json()) as WordApiResponse
+	} catch (error) {
+		console.log('Error getting definitions', error)
+		return 'Error'
+	}
+}
+
+function capitalizeFirstLetter(string: string) {
+	return string.charAt(0).toUpperCase() + string.slice(1)
 }
 
 const definitionCommand: Command = {
@@ -44,20 +55,22 @@ const definitionCommand: Command = {
 		const word = interaction.options.getString('word')!
 		const passedDefinitionNumber = interaction.options.getInteger('definition')
 		const definintionNumber = passedDefinitionNumber
-			? passedDefinitionNumber
-			: 1
+			? passedDefinitionNumber - 1
+			: 0
 
 		const definition = await getDefinition(word)
 
-		if (!definition) {
+		if (definition === 'Error' || !definition) {
 			return {
 				content: `Error: Couldn't get the definition.`
 			}
 		}
 
-		if (definition.meanings.length >= definintionNumber) {
+		if (definition.definitions!.length > definintionNumber) {
 			return {
-				content: `${definition.word}: ${definition.meanings[definintionNumber].definitions[0]}`
+				content: `${capitalizeFirstLetter(word)} (${
+					definition.definitions![definintionNumber].partOfSpeech
+				}): ${definition.definitions![definintionNumber].definition}`
 			}
 		}
 
@@ -67,7 +80,6 @@ const definitionCommand: Command = {
 	}
 }
 
-const wordsApiUrl = 'https://wordsapiv1.p.rapidapi.com/words/'
 async function getSynonymsOrAntonyms(type: WordsApiTypes, word: string) {
 	try {
 		const response = await fetch(`${wordsApiUrl}${word}/${type}`, {
@@ -86,36 +98,42 @@ async function getSynonymsOrAntonyms(type: WordsApiTypes, word: string) {
 
 const antonymAndSynonymsArray: WordsApiTypes[] = ['synonyms', 'antonyms']
 const antonymAndSynonymCommands: Command[] = antonymAndSynonymsArray.map(
-	(current) => {
+	(type) => {
 		return {
-			name: current,
-			description: `Get the ${current} of a word.`,
+			name: type,
+			description: `Get the ${type} of a word.`,
 			options: [
 				{
 					name: 'word',
-					description: `The word you want ${current} for`,
+					description: `The word you want ${type} for`,
 					type: ApplicationCommandOptionType.String,
 					required: true
 				}
 			],
 			async execute(interaction: ChatInputCommandInteraction) {
 				const word = interaction.options.getString('word')!
-				const response = await getSynonymsOrAntonyms(current, word)
+				const response = await getSynonymsOrAntonyms(type, word)
 
 				if (response === 'Error') {
 					console.log(word, response)
 					return {
-						content: `Error getting ${current}.`
+						content: `Error getting ${type}.`
 					}
 				}
 
+				const responseStrings = response[type]!
+
+				if (responseStrings.length === 0) {
+					return {
+						content: `Couldn't get any ${type}`
+					}
+				}
+
+				// Take the string array, make it a string, and add a space after each comma
+				const massagedSynonyms = responseStrings.toString().replace(/,/g, ', ')
+
 				return {
-					content: `${word} ${current}: ${
-						(response[current]!.reduce(
-							(previous, current) => `${previous}, ${current}`
-						),
-						'')
-					}`
+					content: `${capitalizeFirstLetter(word)} ${type}: ${massagedSynonyms}`
 				}
 			}
 		}
