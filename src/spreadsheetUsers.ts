@@ -1,9 +1,11 @@
 import { type MediaSpreadsheetsUsers } from './typings'
 
+export const buffetsUserId = '136494200391729152'
+
 export const mediaSpreadsheetUsers: MediaSpreadsheetsUsers[] = [
 	{
 		personsName: 'Buffet',
-		userId: '136494200391729152',
+		userId: buffetsUserId,
 		Music: {
 			id: '1lyFD7uLMT0mRdGkKwvbIm_2pqk2YJU7rtRQVhHq-nwU',
 			range: 'Main!A2:G'

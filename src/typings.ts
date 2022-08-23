@@ -59,3 +59,48 @@ export type SpreadsheetLengths = {
 	['Movies']: number
 	['TV']: number
 }[]
+
+export interface DictionaryResponse {
+	word: string
+	phonetic: string
+	origin: string
+	phonetics: [
+		{
+			text: string
+			audio?: string
+			sourceUrl?: string
+			license?: {
+				name: string
+				url: string
+			}
+		}
+	]
+	meanings: [
+		{
+			partOfSpeech: string
+			definitions: [
+				{
+					definition: string
+					example: string
+					synonyms: string[]
+					antonyms: string[]
+				}
+			]
+			synonyms: string[]
+			antonyms: string[]
+		}
+	]
+	license?: {
+		name: string
+		url: string
+	}
+	sourceUrls: string[]
+}
+
+export interface WordApiResponse {
+	word: string
+	antonyms?: string[]
+	synonyms?: string[]
+}
+
+export type WordsApiTypes = 'synonyms' | 'antonyms'

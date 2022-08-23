@@ -92,12 +92,10 @@ const macCommand: Command = {
 	}
 }
 
-const SimpleCommands = [
+export const SimpleCommands = [
 	kissCommand,
 	parentsCommand,
 	crocCommand,
 	cheemsCommand,
 	macCommand
 ]
-
-export { SimpleCommands }

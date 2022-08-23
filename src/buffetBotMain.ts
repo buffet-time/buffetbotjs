@@ -12,11 +12,13 @@ import {
 	getAllReminders,
 	remindersCommand
 } from './commands/reminders.js'
+import { AdminCommands } from './commands/admin.js'
 import { acronymCommand } from './commands/acronym.js'
 import { SimpleCommands } from './commands/simple.js'
 import { emailCommand } from './commands/email.js'
 import { sheetsCommand } from './commands/sheets.js'
 import { femboyCommand } from './commands/reddit.js'
+import { DictionaryCommands } from './commands/dictionary.js'
 import { mediaSpreadsheetUsers } from './spreadsheetUsers.js'
 import { getMediaSheetRow, setupMediaSheetsAndChannels } from './mediaSheet.js'
 
@@ -25,30 +27,23 @@ import { getMediaSheetRow, setupMediaSheetsAndChannels } from './mediaSheet.js'
 //    the whole server for things like number of messages and shit
 //    maybe even a breakdown of channels, and like a leaderboard
 // 2) Add /wordcount to get how many times a passed word has been sent in the discord
-// 3) Dictionary definition lookup
-// 4) Thesaurus synonyms of word
-// 5) /commie random commie quotes
-// 6) Movie and Game review sheet thing like the music one
-// 7) Create a remove command command that only I can use
-// 			code block to remove a command.
-// 			const liveCommands = await client.application?.commands.fetch()
-// 			for (element of liveCommands!) {
-// 				if (element.name === 'help') {
-// 					client.application?.commands.delete(element)
-// 				}
-// 			}
+// 3) /commie random commie quotes
+// 4) Movie and Game review sheet thing like the music one
 
 //TODO refactor this so i dont have to manually change every year!
 
-const client = new Client({
+export const client = new Client({
 	intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages]
 })
+
 const arrayOfCommandObjects = [
 	remindersCommand,
 	acronymCommand,
 	emailCommand,
 	sheetsCommand,
 	femboyCommand,
+	...AdminCommands,
+	...DictionaryCommands,
 	...SimpleCommands
 ]
 
@@ -63,16 +58,6 @@ export function updateReminders(reminders: Reminder[]): void {
 client.on('ready', async () => {
 	console.log('Starting up...')
 	setupMediaSheetsAndChannels(client)
-
-	// Delete a live command.
-	// const commandToDelete = 'sheets'
-	// const liveCommands = await client.application?.commands.fetch()
-	// console.log(1, liveCommands)
-	// for (const element of liveCommands!) {
-	// 	if (element[1].name === commandToDelete) {
-	// 		client.application?.commands.delete(element[1])
-	// 	}
-	// }
 
 	allReminders = await getAllReminders()
 
@@ -120,22 +105,13 @@ client.on('ready', async () => {
 	function mediaSheetCheck() {
 		// For the music sheets currently
 		mediaSpreadsheetUsers.forEach(async (info, index) => {
-			if (info.Music) {
-				getMediaSheetRow(info, 'Music', index)
-				// console.log(100)
-			}
-			if (info.Games) {
-				getMediaSheetRow(info, 'Games', index)
-				// console.log(101)
-			}
-			if (info.Movies) {
-				getMediaSheetRow(info, 'Movies', index)
-				// console.log(102)
-			}
-			if (info.TV) {
-				getMediaSheetRow(info, 'TV', index)
-				// console.log(103)
-			}
+			if (info.Music) getMediaSheetRow(info, 'Music', index)
+
+			if (info.Games) getMediaSheetRow(info, 'Games', index)
+
+			if (info.Movies) getMediaSheetRow(info, 'Movies', index)
+
+			if (info.TV) getMediaSheetRow(info, 'TV', index)
 		})
 	}
 
