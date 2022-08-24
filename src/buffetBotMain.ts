@@ -27,10 +27,6 @@ import { getMediaSheetRow, setupMediaSheetsAndChannels } from './mediaSheet.js'
 //    the whole server for things like number of messages and shit
 //    maybe even a breakdown of channels, and like a leaderboard
 // 2) Add /wordcount to get how many times a passed word has been sent in the discord
-// 3) /commie random commie quotes
-// 4) Movie and Game review sheet thing like the music one
-
-//TODO refactor this so i dont have to manually change every year!
 
 export const client = new Client({
 	intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages]
