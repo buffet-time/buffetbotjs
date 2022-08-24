@@ -8,12 +8,17 @@ import { rapidApiToken } from '../config/config.js'
 import {
 	type WordsApiTypes,
 	type Command,
-	type WordApiResponse
+	type WordApiResponse,
+	type UrbanDictionaryResponse
 } from '../typings.js'
 
 const wordsApiUrl = 'https://wordsapiv1.p.rapidapi.com/words/'
+const urbanDictionaryUrl =
+	'https://mashape-community-urban-dictionary.p.rapidapi.com/define'
 
-async function getDefinition(word: string): Promise<WordApiResponse | 'Error'> {
+async function wordsApiGetDefinition(
+	word: string
+): Promise<WordApiResponse | 'Error'> {
 	try {
 		const response = await fetch(`${wordsApiUrl}${word}/definitions`, {
 			method: 'GET',
@@ -23,6 +28,24 @@ async function getDefinition(word: string): Promise<WordApiResponse | 'Error'> {
 			}
 		})
 		return (await response.json()) as WordApiResponse
+	} catch (error) {
+		console.log('Error getting definitions', error)
+		return 'Error'
+	}
+}
+
+async function urbanDictionaryGetDefinition(
+	word: string
+): Promise<UrbanDictionaryResponse | 'Error'> {
+	try {
+		const response = await fetch(`${urbanDictionaryUrl}?term=${word}`, {
+			method: 'GET',
+			headers: {
+				'X-RapidAPI-Key': rapidApiToken,
+				'X-RapidAPI-Host': 'mashape-community-urban-dictionary.p.rapidapi.com'
+			}
+		})
+		return (await response.json()) as UrbanDictionaryResponse
 	} catch (error) {
 		console.log('Error getting definitions', error)
 		return 'Error'
@@ -58,15 +81,31 @@ const definitionCommand: Command = {
 			? passedDefinitionNumber - 1
 			: 0
 
-		const definition = await getDefinition(word)
+		const definition = await wordsApiGetDefinition(word)
 
-		if (definition === 'Error' || !definition) {
+		if (definition === 'Error' || !definition || !definition.definitions) {
+			const udDefinition = await urbanDictionaryGetDefinition(word)
+
+			if (
+				udDefinition &&
+				udDefinition !== 'Error' &&
+				udDefinition.list.length > definintionNumber
+			) {
+				return {
+					content: `${capitalizeFirstLetter(word)} - ${udDefinition.list[
+						definintionNumber
+					].definition
+						.replace(/(\r\n|\n|\r)/gm, ' ')
+						.trim()}`
+				}
+			}
+
 			return {
 				content: `Error: Couldn't get the definition.`
 			}
 		}
 
-		if (definition.definitions!.length > definintionNumber) {
+		if (definition.definitions.length > definintionNumber) {
 			return {
 				content: `${capitalizeFirstLetter(word)} (${
 					definition.definitions![definintionNumber].partOfSpeech
