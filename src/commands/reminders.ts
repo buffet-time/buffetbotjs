@@ -141,8 +141,9 @@ async function addReminder(
 			!newReminder.time ||
 			!newReminder.channel ||
 			timestamp === 0
-		)
+		) {
 			return 'Incorrect invocation of the add reminders command. See !help'
+		}
 
 		try {
 			const parsedData: Reminder[] = JSON.parse(
@@ -185,7 +186,9 @@ export async function removeReminder(
 			messageAuthor
 		).filter((reminder) => reminder.reminderNumber === reminderNumberToRemove)
 
-		if (!objectToRemoveArray[0]) return "The number passed doesn't exist."
+		if (!objectToRemoveArray[0]) {
+			return "The number passed doesn't exist."
+		}
 
 		parsedData.splice(
 			parsedData.findIndex((reminder) =>
@@ -214,10 +217,11 @@ async function viewReminders(
 			await FileSystem.readFile(remindersFilePath, 'utf8')
 		)
 		if (
-			parsedData === [] ||
+			!parsedData ||
 			!parsedData.filter((reminder) => reminder.user === interaction.user.id)[0]
-		)
+		) {
 			return 'You have no saved reminders.'
+		}
 
 		return remindersArrayToReturnString(
 			interaction.options.getInteger('reminder')

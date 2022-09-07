@@ -23,6 +23,7 @@ import { mediaSpreadsheetUsers } from './spreadsheetUsers.js'
 import { getMediaSheetRow, setupMediaSheetsAndChannels } from './mediaSheet.js'
 
 // TODO:
+// -- THESE ARE CURRENTLY NOT POSSIBLE
 // 1) Add /stats command to get various stats on a person or
 //    the whole server for things like number of messages and shit
 //    maybe even a breakdown of channels, and like a leaderboard
@@ -112,7 +113,7 @@ client.on('ready', async () => {
 	}
 
 	mediaSheetCheck()
-	// setInterval(mediaSheetCheck, 20000) // 20 seconds
+	// setInterval(mediaSheetCheck, 20000) // 20 seconds --- testing
 	setInterval(mediaSheetCheck, 120000) // 2 minutes
 
 	client.user?.setActivity('Team Fortress 2')

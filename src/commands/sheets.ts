@@ -5,7 +5,6 @@ import {
 	ChatInputCommandInteraction
 } from 'discord.js'
 import { Command } from '../typings.js'
-import fetch from 'node-fetch'
 import { siteEndpoint } from '../assets/endpoints.js'
 import { currentPeople, mediaSpreadsheetUsers } from '../spreadsheetUsers.js'
 

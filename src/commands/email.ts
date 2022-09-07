@@ -3,7 +3,6 @@ import {
 	ChatInputCommandInteraction
 } from 'discord.js'
 import { Command } from '../typings.js'
-import nodeFetch from 'node-fetch'
 import { botEndpoint } from '../assets/endpoints.js'
 
 export { emailCommand }
@@ -44,7 +43,7 @@ const emailCommand: Command = {
 		let emailStatus
 		try {
 			// TODO fix this
-			await nodeFetch(
+			await fetch(
 				`${botEndpoint}/Email?to=${emailTo}&subject=${emailSubject}&message=${emailMessage}`
 			)
 			emailStatus = 'good'

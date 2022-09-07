@@ -3,8 +3,8 @@ import {
 	ApplicationCommandOptionType,
 	ChatInputCommandInteraction
 } from 'discord.js'
-import fetch from 'node-fetch'
 import { rapidApiToken } from '../config/config.js'
+
 import {
 	type WordsApiTypes,
 	type Command,

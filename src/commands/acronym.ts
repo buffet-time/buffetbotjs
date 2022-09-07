@@ -22,7 +22,9 @@ const acronymCommand: Command = {
 	],
 	execute(interaction: ChatInputCommandInteraction) {
 		const word = interaction.options.getString('acronym')?.toLocaleLowerCase()
-		if (!word) return { content: 'Must pass a word.' }
+		if (!word) {
+			return { content: 'Must pass a word.' }
+		}
 
 		switch (true) {
 			case word.length < 2:
@@ -46,29 +48,31 @@ function getAcronym(word: string): string {
 	const generatedAcronym = getWordsFromProvidedAcronym(word)
 		.toString()
 		.replace(/,/g, '  ')
-	if (generatedAcronym.length > 2000 || generatedAcronym === 'F')
+	if (generatedAcronym.length > 2000 || generatedAcronym === 'F') {
 		return 'That acronym was too large for discord.'
-	else return generatedAcronym
+	}
+
+	return generatedAcronym
 }
 
 // takes the word and returns an array of random words
 // starting with each given letter
 function getWordsFromProvidedAcronym(acronym: string): string[] {
-	let lengthOfWords = 0,
-		wordsArray: string[],
-		generatedWord = ''
+	let lengthOfWords = 0
+	let wordsArray: string[]
+	let generatedWord = ''
 
 	return acronym
 		.toLowerCase()
 		.split('')
 		.map((letter: string) => {
-			if (lengthOfWords > 2000) return 'f'
-			else {
-				wordsArray = words[letter]
-				generatedWord =
-					wordsArray[Math.floor(Math.random() * wordsArray.length)]
-				lengthOfWords += generatedWord.length + 1
-				return generatedWord
+			if (lengthOfWords > 2000) {
+				return 'f'
 			}
+
+			wordsArray = words[letter]
+			generatedWord = wordsArray[Math.floor(Math.random() * wordsArray.length)]
+			lengthOfWords += generatedWord.length + 1
+			return generatedWord
 		})
 }
