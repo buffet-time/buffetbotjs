@@ -16,8 +16,8 @@
 	"type": "module",
 	"scripts": {
 		"serve": "pnpm compile && pnpm execute",
-		"compile": "pnpm exec tsc",
-		"execute": "node --experimental-json-modules ./dist/buffetBotMain.js",
+		"compile": "pnpm tsc",
+		"execute": "node --experimental-json-modules ./dist/src/buffetBotMain.js",
 		"lint-fix": "eslint --fix \"**/*.{ts,vue}\"",
 		"lint-check": "eslint \"**/*.{ts,vue}\"",
 		"format-fix": "prettier --check --write \"**/**\" ",
