@@ -4,8 +4,8 @@ import {
 } from 'discord.js'
 import FileSystem from 'fs/promises'
 import IsEqual from 'lodash.isequal'
-import { updateReminders } from '../buffetBotMain.js'
-import { Command, Reminder } from '../typings.js'
+import { updateReminders } from '../buffetBotMain'
+import { Command, Reminder } from '../typings'
 
 export { remindersCommand }
 const remindersFilePath = 'reminders.json'

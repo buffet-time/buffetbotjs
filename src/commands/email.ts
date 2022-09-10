@@ -2,8 +2,8 @@ import {
 	ApplicationCommandOptionType,
 	ChatInputCommandInteraction
 } from 'discord.js'
-import { Command } from '../typings.js'
-import { botEndpoint } from '../assets/endpoints.js'
+import { Command } from '../typings'
+import { botEndpoint } from '../assets/endpoints'
 
 export { emailCommand }
 

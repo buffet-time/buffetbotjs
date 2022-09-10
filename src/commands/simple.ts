@@ -2,7 +2,7 @@ import {
 	ApplicationCommandOptionType,
 	ChatInputCommandInteraction
 } from 'discord.js'
-import { Command } from '../typings.js'
+import { Command } from '../typings'
 
 const kissImages = [
 	'https://www.daysoftheyear.com/wp-content/uploads/international-kissing-day.jpg',

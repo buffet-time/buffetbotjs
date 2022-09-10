@@ -3,14 +3,14 @@ import {
 	ApplicationCommandOptionType,
 	ChatInputCommandInteraction
 } from 'discord.js'
-import { rapidApiToken } from '../config/config.js'
+import { rapidApiToken } from '../config/config'
 
 import {
 	type WordsApiTypes,
 	type Command,
 	type WordApiResponse,
 	type UrbanDictionaryResponse
-} from '../typings.js'
+} from '../typings'
 
 const wordsApiUrl = 'https://wordsapiv1.p.rapidapi.com/words/'
 const urbanDictionaryUrl =

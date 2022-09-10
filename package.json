@@ -2,7 +2,8 @@
 	"name": "buffetbotjs",
 	"version": "1.0.0",
 	"private": false,
-	"main": "./dist/src/buffetBotMain.js",
+	"source": "./src/buffetBotMain.ts",
+	"main": "./dist/buffetBotMain.js",
 	"description": "Bot I created for my private Discord",
 	"author": {
 		"email": "packageJson@danielTurcich.com",
@@ -16,8 +17,8 @@
 	"type": "module",
 	"scripts": {
 		"serve": "pnpm compile && pnpm execute",
-		"compile": "pnpm tsc",
-		"execute": "node --experimental-json-modules ./dist/src/buffetBotMain.js",
+		"compile": "parcel build",
+		"execute": "node --experimental-json-modules ./dist/buffetBotMain.js",
 		"lint-fix": "eslint --fix \"**/*.{ts,vue}\"",
 		"lint-check": "eslint \"**/*.{ts,vue}\"",
 		"format-fix": "prettier --check --write \"**/**\" ",
@@ -40,6 +41,7 @@
 		"eslint-config-prettier": "^8.5.0",
 		"eslint-plugin-prettier": "^4.2.1",
 		"husky": "^8.0.1",
+		"parcel": "^2.7.0",
 		"prettier": "^2.7.1",
 		"typescript": "^4.8.2",
 		"undici": "^5.10.0"
