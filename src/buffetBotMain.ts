@@ -5,22 +5,22 @@ import {
 	Client,
 	GatewayIntentBits
 } from 'discord.js'
-import { Reminder } from './typings.js'
-import { token } from './config/config.js'
+import { Reminder } from './typings'
+import { token } from './config/config'
 import {
 	removeReminder,
 	getAllReminders,
 	remindersCommand
-} from './commands/reminders.js'
-import { AdminCommands } from './commands/admin.js'
-import { acronymCommand } from './commands/acronym.js'
-import { SimpleCommands } from './commands/simple.js'
-import { emailCommand } from './commands/email.js'
-import { sheetsCommand } from './commands/sheets.js'
-import { femboyCommand } from './commands/reddit.js'
-import { DictionaryCommands } from './commands/dictionary.js'
-import { mediaSpreadsheetUsers } from './spreadsheetUsers.js'
-import { getMediaSheetRow, setupMediaSheetsAndChannels } from './mediaSheet.js'
+} from './commands/reminders'
+import { AdminCommands } from './commands/admin'
+import { acronymCommand } from './commands/acronym'
+import { SimpleCommands } from './commands/simple'
+import { emailCommand } from './commands/email'
+import { sheetsCommand } from './commands/sheets'
+import { femboyCommand } from './commands/reddit'
+import { DictionaryCommands } from './commands/dictionary'
+import { mediaSpreadsheetUsers } from './spreadsheetUsers'
+import { getMediaSheetRow, setupMediaSheetsAndChannels } from './mediaSheet'
 
 // TODO:
 // -- THESE ARE CURRENTLY NOT POSSIBLE

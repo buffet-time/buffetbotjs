@@ -4,8 +4,8 @@ import {
 	getNumberOfRows,
 	getRowByIndex,
 	getSheetsRowMessage
-} from './commands/sheets.js'
-import { mediaSpreadsheetUsers } from './spreadsheetUsers.js'
+} from './commands/sheets'
+import { mediaSpreadsheetUsers } from './spreadsheetUsers'
 import {
 	type MediaChannels,
 	type MediaSpreadsheetsUsers,

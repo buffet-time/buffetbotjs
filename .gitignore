@@ -1,6 +1,9 @@
 # folders to ignore
 node_modules
+
+# parcel
 /dist
+.parcel-cache
 
 # local files for dev purposes
 ignore.*

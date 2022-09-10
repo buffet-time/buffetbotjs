@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { MediaTypeInfoObject, Release, type MediaChannels } from '../typings.js'
+import { MediaTypeInfoObject, Release, type MediaChannels } from '../typings'
 import {
 	ApplicationCommandOptionType,
 	ChatInputCommandInteraction
 } from 'discord.js'
-import { Command } from '../typings.js'
-import { siteEndpoint } from '../assets/endpoints.js'
-import { currentPeople, mediaSpreadsheetUsers } from '../spreadsheetUsers.js'
+import { Command } from '../typings'
+import { siteEndpoint } from '../assets/endpoints'
+import { currentPeople, mediaSpreadsheetUsers } from '../spreadsheetUsers'
 
 export {
 	getNumberOfRows,

@@ -1,5 +1,5 @@
-import { Command } from '../typings.js'
-import { siteEndpoint } from '../assets/endpoints.js'
+import { Command } from '../typings'
+import { siteEndpoint } from '../assets/endpoints'
 
 export { femboyCommand }
 
