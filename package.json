@@ -49,6 +49,7 @@
 	"targets": {
 		"main": false,
 		"module": {
+			"includeNodeModules": true,
 			"context": "node",
 			"outputFormat": "esmodule",
 			"isLibrary": false,
