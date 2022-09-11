@@ -16,7 +16,7 @@
 	"scripts": {
 		"serve": "pnpm compile && pnpm execute",
 		"compile": "parcel build",
-		"execute": "node --experimental-json-modules ./dist/main.js",
+		"execute": "node --experimental-json-modules ./dist/index.js",
 		"lint-fix": "eslint --fix \"**/*.{ts,vue}\"",
 		"lint-check": "eslint \"**/*.{ts,vue}\"",
 		"format-fix": "prettier --check --write \"**/**\" ",
@@ -45,16 +45,12 @@
 		"undici": "^5.10.0"
 	},
 	"source": "./src/main.ts",
-	"main": "./dist/main.js",
+	"module": "./dist/index.js",
 	"targets": {
-		"main": {
+		"module": {
 			"context": "node",
-			"outputFormat": "esmodule",
 			"isLibrary": false,
 			"sourceMap": false
 		}
-	},
-	"alias": {
-		"process": false
 	}
 }
