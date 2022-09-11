@@ -45,16 +45,16 @@
 		"undici": "^5.10.0"
 	},
 	"source": "./src/main.ts",
-	"module": "./dist/main.js",
+	"main": "./dist/main.js",
 	"targets": {
-		"main": false,
-		"module": {
-			"includeNodeModules": true,
+		"main": {
 			"context": "node",
 			"outputFormat": "esmodule",
 			"isLibrary": false,
 			"sourceMap": false
-		},
-		"browser": false
+		}
+	},
+	"alias": {
+		"process": false
 	}
 }
