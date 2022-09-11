@@ -2,10 +2,11 @@ import {
 	ApplicationCommandOptionType,
 	ChatInputCommandInteraction
 } from 'discord.js'
-import { Command } from '../typings'
-import Words from '../assets/acronymWords'
+import { Command } from '../types/typings'
 
-const words: { [key: string]: string[] } = Words
+const words: { [key: string]: string[] } = await import(
+	'../assets/acronymWords'
+)
 
 export { acronymCommand }
 

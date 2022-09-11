@@ -4,13 +4,13 @@ import {
 	ChatInputCommandInteraction
 } from 'discord.js'
 import { rapidApiToken } from '../config/config'
-
 import {
 	type WordsApiTypes,
 	type Command,
 	type WordApiResponse,
 	type UrbanDictionaryResponse
-} from '../typings'
+} from '../types/typings'
+import { ProperFetch } from '../properFetch'
 
 const wordsApiUrl = 'https://wordsapiv1.p.rapidapi.com/words/'
 const urbanDictionaryUrl =
@@ -20,7 +20,7 @@ async function wordsApiGetDefinition(
 	word: string
 ): Promise<WordApiResponse | 'Error'> {
 	try {
-		const response = await fetch(`${wordsApiUrl}${word}/definitions`, {
+		const response = await ProperFetch(`${wordsApiUrl}${word}/definitions`, {
 			method: 'GET',
 			headers: {
 				'X-RapidAPI-Key': rapidApiToken,
@@ -38,14 +38,13 @@ async function urbanDictionaryGetDefinition(
 	word: string
 ): Promise<UrbanDictionaryResponse | 'Error'> {
 	try {
-		const response = await fetch(`${urbanDictionaryUrl}?term=${word}`, {
+		return (await ProperFetch(`${urbanDictionaryUrl}?term=${word}`, {
 			method: 'GET',
 			headers: {
 				'X-RapidAPI-Key': rapidApiToken,
 				'X-RapidAPI-Host': 'mashape-community-urban-dictionary.p.rapidapi.com'
 			}
-		})
-		return (await response.json()) as UrbanDictionaryResponse
+		})) as UrbanDictionaryResponse
 	} catch (error) {
 		console.log('Error getting definitions', error)
 		return 'Error'
@@ -121,7 +120,7 @@ const definitionCommand: Command = {
 
 async function getSynonymsOrAntonyms(type: WordsApiTypes, word: string) {
 	try {
-		const response = await fetch(`${wordsApiUrl}${word}/${type}`, {
+		const response = await ProperFetch(`${wordsApiUrl}${word}/${type}`, {
 			method: 'GET',
 			headers: {
 				'X-RapidAPI-Key': rapidApiToken,

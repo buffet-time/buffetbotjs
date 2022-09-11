@@ -1,12 +1,20 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { MediaTypeInfoObject, Release, type MediaChannels } from '../typings'
+import {
+	MediaTypeInfoObject,
+	Release,
+	type MediaChannels
+} from '../types/typings'
 import {
 	ApplicationCommandOptionType,
 	ChatInputCommandInteraction
 } from 'discord.js'
-import { Command } from '../typings'
+import { Command } from '../types/typings'
 import { siteEndpoint } from '../assets/endpoints'
-import { currentPeople, mediaSpreadsheetUsers } from '../spreadsheetUsers'
+import {
+	currentPeople,
+	mediaSpreadsheetUsers
+} from '../assets/spreadsheetUsers'
+import { ProperFetch } from '../properFetch'
 
 export {
 	getNumberOfRows,
@@ -98,7 +106,7 @@ async function getNumberOfRows(
 	try {
 		// TODO: cleanup hardcoded ports
 		return (await (
-			await fetch(
+			await ProperFetch(
 				`${siteEndpoint}/Sheets?id=${id}&range=${range}&rows=true&nonmusic=true`
 			)
 		).json()) as number
@@ -115,7 +123,7 @@ async function getRowByIndex(
 ): Promise<string[] | undefined> {
 	try {
 		return (await (
-			await fetch(
+			await ProperFetch(
 				`${siteEndpoint}/Sheets?id=${id}&range=${range}&index=${index}`
 			)
 		).json()) as string[]

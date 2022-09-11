@@ -1,4 +1,4 @@
-import { Command } from '../typings'
+import { Command } from '../types/typings'
 import { siteEndpoint } from '../assets/endpoints'
 
 export { femboyCommand }

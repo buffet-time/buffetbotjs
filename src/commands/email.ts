@@ -2,8 +2,9 @@ import {
 	ApplicationCommandOptionType,
 	ChatInputCommandInteraction
 } from 'discord.js'
-import { Command } from '../typings'
+import { Command } from '../types/typings'
 import { botEndpoint } from '../assets/endpoints'
+import { ProperFetch } from '../properFetch'
 
 export { emailCommand }
 
@@ -43,7 +44,7 @@ const emailCommand: Command = {
 		let emailStatus
 		try {
 			// TODO fix this
-			await fetch(
+			await ProperFetch(
 				`${botEndpoint}/Email?to=${emailTo}&subject=${emailSubject}&message=${emailMessage}`
 			)
 			emailStatus = 'good'

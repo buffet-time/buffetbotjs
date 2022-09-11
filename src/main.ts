@@ -5,7 +5,7 @@ import {
 	Client,
 	GatewayIntentBits
 } from 'discord.js'
-import { Reminder } from './typings'
+import { Reminder } from './types/typings'
 import { token } from './config/config'
 import {
 	removeReminder,
@@ -19,7 +19,7 @@ import { emailCommand } from './commands/email'
 import { sheetsCommand } from './commands/sheets'
 import { femboyCommand } from './commands/reddit'
 import { DictionaryCommands } from './commands/dictionary'
-import { mediaSpreadsheetUsers } from './spreadsheetUsers'
+import { mediaSpreadsheetUsers } from './assets/spreadsheetUsers'
 import { getMediaSheetRow, setupMediaSheetsAndChannels } from './mediaSheet'
 
 // TODO:

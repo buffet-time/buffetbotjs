@@ -5,12 +5,12 @@ import {
 	getRowByIndex,
 	getSheetsRowMessage
 } from './commands/sheets'
-import { mediaSpreadsheetUsers } from './spreadsheetUsers'
+import { mediaSpreadsheetUsers } from './assets/spreadsheetUsers'
 import {
 	type MediaChannels,
 	type MediaSpreadsheetsUsers,
 	type SpreadsheetLengths
-} from './typings'
+} from './types/typings'
 
 const musicChannelId = '301931813947965440'
 const gamesChannelId = '918879745716924446'

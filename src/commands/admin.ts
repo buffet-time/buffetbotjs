@@ -2,9 +2,9 @@ import {
 	ApplicationCommandOptionType,
 	ChatInputCommandInteraction
 } from 'discord.js'
-import { client } from '../buffetBotMain'
-import { buffetsUserId } from '../spreadsheetUsers'
-import { Command } from '../typings'
+import { client } from '../main'
+import { buffetsUserId } from '../assets/spreadsheetUsers'
+import { Command } from '../types/typings'
 
 const deleteCommand: Command = {
 	name: 'delete',
