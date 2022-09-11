@@ -13,4 +13,5 @@ pnpm-lock.yaml
 .DS_Store
 LICENSE
 /src/assets/*
-ignoreThis.txt
+ignore.txt
+/.parcel-cache
