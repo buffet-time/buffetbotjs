@@ -20,14 +20,13 @@ async function wordsApiGetDefinition(
 	word: string
 ): Promise<WordApiResponse | 'Error'> {
 	try {
-		const response = await ProperFetch(`${wordsApiUrl}${word}/definitions`, {
+		return (await ProperFetch(`${wordsApiUrl}${word}/definitions`, {
 			method: 'GET',
 			headers: {
 				'X-RapidAPI-Key': rapidApiToken,
 				'X-RapidAPI-Host': 'wordsapiv1.p.rapidapi.com'
 			}
-		})
-		return (await response.json()) as WordApiResponse
+		})) as WordApiResponse
 	} catch (error) {
 		console.log('Error getting definitions', error)
 		return 'Error'
@@ -120,14 +119,13 @@ const definitionCommand: Command = {
 
 async function getSynonymsOrAntonyms(type: WordsApiTypes, word: string) {
 	try {
-		const response = await ProperFetch(`${wordsApiUrl}${word}/${type}`, {
+		return (await ProperFetch(`${wordsApiUrl}${word}/${type}`, {
 			method: 'GET',
 			headers: {
 				'X-RapidAPI-Key': rapidApiToken,
 				'X-RapidAPI-Host': 'wordsapiv1.p.rapidapi.com'
 			}
-		})
-		return (await response.json()) as WordApiResponse
+		})) as WordApiResponse
 	} catch (error) {
 		console.log(`Error getting ${type}`, error)
 		return 'Error'

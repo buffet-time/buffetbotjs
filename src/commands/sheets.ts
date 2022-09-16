@@ -105,11 +105,9 @@ async function getNumberOfRows(
 ): Promise<number | undefined> {
 	try {
 		// TODO: cleanup hardcoded ports
-		return (await (
-			await ProperFetch(
-				`${siteEndpoint}/Sheets?id=${id}&range=${range}&rows=true&nonmusic=true`
-			)
-		).json()) as number
+		return (await await ProperFetch(
+			`${siteEndpoint}/Sheets?id=${id}&range=${range}&rows=true&nonmusic=true`
+		)) as number
 	} catch (error) {
 		console.log(error)
 		return undefined
@@ -122,11 +120,9 @@ async function getRowByIndex(
 	range: string
 ): Promise<string[] | undefined> {
 	try {
-		return (await (
-			await ProperFetch(
-				`${siteEndpoint}/Sheets?id=${id}&range=${range}&index=${index}`
-			)
-		).json()) as string[]
+		return (await await ProperFetch(
+			`${siteEndpoint}/Sheets?id=${id}&range=${range}&index=${index}`
+		)) as string[]
 	} catch (error) {
 		console.log(error)
 		return undefined
