@@ -2,7 +2,7 @@ import {
 	ApplicationCommandOptionType,
 	ChatInputCommandInteraction
 } from 'discord.js'
-import { Command } from '../types/typings'
+import type { Command } from '../types/typings'
 import {
 	kissImages,
 	parentsImages,

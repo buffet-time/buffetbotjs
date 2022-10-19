@@ -1,5 +1,6 @@
-import { Command } from '../types/typings'
+import type { Command } from '../types/typings'
 import { siteEndpoint } from '../assets/endpoints'
+import { ProperFetch } from 'src/properFetch'
 
 export { femboyCommand }
 
@@ -8,9 +9,9 @@ const femboyCommand: Command = {
 	description: 'Posts the latest femboy',
 	async execute() {
 		try {
-			const returnedObject = (await (
-				await fetch(`${siteEndpoint}/Reddit/Top/Femboy`)
-			).json()) as { url: string }
+			const returnedObject = (await ProperFetch(
+				`${siteEndpoint}/Reddit/Top/Femboy`
+			)) as { url: string }
 
 			return {
 				files: [returnedObject.url]

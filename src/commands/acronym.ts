@@ -2,7 +2,7 @@ import {
 	ApplicationCommandOptionType,
 	ChatInputCommandInteraction
 } from 'discord.js'
-import { Command } from '../types/typings'
+import type { Command } from '../types/typings'
 import AcronymWords from '../assets/acronymWords'
 
 const words: { [key: string]: string[] } = AcronymWords
@@ -48,7 +48,7 @@ function getAcronym(word: string): string {
 	const generatedAcronym = getWordsFromProvidedAcronym(word)
 		.toString()
 		.replace(/,/g, '  ')
-	if (generatedAcronym.length > 2000 || generatedAcronym === 'F') {
+	if (!generatedAcronym || generatedAcronym.length > 2000) {
 		return 'That acronym was too large for discord.'
 	}
 
@@ -57,7 +57,7 @@ function getAcronym(word: string): string {
 
 // takes the word and returns an array of random words
 // starting with each given letter
-function getWordsFromProvidedAcronym(acronym: string): string[] {
+function getWordsFromProvidedAcronym(acronym: string): (string | undefined)[] {
 	let lengthOfWords = 0
 	let wordsArray: string[]
 	let generatedWord = ''
@@ -67,7 +67,7 @@ function getWordsFromProvidedAcronym(acronym: string): string[] {
 		.split('')
 		.map((letter: string) => {
 			if (lengthOfWords > 2000) {
-				return 'f'
+				return undefined
 			}
 
 			wordsArray = words[letter]

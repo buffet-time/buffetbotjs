@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
+	type Command,
+	type MediaChannels,
 	MediaTypeInfoObject,
-	Release,
-	type MediaChannels
+	Release
 } from '../types/typings'
 import {
 	ApplicationCommandOptionType,
 	ChatInputCommandInteraction
 } from 'discord.js'
-import { Command } from '../types/typings'
 import { siteEndpoint } from '../assets/endpoints'
 import {
 	currentPeople,
@@ -88,9 +88,9 @@ const sheetsCommand: Command = {
 
 			if (row && rowIsFilledOut(row, notMusic)) {
 				return { content: `${name}: ${getSheetsRowMessage(sheetType, row)}` }
-			} else {
-				return { content: 'Specified row is not filled out' }
 			}
+
+			return { content: 'Specified row is not filled out' }
 		}
 
 		return {

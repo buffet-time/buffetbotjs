@@ -4,7 +4,7 @@ import {
 } from 'discord.js'
 import { client } from '../main'
 import { buffetsUserId } from '../assets/spreadsheetUsers'
-import { Command } from '../types/typings'
+import type { Command } from '../types/typings'
 
 const deleteCommand: Command = {
 	name: 'delete',

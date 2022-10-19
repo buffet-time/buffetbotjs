@@ -2,7 +2,7 @@ import {
 	ApplicationCommandOptionType,
 	ChatInputCommandInteraction
 } from 'discord.js'
-import { Command } from '../types/typings'
+import type { Command } from '../types/typings'
 import { botEndpoint } from '../assets/endpoints'
 import { ProperFetch } from '../properFetch'
 
@@ -54,8 +54,8 @@ const emailCommand: Command = {
 
 		if (emailStatus === 'good') {
 			return { content: 'Email sent succesfully.' }
-		} else {
-			return { content: `Error sending email: ${emailStatus}` }
 		}
+
+		return { content: `Error sending email: ${emailStatus}` }
 	}
 }

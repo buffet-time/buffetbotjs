@@ -5,7 +5,7 @@ import {
 	Client,
 	GatewayIntentBits
 } from 'discord.js'
-import { Reminder } from './types/typings'
+import type { Reminder } from './types/typings'
 import { token } from './config/config'
 import {
 	removeReminder,

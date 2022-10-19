@@ -1,7 +1,13 @@
 /* eslint-disable no-mixed-spaces-and-tabs */
 import {
+	APIAttachment,
 	ApplicationCommandOptionData,
-	ChatInputCommandInteraction
+	Attachment,
+	AttachmentBuilder,
+	AttachmentPayload,
+	BufferResolvable,
+	ChatInputCommandInteraction,
+	JSONEncodable
 } from 'discord.js'
 
 export interface Reminder {
@@ -18,12 +24,24 @@ export interface Command {
 	options?: ApplicationCommandOptionData[]
 	execute(options?: ChatInputCommandInteraction):
 		| Promise<{
-				content?: string | null
-				files?: string[]
+				content?: string
+				files?: (
+					| BufferResolvable
+					| JSONEncodable<APIAttachment>
+					| Attachment
+					| AttachmentBuilder
+					| AttachmentPayload
+				)[]
 		  }>
 		| {
-				content: string | null
-				files?: string[]
+				content?: string
+				files?: (
+					| BufferResolvable
+					| JSONEncodable<APIAttachment>
+					| Attachment
+					| AttachmentBuilder
+					| AttachmentPayload
+				)[]
 		  }
 }
 

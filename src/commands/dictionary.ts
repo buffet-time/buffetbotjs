@@ -4,11 +4,11 @@ import {
 	ChatInputCommandInteraction
 } from 'discord.js'
 import { rapidApiToken } from '../config/config'
-import {
-	type WordsApiTypes,
-	type Command,
-	type WordApiResponse,
-	type UrbanDictionaryResponse
+import type {
+	WordsApiTypes,
+	Command,
+	WordApiResponse,
+	UrbanDictionaryResponse
 } from '../types/typings'
 import { ProperFetch } from '../properFetch'
 

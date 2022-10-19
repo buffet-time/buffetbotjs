@@ -1,4 +1,4 @@
-import { type MediaSpreadsheetsUsers } from '../types/typings'
+import type {  MediaSpreadsheetsUsers } from '../types/typings'
 
 export const buffetsUserId = '136494200391729152'
 

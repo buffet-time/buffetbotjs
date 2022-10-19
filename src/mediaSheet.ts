@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { type Client, type TextChannel } from 'discord.js'
+import type { Client, TextChannel } from 'discord.js'
 import {
 	getNumberOfRows,
 	getRowByIndex,
 	getSheetsRowMessage
 } from './commands/sheets'
 import { mediaSpreadsheetUsers } from './assets/spreadsheetUsers'
-import {
-	type MediaChannels,
-	type MediaSpreadsheetsUsers,
-	type SpreadsheetLengths
+import type {
+	MediaChannels,
+	MediaSpreadsheetsUsers,
+	SpreadsheetLengths
 } from './types/typings'
 
 const musicChannelId = '301931813947965440'

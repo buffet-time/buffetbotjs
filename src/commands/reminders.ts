@@ -5,7 +5,7 @@ import {
 import FileSystem from 'fs/promises'
 import IsEqual from 'lodash.isequal'
 import { updateReminders } from '../main'
-import { Command, Reminder } from '../types/typings'
+import type { Command, Reminder } from '../types/typings'
 
 export { remindersCommand }
 const remindersFilePath = 'reminders.json'
