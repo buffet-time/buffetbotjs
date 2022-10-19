@@ -1,6 +1,6 @@
 import type { Command } from '../types/typings'
 import { siteEndpoint } from '../assets/endpoints'
-import { ProperFetch } from 'src/properFetch'
+import { ProperFetch } from '../properFetch'
 
 export { femboyCommand }
 
