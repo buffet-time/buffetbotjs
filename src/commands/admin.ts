@@ -8,7 +8,7 @@ import type { Command } from '../types/typings'
 
 const deleteCommand: Command = {
 	name: 'delete',
-	description: 'Deletes a command ',
+	description: 'Deletes a command: for buffet',
 	options: [
 		{
 			name: 'command',
@@ -19,7 +19,6 @@ const deleteCommand: Command = {
 	],
 	async execute(interaction: ChatInputCommandInteraction) {
 		if (interaction.user.id === buffetsUserId) {
-			//
 			const commandToDelete = interaction.options.getString('command')
 
 			const liveCommands = await client.application?.commands.fetch()
@@ -45,4 +44,27 @@ const deleteCommand: Command = {
 	}
 }
 
-export const AdminCommands = [deleteCommand]
+const liveCommand: Command = {
+	name: 'live',
+	description: 'Checks live commands: for buffet',
+	async execute(interaction: ChatInputCommandInteraction) {
+		if (interaction.user.id === buffetsUserId) {
+			const liveCommands = await client.application?.commands.fetch()
+
+			const commandNameArray: string[] = []
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+			liveCommands?.forEach((command) => {
+				commandNameArray.push(command.name)
+			})
+
+			return {
+				content: `${commandNameArray.toString()}`
+			}
+		}
+
+		return {
+			content: `You're not Buffet.`
+		}
+	}
+}
+export const AdminCommands = [deleteCommand, liveCommand]
