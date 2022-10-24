@@ -88,11 +88,24 @@ const leftistCommand: Command = {
 	}
 }
 
+const garyCommand: Command = {
+	name: 'gary',
+	description: 'The only solution to pedos: Gary Plauché',
+	execute() {
+		return {
+			files: [
+				'https://cdn.discordapp.com/attachments/280830527055855618/1034143513689985034/gary.png'
+			]
+		}
+	}
+}
+
 export const SimpleCommands = [
 	kissCommand,
 	parentsCommand,
 	crocCommand,
 	cheemsCommand,
 	macCommand,
-	leftistCommand
+	leftistCommand,
+	garyCommand
 ]
