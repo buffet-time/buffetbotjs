@@ -1,7 +1,7 @@
 {
 	"name": "buffetbotjs",
 	"version": "1.0.0",
-	"private": false,
+	"private": true,
 	"description": "Bot I created for my private Discord",
 	"author": {
 		"email": "packageJson@danielTurcich.com",
@@ -10,13 +10,14 @@
 	},
 	"engines": {
 		"node": "^19.0.0",
-		"pnpm": "^7.0.0"
+		"pnpm": "^7.28.0"
 	},
 	"type": "module",
 	"scripts": {
 		"serve": "pnpm compile && pnpm execute",
 		"compile": "parcel build",
 		"execute": "node --experimental-json-modules ./dist/index.js",
+		"checks": "pnpm lint-check && pnpm format-check && pnpm type-check",
 		"lint-fix": "eslint --fix \"**/*.{ts,vue}\"",
 		"lint-check": "eslint \"**/*.{ts,vue}\"",
 		"format-fix": "prettier --check --write \"**/**\" ",
@@ -31,18 +32,18 @@
 	},
 	"devDependencies": {
 		"@types/lodash.isequal": "^4.5.6",
-		"@types/node": "^18.11.18",
+		"@types/node": "^18.14.6",
 		"@types/ws": "^8.5.4",
-		"@typescript-eslint/eslint-plugin": "^5.48.0",
-		"@typescript-eslint/parser": "^5.48.0",
-		"eslint": "^8.31.0",
+		"@typescript-eslint/eslint-plugin": "^5.54.0",
+		"@typescript-eslint/parser": "^5.54.0",
+		"eslint": "^8.35.0",
 		"eslint-config-prettier": "^8.6.0",
 		"eslint-plugin-prettier": "^4.2.1",
 		"husky": "^8.0.3",
-		"parcel": "^2.8.2",
-		"prettier": "^2.8.1",
-		"typescript": "^4.9.4",
-		"undici": "^5.14.0"
+		"parcel": "^2.8.3",
+		"prettier": "^2.8.4",
+		"typescript": "^4.9.5",
+		"undici": "^5.20.0"
 	},
 	"source": "./src/main.ts",
 	"module": "./dist/index.js",
