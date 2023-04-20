@@ -30,7 +30,11 @@ import { getMediaSheetRow, setupMediaSheetsAndChannels } from './mediaSheet'
 // 2) Add /wordcount to get how many times a passed word has been sent in the discord
 
 export const client = new Client({
-	intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages]
+	intents: [
+		GatewayIntentBits.Guilds,
+		GatewayIntentBits.GuildMessages,
+		GatewayIntentBits.GuildVoiceStates
+	]
 })
 
 const arrayOfCommandObjects = [
