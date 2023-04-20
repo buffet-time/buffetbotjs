@@ -152,8 +152,8 @@ client.on('interactionCreate', async (interaction) => {
 			const messageToSend = await commandToBeExecuted.execute(
 				interaction as ChatInputCommandInteraction
 			)
-			console.log(1, messageToSend)
-			if (!messageToSend) {
+			console.log(1, messageToSend, String(messageToSend) === '{}')
+			if (String(messageToSend) === '{}') {
 				console.log(2)
 				return
 			}
