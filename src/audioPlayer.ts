@@ -52,14 +52,17 @@ function saveYoutubeVideoToMp3(videoId: string) {
 }
 
 export function joinVoice(voiceChannel: VoiceChannel) {
+	console.log(100)
 	const connection = joinVoiceChannel({
 		channelId: voiceChannel.id,
 		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 		guildId: voiceChannel.guild!.id,
 		adapterCreator: voiceChannel.guild.voiceAdapterCreator
 	})
+	console.log(101)
 
 	const subscription = connection?.subscribe(player)
+	console.log(102)
 
 	if (!subscription) {
 		return {
@@ -67,6 +70,8 @@ export function joinVoice(voiceChannel: VoiceChannel) {
 				'Error(6): The bot must be in the voice channel first before playing a video!'
 		}
 	}
+
+	console.log(103)
 
 	return {}
 }

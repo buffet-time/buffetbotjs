@@ -140,28 +140,37 @@ client.on('ready', async () => {
 })
 
 client.on('interactionCreate', async (interaction) => {
+	console.log(11)
 	if (!interaction.isCommand()) {
+		console.log(11.5)
 		return
 	}
 
+	console.log(12)
 	try {
 		const commandToBeExecuted = arrayOfCommandObjects.find((command) =>
 			interaction.commandName === command.name ? command : undefined
 		)
+		console.log(13)
 		if (commandToBeExecuted) {
 			const messageToSend = await commandToBeExecuted.execute(
 				interaction as ChatInputCommandInteraction
 			)
+			console.log(14)
 			if (!messageToSend) {
+				console.log(14.5)
 				return
 			}
+			console.log(15)
 			messageToSend
 				? interaction.reply(messageToSend)
 				: interaction.reply('Error Code: 3')
 		} else {
+			console.log(16)
 			interaction.reply('Error Code: 2')
 		}
 	} catch (error) {
+		console.log(17)
 		interaction.reply(`Error Code 1: ${error}`)
 	}
 })
