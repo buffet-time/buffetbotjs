@@ -16,7 +16,7 @@ import {
 export { audioCommand }
 
 const audioCommand: Command = {
-	name: 'music',
+	name: 'audio',
 	description: 'Play audio into voice channel',
 	options: [
 		{
@@ -25,7 +25,7 @@ const audioCommand: Command = {
 			type: ApplicationCommandOptionType.Subcommand,
 			options: [
 				{
-					name: 'voiceChannel',
+					name: 'channel',
 					description: 'the voice channel to play in',
 					type: ApplicationCommandOptionType.Channel,
 					required: true
