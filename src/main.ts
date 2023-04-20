@@ -152,6 +152,9 @@ client.on('interactionCreate', async (interaction) => {
 			const messageToSend = await commandToBeExecuted.execute(
 				interaction as ChatInputCommandInteraction
 			)
+			if (!messageToSend) {
+				return
+			}
 			messageToSend
 				? interaction.reply(messageToSend)
 				: interaction.reply('Error Code: 3')
