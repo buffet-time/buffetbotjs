@@ -139,6 +139,10 @@ client.on('ready', async () => {
 	console.log('Ready')
 })
 
+function isObjectEmpty(object: any) {
+	return Object.keys(object).length === 0 && object.constructor === Object
+}
+
 client.on('interactionCreate', async (interaction) => {
 	if (!interaction.isCommand()) {
 		return
@@ -152,8 +156,8 @@ client.on('interactionCreate', async (interaction) => {
 			const messageToSend = await commandToBeExecuted.execute(
 				interaction as ChatInputCommandInteraction
 			)
-			console.log(1, messageToSend, String(messageToSend) === '{}')
-			if (String(messageToSend) === '{}') {
+			console.log(1, messageToSend, isObjectEmpty(messageToSend))
+			if (isObjectEmpty(messageToSend)) {
 				console.log(2)
 				return
 			}
