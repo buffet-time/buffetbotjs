@@ -69,7 +69,7 @@ const audioCommand: Command = {
 	async execute(interaction: ChatInputCommandInteraction) {
 		switch (interaction.options.getSubcommand()) {
 			case 'join': {
-				const voiceChannel = interaction.options.getChannel('voiceChannel')
+				const voiceChannel = interaction.options.getChannel('channel')
 				if (!(voiceChannel instanceof VoiceChannel)) {
 					return {
 						content: 'Error(1): You have to select a valid voice channel.'
