@@ -9,7 +9,7 @@
 		"url": "https://danielTurcich.com"
 	},
 	"engines": {
-		"node": "^19.0.0",
+		"node": "^20.0.0",
 		"pnpm": "^8.1.0"
 	},
 	"type": "module",

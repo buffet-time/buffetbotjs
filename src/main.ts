@@ -21,6 +21,7 @@ import { femboyCommand } from './commands/reddit'
 import { DictionaryCommands } from './commands/dictionary'
 import { mediaSpreadsheetUsers } from './assets/spreadsheetUsers'
 import { getMediaSheetRow, setupMediaSheetsAndChannels } from './mediaSheet'
+import { audioCommand } from './commands/audio'
 
 // TODO:
 // -- THESE ARE CURRENTLY NOT POSSIBLE
@@ -43,6 +44,7 @@ const arrayOfCommandObjects = [
 	emailCommand,
 	sheetsCommand,
 	femboyCommand,
+	audioCommand,
 	...AdminCommands,
 	...DictionaryCommands,
 	...SimpleCommands
@@ -106,13 +108,21 @@ client.on('ready', async () => {
 	function mediaSheetCheck() {
 		// For the music sheets currently
 		mediaSpreadsheetUsers.forEach(async (info, index) => {
-			if (info.Music) getMediaSheetRow(info, 'Music', index)
+			if (info.Music) {
+				getMediaSheetRow(info, 'Music', index)
+			}
 
-			if (info.Games) getMediaSheetRow(info, 'Games', index)
+			if (info.Games) {
+				getMediaSheetRow(info, 'Games', index)
+			}
 
-			if (info.Movies) getMediaSheetRow(info, 'Movies', index)
+			if (info.Movies) {
+				getMediaSheetRow(info, 'Movies', index)
+			}
 
-			if (info.TV) getMediaSheetRow(info, 'TV', index)
+			if (info.TV) {
+				getMediaSheetRow(info, 'TV', index)
+			}
 		})
 	}
 
