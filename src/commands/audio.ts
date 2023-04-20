@@ -16,7 +16,7 @@ import {
 export { audioCommand }
 
 const audioCommand: Command = {
-	name: 'audio',
+	name: 'music',
 	description: 'Play audio into voice channel',
 	options: [
 		{
