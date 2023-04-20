@@ -16,6 +16,9 @@ dependencies:
   fluent-ffmpeg:
     specifier: ^2.1.2
     version: 2.1.2
+  libsodium-wrappers:
+    specifier: ^0.7.11
+    version: 0.7.11
   lodash.isequal:
     specifier: ^4.5.0
     version: 4.5.0
@@ -2166,6 +2169,16 @@ packages:
       prelude-ls: 1.2.1
       type-check: 0.4.0
     dev: true
+
+  /libsodium-wrappers@0.7.11:
+    resolution: {integrity: sha512-SrcLtXj7BM19vUKtQuyQKiQCRJPgbpauzl3s0rSwD+60wtHqSUuqcoawlMDheCJga85nKOQwxNYQxf/CKAvs6Q==}
+    dependencies:
+      libsodium: 0.7.11
+    dev: false
+
+  /libsodium@0.7.11:
+    resolution: {integrity: sha512-WPfJ7sS53I2s4iM58QxY3Inb83/6mjlYgcmZs7DJsvDlnmVUwNinBCi5vBT43P6bHRy01O4zsMU2CoVR6xJ40A==}
+    dev: false
 
   /lightningcss-darwin-arm64@1.20.0:
     resolution: {integrity: sha512-aYEohJTlzwB8URJaNiS57tMbjyLub0mYvxlxKQk8SZv+irXx6MoBWpDNQKKTS9gg1pGf/eAwjpa3BLAoCBsh1A==}
