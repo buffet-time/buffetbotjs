@@ -11,6 +11,11 @@ import ytdl from 'ytdl-core'
 // import fs from 'node:fs/promises'
 // import path from 'node:path'
 
+import { dirname } from 'path'
+import { fileURLToPath } from 'url'
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
+
 // for refernce
 // https://github.com/fent/node-ytdl-core/blob/master/example/convert_to_mp3.js
 

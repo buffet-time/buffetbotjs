@@ -82,25 +82,30 @@ client.on('ready', async () => {
 
 	// Reminder Handling
 	setInterval(async () => {
-		if (allReminders[0]) {
-			currentTime = Date.now()
-			x = allReminders.length
-			while (x--) {
-				if (currentTime >= allReminders[x].time) {
-					const channelToSendTo = await client.channels.fetch(
-						allReminders[x].channel
-					)
-					if (channelToSendTo?.type === ChannelType.GuildText) {
-						channelToSendTo.send(
-							`<@!${allReminders[x].user}>: ${allReminders[x].message}`
-						)
-						await removeReminder(
-							allReminders[x].user,
-							allReminders[x].reminderNumber
-						)
-						allReminders = await getAllReminders()
-					}
-				}
+		if (!allReminders[0]) {
+			return
+		}
+
+		currentTime = Date.now()
+		x = allReminders.length
+		while (x--) {
+			if (currentTime < allReminders[x].time) {
+				return
+			}
+
+			const channelToSendTo = await client.channels.fetch(
+				allReminders[x].channel
+			)
+
+			if (channelToSendTo?.type === ChannelType.GuildText) {
+				channelToSendTo.send(
+					`<@!${allReminders[x].user}>: ${allReminders[x].message}`
+				)
+				await removeReminder(
+					allReminders[x].user,
+					allReminders[x].reminderNumber
+				)
+				allReminders = await getAllReminders()
 			}
 		}
 	}, 15000) // 15 seconds

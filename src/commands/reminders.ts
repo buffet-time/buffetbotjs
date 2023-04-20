@@ -105,10 +105,11 @@ const remindersCommand: Command = {
 					content: await viewReminders(interaction)
 				}
 			}
-			default:
+			default: {
 				return {
 					content: 'Incorrect invocation of the !reminders command.'
 				}
+			}
 		}
 	}
 }
