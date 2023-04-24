@@ -14,3 +14,4 @@ emailCredentials.json
 emailToken.json
 sheetsCredentials.json
 sheetsToken.json
+config.ts
