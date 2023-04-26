@@ -6,20 +6,21 @@ import {
 	getVoiceConnection
 } from '@discordjs/voice'
 import type { VoiceChannel } from 'discord.js'
-import ffmpeg from 'fluent-ffmpeg'
-import ytdl from 'ytdl-core'
 // import fs from 'node:fs/promises'
 // import path from 'node:path'
 
 import { dirname } from 'path'
 import { fileURLToPath } from 'url'
 
+import { promisify } from 'util'
+import { exec } from 'child_process'
+const promiseExec = promisify(exec)
+
 const __dirname = dirname(fileURLToPath(import.meta.url))
+const tmpDirectory = '/home/ubuntu/buffetbotjs/tmp'
 
 // for refernce
 // https://github.com/fent/node-ytdl-core/blob/master/example/convert_to_mp3.js
-
-const tempDirectory = `${__dirname}/assets/temp`
 
 const player = createAudioPlayer({
 	behaviors: {
@@ -31,24 +32,71 @@ player.on('error', (error) => {
 	console.error(`Error: ${error.message}`)
 })
 
-// async function emptyTempFolder() {
-// 	for (const file of await fs.readdir(tempDirectory)) {
-// 		await fs.unlink(path.join(tempDirectory, file))
-// 	}
-// }
+async function downloadYoutubeUrlToVideo(videoId: string, outputVideo: string) {
+	// yt-dlp -o funny_video.flv "https://some/video"
+	await promiseExec(
+		`yt-dlp -o ${outputVideo} "https://www.youtube.com/watch?v=${videoId}"`
+	)
+}
 
-function saveYoutubeVideoToMp3(videoId: string) {
-	// prevents collisions (given the small usage UUID/ Guid is not needed)
-	const start = Date.now()
+async function ffmpegConvertVideoToAudio(
+	inputVideo: string,
+	outputAudio: string
+) {
+	// ffmpeg -i 1682540145477-dQw4w9WgXcQ.webm -b:a 128K -vn /home/ubuntu/buffetbotjs/1682540145477-dQw4w9WgXcQ.ogg
+	await promiseExec(`ffmpeg -i ${inputVideo} -b:a 128K -vn ${outputAudio}`)
+}
 
-	const stream = ytdl(videoId, {
-		quality: 'highestaudio'
-	})
+async function saveYoutubeVideoToOgg(videoId: string) {
+	const baseDirectory = `${tmpDirectory}/${videoId}`
+	const videoFile = `${baseDirectory}.webm`
+	const musicFile = `${baseDirectory}.ogg`
 
-	const filename = `${tempDirectory}/${start}-${videoId}.ogg`
-	ffmpeg(stream).audioBitrate(128).save(filename)
+	// Download video from videoId passed using yt-dlp
+	await downloadYoutubeUrlToVideo(videoId, videoFile)
 
-	return filename
+	// convert the webm to ogg with ffmpeg
+	await ffmpegConvertVideoToAudio(videoFile, musicFile)
+
+	// remove the video file now that the audio file is done processing
+	await promiseExec(`rm -rf ${videoFile}`)
+
+	return musicFile
+}
+
+// https://stackoverflow.com/a/9102270/4830093
+function getIdFromYouTubeUrl(url: string) {
+	const regExp =
+		// eslint-disable-next-line no-useless-escape
+		/^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/
+	const match = url.match(regExp)
+	if (match && match[2].length == 11) {
+		return match[2]
+	} else {
+		return false
+	}
+}
+
+function looseValidateYouTube() {
+	//
+}
+
+export function playYoutubeVideo(id: string) {
+	let youtubeUrl = ''
+	if (getIdFromYouTubeUrl(id)) {
+		youtubeUrl = id
+	} else if (ytdl.validateURL(id)) {
+		// Valid youtube video URL passed
+		youtubeUrl = id
+	} else {
+		return { content: `Error(3): Passed invalid video: ${id}` }
+	}
+
+	const filename = saveYoutubeVideoToOgg(youtubeUrl)
+	const audioResource = createAudioResource(filename)
+
+	player.play(audioResource)
+	return {}
 }
 
 export function joinVoice(voiceChannel: VoiceChannel) {
@@ -74,27 +122,6 @@ export function joinVoice(voiceChannel: VoiceChannel) {
 export function leaveChannel(guildId: string) {
 	const connection = getVoiceConnection(guildId)
 	connection?.destroy()
-}
-
-// function playVideo()
-
-export function playYoutubeVideo(id: string) {
-	let youtubeUrl = ''
-	if (ytdl.validateID(id)) {
-		// Valid youtube video ID passed
-		youtubeUrl = `http://www.youtube.com/watch?v=${id}`
-	} else if (ytdl.validateURL(id)) {
-		// Valid youtube video URL passed
-		youtubeUrl = id
-	} else {
-		return { content: 'Error(3): Passed invalid video' }
-	}
-
-	const filename = saveYoutubeVideoToMp3(youtubeUrl)
-	const audioResource = createAudioResource(filename)
-
-	player.play(audioResource)
-	return {}
 }
 
 export function stopPlayer() {

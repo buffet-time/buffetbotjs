@@ -156,12 +156,9 @@ client.on('interactionCreate', async (interaction) => {
 			const messageToSend = await commandToBeExecuted.execute(
 				interaction as ChatInputCommandInteraction
 			)
-			console.log(1, messageToSend, isObjectEmpty(messageToSend))
 			if (isObjectEmpty(messageToSend)) {
-				console.log(2)
 				return
 			}
-			console.log(3)
 			messageToSend
 				? interaction.reply(messageToSend)
 				: interaction.reply('Error Code: 3')

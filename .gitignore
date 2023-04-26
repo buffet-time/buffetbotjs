@@ -5,6 +5,13 @@ node_modules
 /dist
 .parcel-cache
 
+# file types to ignore (for the audio functionality)
+*.mp4
+*.mp3
+*.ogg
+*.webm
+*.m4a
+
 # local files for dev purposes
 ignore.*
 

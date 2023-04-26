@@ -95,7 +95,7 @@ const audioCommand: Command = {
 					}
 				}
 
-				return playYoutubeVideo(video)
+				return playYoutubeVideo(video.trim())
 			}
 			case 'pause': {
 				pausePlayer()
