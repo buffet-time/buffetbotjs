@@ -11,6 +11,7 @@ node_modules
 *.ogg
 *.webm
 *.m4a
+*.opus
 
 # local files for dev purposes
 ignore.*

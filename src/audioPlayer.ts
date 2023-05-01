@@ -1,22 +1,19 @@
+import { promisify } from 'util'
+import { exec } from 'child_process'
+import { readdir } from 'fs/promises'
+
 import {
 	createAudioPlayer,
 	createAudioResource,
 	NoSubscriberBehavior,
 	joinVoiceChannel,
-	getVoiceConnection
+	getVoiceConnection,
+	StreamType
 } from '@discordjs/voice'
 import type { VoiceChannel } from 'discord.js'
-// import fs from 'node:fs/promises'
-// import path from 'node:path'
 
-import { dirname } from 'path'
-import { fileURLToPath } from 'url'
-
-import { promisify } from 'util'
-import { exec } from 'child_process'
 const promiseExec = promisify(exec)
 
-const __dirname = dirname(fileURLToPath(import.meta.url))
 const tmpDirectory = '/home/ubuntu/buffetbotjs/tmp'
 
 // for refernce
@@ -32,36 +29,24 @@ player.on('error', (error) => {
 	console.error(`Error: ${error.message}`)
 })
 
-async function downloadYoutubeUrlToVideo(videoId: string, outputVideo: string) {
-	// yt-dlp -o funny_video.flv "https://some/video"
-	await promiseExec(
-		`yt-dlp -o ${outputVideo} "https://www.youtube.com/watch?v=${videoId}"`
-	)
-}
-
-async function ffmpegConvertVideoToAudio(
-	inputVideo: string,
-	outputAudio: string
-) {
-	// ffmpeg -i 1682540145477-dQw4w9WgXcQ.webm -b:a 128K -vn /home/ubuntu/buffetbotjs/1682540145477-dQw4w9WgXcQ.ogg
-	await promiseExec(`ffmpeg -i ${inputVideo} -b:a 128K -vn ${outputAudio}`)
-}
-
 async function saveYoutubeVideoToOgg(videoId: string) {
-	const baseDirectory = `${tmpDirectory}/${videoId}`
-	const videoFile = `${baseDirectory}.webm`
-	const musicFile = `${baseDirectory}.ogg`
+	const eventualFilename = `${tmpDirectory}/${videoId}.opus`
+	const newMusicFileName = `${videoId}.opus`
+
+	const fileNames = await readdir(tmpDirectory)
+	const fileExists = fileNames.find((file) => file === newMusicFileName)
+
+	if (fileExists) {
+		// if the ogg already exists skip the rest, its unecessary work!
+		return eventualFilename
+	}
 
 	// Download video from videoId passed using yt-dlp
-	await downloadYoutubeUrlToVideo(videoId, videoFile)
+	await promiseExec(
+		`yt-dlp --extract-audio --paths ${tmpDirectory} --output ${videoId} "https://www.youtube.com/watch?v=${videoId}"`
+	)
 
-	// convert the webm to ogg with ffmpeg
-	await ffmpegConvertVideoToAudio(videoFile, musicFile)
-
-	// remove the video file now that the audio file is done processing
-	await promiseExec(`rm -rf ${videoFile}`)
-
-	return musicFile
+	return eventualFilename
 }
 
 // https://stackoverflow.com/a/9102270/4830093
@@ -77,23 +62,33 @@ function getIdFromYouTubeUrl(url: string) {
 	}
 }
 
-function looseValidateYouTube() {
-	//
+// Alphanumeric & - & _ & only 11 characters
+function looseValidateYouTubeId(youtubeId: string) {
+	const regExp = /^[a-zA-Z0-9-_]+$/
+
+	if (youtubeId.match(regExp) && youtubeId.length === 11) {
+		return true
+	}
+	return false
 }
 
-export function playYoutubeVideo(id: string) {
+export async function playYoutubeVideo(userInput: string) {
 	let youtubeUrl = ''
-	if (getIdFromYouTubeUrl(id)) {
-		youtubeUrl = id
-	} else if (ytdl.validateURL(id)) {
+	const idFromUrl = getIdFromYouTubeUrl(userInput)
+	if (looseValidateYouTubeId(userInput)) {
+		// valid youtube id was passed
+		youtubeUrl = userInput
+	} else if (idFromUrl) {
 		// Valid youtube video URL passed
-		youtubeUrl = id
+		youtubeUrl = idFromUrl
 	} else {
-		return { content: `Error(3): Passed invalid video: ${id}` }
+		return { content: `Error(3): Passed invalid video: ${userInput}` }
 	}
 
-	const filename = saveYoutubeVideoToOgg(youtubeUrl)
-	const audioResource = createAudioResource(filename)
+	const filename = await saveYoutubeVideoToOgg(youtubeUrl)
+	const audioResource = createAudioResource(filename, {
+		inputType: StreamType.Opus
+	})
 
 	player.play(audioResource)
 	return {}
