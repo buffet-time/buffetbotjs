@@ -29,7 +29,7 @@ player.on('error', (error) => {
 
 player.on(AudioPlayerStatus.Idle, () => {
 	if (audioQueue.length > 0) {
-		playYoutubeVideo(audioQueue[0])
+		playAudio(audioQueue[0])
 	}
 })
 
@@ -92,6 +92,14 @@ async function videoUrlOrIdToSavedFilename(videoInput: string) {
 	return await saveYoutubeVideoToOgg(youtubeUrl)
 }
 
+function playAudio(filename: string) {
+	const audioResource = createAudioResource(filename, {
+		inputType: StreamType.Opus
+	})
+
+	player.play(audioResource)
+}
+
 export async function playYoutubeVideo(userInput: string) {
 	const filename = await videoUrlOrIdToSavedFilename(userInput)
 	if (typeof filename !== 'string') {
@@ -99,11 +107,8 @@ export async function playYoutubeVideo(userInput: string) {
 		return filename
 	}
 
-	const audioResource = createAudioResource(filename, {
-		inputType: StreamType.Opus
-	})
+	playAudio(filename)
 
-	player.play(audioResource)
 	return { content: 'Playing audio :)' }
 }
 
@@ -115,7 +120,7 @@ export async function addVideoToQueue(userInput: string) {
 	}
 
 	if (AudioPlayerStatus.Idle) {
-		playYoutubeVideo(filename)
+		playAudio(filename)
 	} else {
 		audioQueue.push(filename)
 	}

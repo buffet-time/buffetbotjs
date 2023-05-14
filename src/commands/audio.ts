@@ -109,7 +109,7 @@ const audioCommand: Command = {
 					}
 				}
 
-				return playYoutubeVideo(video.trim())
+				return await playYoutubeVideo(video.trim())
 			}
 			case 'queue': {
 				const video = interaction.options.getString('video')
@@ -120,7 +120,7 @@ const audioCommand: Command = {
 					}
 				}
 
-				return addVideoToQueue(video.trim())
+				return await addVideoToQueue(video.trim())
 			}
 			case 'pause': {
 				pausePlayer()
