@@ -138,10 +138,8 @@ export async function addVideoToQueue(youtubeId: string) {
 	const filename = await saveYoutubeVideoToOgg(youtubeId)
 
 	if (currentPlayerState === 'Idle') {
-		console.log(1)
 		playAudio(filename)
 	} else {
-		console.log(2)
 		audioQueue.push(filename)
 	}
 }
