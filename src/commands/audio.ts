@@ -10,7 +10,8 @@ import {
 	stopPlayer,
 	playYoutubeVideo,
 	joinVoice,
-	leaveChannel
+	leaveChannel,
+	addVideoToQueue
 } from '../audioPlayer'
 
 export { audioCommand }
@@ -40,6 +41,19 @@ const audioCommand: Command = {
 		{
 			name: 'play',
 			description: 'Play audio from a YouTube video',
+			type: ApplicationCommandOptionType.Subcommand,
+			options: [
+				{
+					name: 'video',
+					description: 'YouTube video ID or url',
+					type: ApplicationCommandOptionType.String,
+					required: true
+				}
+			]
+		},
+		{
+			name: 'queue',
+			description: 'Add video to bot queue',
 			type: ApplicationCommandOptionType.Subcommand,
 			options: [
 				{
@@ -84,7 +98,7 @@ const audioCommand: Command = {
 				}
 
 				leaveChannel(interaction.guild.id)
-				return {}
+				return { content: 'Left voice channel.' }
 			}
 			case 'play': {
 				const video = interaction.options.getString('video')
@@ -97,17 +111,28 @@ const audioCommand: Command = {
 
 				return playYoutubeVideo(video.trim())
 			}
+			case 'queue': {
+				const video = interaction.options.getString('video')
+
+				if (!video) {
+					return {
+						content: 'Error(2): Passed invalid video.'
+					}
+				}
+
+				return addVideoToQueue(video.trim())
+			}
 			case 'pause': {
 				pausePlayer()
-				return {}
+				return { content: 'Paused audio.' }
 			}
 			case 'resume': {
 				unpausePlayer()
-				return {}
+				return { content: 'Resume audio.' }
 			}
 			case 'stop': {
 				stopPlayer()
-				return {}
+				return { content: 'Stopped audio.' }
 			}
 			default: {
 				return {

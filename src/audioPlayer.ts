@@ -8,16 +8,14 @@ import {
 	NoSubscriberBehavior,
 	joinVoiceChannel,
 	getVoiceConnection,
-	StreamType
+	StreamType,
+	AudioPlayerStatus
 } from '@discordjs/voice'
 import type { VoiceChannel } from 'discord.js'
 
 const promiseExec = promisify(exec)
-
 const tmpDirectory = '/home/ubuntu/buffetbotjs/tmp'
-
-// for refernce
-// https://github.com/fent/node-ytdl-core/blob/master/example/convert_to_mp3.js
+const audioQueue: string[] = []
 
 const player = createAudioPlayer({
 	behaviors: {
@@ -27,6 +25,12 @@ const player = createAudioPlayer({
 
 player.on('error', (error) => {
 	console.error(`Error: ${error.message}`)
+})
+
+player.on(AudioPlayerStatus.Idle, () => {
+	if (audioQueue.length > 0) {
+		playYoutubeVideo(audioQueue[0])
+	}
 })
 
 async function saveYoutubeVideoToOgg(videoId: string) {
@@ -72,26 +76,50 @@ function looseValidateYouTubeId(youtubeId: string) {
 	return false
 }
 
-export async function playYoutubeVideo(userInput: string) {
+async function videoUrlOrIdToSavedFilename(videoInput: string) {
 	let youtubeUrl = ''
-	const idFromUrl = getIdFromYouTubeUrl(userInput)
-	if (looseValidateYouTubeId(userInput)) {
+	const idFromUrl = getIdFromYouTubeUrl(videoInput)
+	if (looseValidateYouTubeId(videoInput)) {
 		// valid youtube id was passed
-		youtubeUrl = userInput
+		youtubeUrl = videoInput
 	} else if (idFromUrl) {
 		// Valid youtube video URL passed
 		youtubeUrl = idFromUrl
 	} else {
-		return { content: `Error(3): Passed invalid video: ${userInput}` }
+		return { content: `Error(3): Passed invalid video: ${videoInput}` }
 	}
 
-	const filename = await saveYoutubeVideoToOgg(youtubeUrl)
+	return await saveYoutubeVideoToOgg(youtubeUrl)
+}
+
+export async function playYoutubeVideo(userInput: string) {
+	const filename = await videoUrlOrIdToSavedFilename(userInput)
+	if (typeof filename !== 'string') {
+		// Error. return messsage to user
+		return filename
+	}
+
 	const audioResource = createAudioResource(filename, {
 		inputType: StreamType.Opus
 	})
 
 	player.play(audioResource)
-	return {}
+	return { content: 'Playing audio :)' }
+}
+
+export async function addVideoToQueue(userInput: string) {
+	const filename = await videoUrlOrIdToSavedFilename(userInput)
+	if (typeof filename !== 'string') {
+		// Error. return messsage to user
+		return filename
+	}
+
+	if (AudioPlayerStatus.Idle) {
+		playYoutubeVideo(filename)
+	} else {
+		audioQueue.push(filename)
+	}
+	return { content: 'Added video to queue!' }
 }
 
 export function joinVoice(voiceChannel: VoiceChannel) {
@@ -111,7 +139,7 @@ export function joinVoice(voiceChannel: VoiceChannel) {
 		}
 	}
 
-	return {}
+	return { content: `Joined ${voiceChannel.name}` }
 }
 
 export function leaveChannel(guildId: string) {
