@@ -27,19 +27,24 @@ const acronymCommand: Command = {
 		}
 
 		switch (true) {
-			case word.length < 2:
+			case word.length < 2: {
 				return { content: 'Acronym must be more than one letter.' }
-			case word === 'acab':
+			}
+			case word === 'acab': {
 				return { content: '**ALL** cops are bastards' }
-			case word === 'mac':
+			}
+			case word === 'mac': {
 				return { content: 'Linux Stan' }
-			case /^[a-zA-Z]+$/.test(word):
+			}
+			case /^[a-zA-Z]+$/.test(word): {
 				return { content: getAcronym(word) }
-			default:
+			}
+			default: {
 				return {
 					content:
 						'The word you want to become an acronym must only contain letters.'
 				}
+			}
 		}
 	}
 }

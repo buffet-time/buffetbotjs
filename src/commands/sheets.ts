@@ -131,17 +131,20 @@ async function getRowByIndex(
 
 function getSheetsRowMessage(type: MediaChannels, row: string[]): string {
 	switch (type) {
-		case 'Music':
+		case 'Music': {
 			return `${row[Release.artist].trim()} - ${row[
 				Release.name
 			].trim()} (${row[Release.year].trim()} ${row[Release.type].trim()}) ${row[
 				Release.score
 			].trim()}/10 ~ ${row[Release.comments].trim()}`
-		case 'Games':
+		}
+		case 'Games': {
 			return `${row[0]} (${row[3]} - ${row[1]}) ${row[2]}/10 ~ ${row[4]}`
+		}
 		case 'Movies':
-		case 'TV':
+		case 'TV': {
 			return `${row[0]} (${row[2]}) ${row[1]}/10 ~ ${row[3]}`
+		}
 	}
 }
 

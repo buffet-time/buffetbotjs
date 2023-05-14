@@ -21,6 +21,7 @@ import { femboyCommand } from './commands/reddit'
 import { DictionaryCommands } from './commands/dictionary'
 import { mediaSpreadsheetUsers } from './assets/spreadsheetUsers'
 import { getMediaSheetRow, setupMediaSheetsAndChannels } from './mediaSheet'
+import { audioCommand } from './commands/audio'
 
 // TODO:
 // -- THESE ARE CURRENTLY NOT POSSIBLE
@@ -30,8 +31,16 @@ import { getMediaSheetRow, setupMediaSheetsAndChannels } from './mediaSheet'
 // 2) Add /wordcount to get how many times a passed word has been sent in the discord
 
 export const client = new Client({
-	intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages]
+	intents: [
+		GatewayIntentBits.Guilds,
+		GatewayIntentBits.GuildMessages,
+		GatewayIntentBits.GuildVoiceStates
+	]
 })
+
+export function updateBotStatus(newStatus: string) {
+	client.user?.setActivity(newStatus)
+}
 
 const arrayOfCommandObjects = [
 	remindersCommand,
@@ -39,6 +48,7 @@ const arrayOfCommandObjects = [
 	emailCommand,
 	sheetsCommand,
 	femboyCommand,
+	audioCommand,
 	...AdminCommands,
 	...DictionaryCommands,
 	...SimpleCommands
@@ -76,25 +86,30 @@ client.on('ready', async () => {
 
 	// Reminder Handling
 	setInterval(async () => {
-		if (allReminders[0]) {
-			currentTime = Date.now()
-			x = allReminders.length
-			while (x--) {
-				if (currentTime >= allReminders[x].time) {
-					const channelToSendTo = await client.channels.fetch(
-						allReminders[x].channel
-					)
-					if (channelToSendTo?.type === ChannelType.GuildText) {
-						channelToSendTo.send(
-							`<@!${allReminders[x].user}>: ${allReminders[x].message}`
-						)
-						await removeReminder(
-							allReminders[x].user,
-							allReminders[x].reminderNumber
-						)
-						allReminders = await getAllReminders()
-					}
-				}
+		if (!allReminders[0]) {
+			return
+		}
+
+		currentTime = Date.now()
+		x = allReminders.length
+		while (x--) {
+			if (currentTime < allReminders[x].time) {
+				return
+			}
+
+			const channelToSendTo = await client.channels.fetch(
+				allReminders[x].channel
+			)
+
+			if (channelToSendTo?.type === ChannelType.GuildText) {
+				channelToSendTo.send(
+					`<@!${allReminders[x].user}>: ${allReminders[x].message}`
+				)
+				await removeReminder(
+					allReminders[x].user,
+					allReminders[x].reminderNumber
+				)
+				allReminders = await getAllReminders()
 			}
 		}
 	}, 15000) // 15 seconds
@@ -102,13 +117,21 @@ client.on('ready', async () => {
 	function mediaSheetCheck() {
 		// For the music sheets currently
 		mediaSpreadsheetUsers.forEach(async (info, index) => {
-			if (info.Music) getMediaSheetRow(info, 'Music', index)
+			if (info.Music) {
+				getMediaSheetRow(info, 'Music', index)
+			}
 
-			if (info.Games) getMediaSheetRow(info, 'Games', index)
+			if (info.Games) {
+				getMediaSheetRow(info, 'Games', index)
+			}
 
-			if (info.Movies) getMediaSheetRow(info, 'Movies', index)
+			if (info.Movies) {
+				getMediaSheetRow(info, 'Movies', index)
+			}
 
-			if (info.TV) getMediaSheetRow(info, 'TV', index)
+			if (info.TV) {
+				getMediaSheetRow(info, 'TV', index)
+			}
 		})
 	}
 
@@ -119,6 +142,10 @@ client.on('ready', async () => {
 	client.user?.setActivity('Team Fortress 2')
 	console.log('Ready')
 })
+
+function isObjectEmpty(object: any) {
+	return Object.keys(object).length === 0 && object.constructor === Object
+}
 
 client.on('interactionCreate', async (interaction) => {
 	if (!interaction.isCommand()) {
@@ -133,6 +160,9 @@ client.on('interactionCreate', async (interaction) => {
 			const messageToSend = await commandToBeExecuted.execute(
 				interaction as ChatInputCommandInteraction
 			)
+			if (isObjectEmpty(messageToSend)) {
+				return
+			}
 			messageToSend
 				? interaction.reply(messageToSend)
 				: interaction.reply('Error Code: 3')

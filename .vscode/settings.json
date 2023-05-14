@@ -15,5 +15,8 @@
 		"pnpm-lock.yaml": true,
 		"LICENSE": true,
 		"reminders.json": true
+	},
+	"[typescript]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
 	}
 }

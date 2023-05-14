@@ -105,10 +105,11 @@ const remindersCommand: Command = {
 					content: await viewReminders(interaction)
 				}
 			}
-			default:
+			default: {
 				return {
 					content: 'Incorrect invocation of the !reminders command.'
 				}
+			}
 		}
 	}
 }
@@ -254,23 +255,33 @@ function getTime(amount: number, type: string) {
 	const timestamp = Date.now()
 
 	switch (type) {
-		case 'seconds':
+		case 'seconds': {
 			return timestamp + seconds
-		case 'minutes':
+		}
+		case 'minutes': {
 			return timestamp + seconds * 60
-		case 'hours':
+		}
+		case 'hours': {
 			return timestamp + seconds * 3600
-		case 'days':
+		}
+		case 'days': {
 			return timestamp + seconds * 86400
-		case 'weeks':
+		}
+		case 'weeks': {
 			return timestamp + seconds * 604800
-		case 'months': // 30 days
+		}
+		case 'months': {
+			// 30 days
 			return timestamp + seconds * 2592000
-		case 'years': // 365 days
+		}
+		case 'years': {
+			// 365 days
 			return timestamp + seconds * 31536000
-		default:
+		}
+		default: {
 			console.error('Error in getTime(): ', seconds, timestamp, amount, type)
 			return 0
+		}
 	}
 }
 

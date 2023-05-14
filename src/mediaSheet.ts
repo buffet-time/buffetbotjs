@@ -67,7 +67,7 @@ async function getMediaSheetRow(
 			}
 
 			switch (channel) {
-				case 'Games':
+				case 'Games': {
 					gamesChannel.send(
 						`${spreadsheetInfo.personsName}: ${getSheetsRowMessage(
 							'Games',
@@ -75,7 +75,8 @@ async function getMediaSheetRow(
 						)}`
 					)
 					break
-				case 'Music':
+				}
+				case 'Music': {
 					musicChannel.send(
 						`${spreadsheetInfo.personsName}: ${getSheetsRowMessage(
 							'Music',
@@ -83,7 +84,8 @@ async function getMediaSheetRow(
 						)}`
 					)
 					break
-				case 'Movies':
+				}
+				case 'Movies': {
 					moviesAndTvChannel.send(
 						`${spreadsheetInfo.personsName}: Movie - ${getSheetsRowMessage(
 							'Movies',
@@ -91,7 +93,8 @@ async function getMediaSheetRow(
 						)}`
 					)
 					break
-				case 'TV':
+				}
+				case 'TV': {
 					moviesAndTvChannel.send(
 						`${spreadsheetInfo.personsName}: TV - ${getSheetsRowMessage(
 							'TV',
@@ -99,6 +102,7 @@ async function getMediaSheetRow(
 						)}`
 					)
 					break
+				}
 			}
 
 			spreadsheetLengths[index][channel] = tempLength
