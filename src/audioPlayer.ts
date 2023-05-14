@@ -150,8 +150,10 @@ export async function addVideoToQueue(userInput: string) {
 	}
 
 	if (currentPlayerState === 'Idle') {
+		console.log(1)
 		playAudio(filename)
 	} else {
+		console.log(2)
 		audioQueue.push(filename)
 	}
 	return { content: 'Added video to queue!' }
