@@ -27,9 +27,15 @@ player.on('error', (error) => {
 	console.error(`Error: ${error.message}`)
 })
 
+player.on(AudioPlayerStatus.Playing, () => {
+	console.log('entered playing state!')
+})
+
 player.on(AudioPlayerStatus.Idle, () => {
+	console.log('entered idle state!')
 	if (audioQueue.length > 0) {
 		playAudio(audioQueue[0])
+		audioQueue.splice(0, 1)
 	}
 })
 
