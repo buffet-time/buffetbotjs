@@ -106,20 +106,19 @@ function looseValidateYouTubeId(youtubeId: string) {
 	return false
 }
 
-async function videoUrlOrIdToSavedFilename(videoInput: string) {
-	let youtubeUrl = ''
-	const idFromUrl = getIdFromYouTubeUrl(videoInput)
-	if (looseValidateYouTubeId(videoInput)) {
+export function validateUrlOrId(userInput: string) {
+	let youtubeID = ''
+	const idFromUrl = getIdFromYouTubeUrl(userInput)
+	if (looseValidateYouTubeId(userInput)) {
 		// valid youtube id was passed
-		youtubeUrl = videoInput
+		youtubeID = userInput
 	} else if (idFromUrl) {
 		// Valid youtube video URL passed
-		youtubeUrl = idFromUrl
+		youtubeID = idFromUrl
 	} else {
-		return { content: `Error(3): Passed invalid video: ${videoInput}` }
+		return { content: `Error(3): Passed invalid video: ${userInput}` }
 	}
-
-	return await saveYoutubeVideoToOgg(youtubeUrl)
+	return youtubeID
 }
 
 function playAudio(filename: string) {
@@ -130,24 +129,13 @@ function playAudio(filename: string) {
 	player.play(audioResource)
 }
 
-export async function playYoutubeVideo(userInput: string) {
-	const filename = await videoUrlOrIdToSavedFilename(userInput)
-	if (typeof filename !== 'string') {
-		// Error. return messsage to user
-		return filename
-	}
-
+export async function playYoutubeVideo(youtubeId: string) {
+	const filename = await saveYoutubeVideoToOgg(youtubeId)
 	playAudio(filename)
-
-	return { content: 'Playing audio :)' }
 }
 
-export async function addVideoToQueue(userInput: string) {
-	const filename = await videoUrlOrIdToSavedFilename(userInput)
-	if (typeof filename !== 'string') {
-		// Error. return messsage to user
-		return filename
-	}
+export async function addVideoToQueue(youtubeId: string) {
+	const filename = await saveYoutubeVideoToOgg(youtubeId)
 
 	if (currentPlayerState === 'Idle') {
 		console.log(1)
@@ -156,7 +144,6 @@ export async function addVideoToQueue(userInput: string) {
 		console.log(2)
 		audioQueue.push(filename)
 	}
-	return { content: 'Added video to queue!' }
 }
 
 export function joinVoice(voiceChannel: VoiceChannel) {

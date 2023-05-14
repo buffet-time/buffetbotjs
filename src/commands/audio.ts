@@ -11,7 +11,8 @@ import {
 	playYoutubeVideo,
 	joinVoice,
 	leaveChannel,
-	addVideoToQueue
+	addVideoToQueue,
+	validateUrlOrId
 } from '../audioPlayer'
 
 export { audioCommand }
@@ -109,7 +110,16 @@ const audioCommand: Command = {
 					}
 				}
 
-				return await playYoutubeVideo(video.trim())
+				const youtubeId = validateUrlOrId(video.trim())
+
+				if (typeof youtubeId !== 'string') {
+					// return error response if we dont get back a string
+					return youtubeId
+				}
+
+				playYoutubeVideo(youtubeId)
+
+				return { content: 'Audio playing (or soon)' }
 			}
 			case 'queue': {
 				const video = interaction.options.getString('video')
@@ -120,7 +130,18 @@ const audioCommand: Command = {
 					}
 				}
 
-				return await addVideoToQueue(video.trim())
+				const youtubeId = validateUrlOrId(video.trim())
+
+				if (typeof youtubeId !== 'string') {
+					// return error response if we dont get back a string
+					return youtubeId
+				}
+
+				addVideoToQueue(youtubeId)
+
+				return {
+					content: 'Audio being added to queue'
+				}
 			}
 			case 'pause': {
 				pausePlayer()
