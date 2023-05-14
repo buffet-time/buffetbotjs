@@ -12,6 +12,7 @@ import {
 	AudioPlayerStatus
 } from '@discordjs/voice'
 import type { VoiceChannel } from 'discord.js'
+import { updateBotStatus } from './main'
 
 const promiseExec = promisify(exec)
 const tmpDirectory = '/home/ubuntu/buffetbotjs/tmp'
@@ -21,7 +22,7 @@ let currentPlayerState:
 	| 'Buffering'
 	| 'Playing'
 	| 'AutoPaused'
-	| 'Paused' = 'Paused'
+	| 'Paused' = 'Idle'
 
 const player = createAudioPlayer({
 	behaviors: {
@@ -39,22 +40,27 @@ player.on(AudioPlayerStatus.Idle, () => {
 		playAudio(audioQueue[0])
 		audioQueue.splice(0, 1)
 	}
+	updateBotStatus('Audio: Idle')
 })
 
 player.on(AudioPlayerStatus.Buffering, () => {
 	currentPlayerState = 'Buffering'
+	updateBotStatus('Audio: Buffering')
 })
 
 player.on(AudioPlayerStatus.Playing, () => {
 	currentPlayerState = 'Playing'
+	updateBotStatus('Audio: Playing')
 })
 
 player.on(AudioPlayerStatus.AutoPaused, () => {
 	currentPlayerState = 'AutoPaused'
+	updateBotStatus('Audio: AutoPaused')
 })
 
 player.on(AudioPlayerStatus.Paused, () => {
 	currentPlayerState = 'Paused'
+	updateBotStatus('Audio: Paused')
 })
 
 async function saveYoutubeVideoToOgg(videoId: string) {
@@ -174,6 +180,7 @@ export function joinVoice(voiceChannel: VoiceChannel) {
 export function leaveChannel(guildId: string) {
 	const connection = getVoiceConnection(guildId)
 	connection?.destroy()
+	updateBotStatus('Team Fortress 2')
 }
 
 export function stopPlayer() {

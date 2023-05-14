@@ -38,6 +38,10 @@ export const client = new Client({
 	]
 })
 
+export function updateBotStatus(newStatus: string) {
+	client.user?.setActivity(newStatus)
+}
+
 const arrayOfCommandObjects = [
 	remindersCommand,
 	acronymCommand,
