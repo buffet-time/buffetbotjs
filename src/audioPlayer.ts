@@ -16,6 +16,12 @@ import type { VoiceChannel } from 'discord.js'
 const promiseExec = promisify(exec)
 const tmpDirectory = '/home/ubuntu/buffetbotjs/tmp'
 const audioQueue: string[] = []
+let currentPlayerState:
+	| 'Idle'
+	| 'Buffering'
+	| 'Playing'
+	| 'AutoPaused'
+	| 'Paused' = 'Paused'
 
 const player = createAudioPlayer({
 	behaviors: {
@@ -27,16 +33,28 @@ player.on('error', (error) => {
 	console.error(`Error: ${error.message}`)
 })
 
-player.on(AudioPlayerStatus.Playing, () => {
-	console.log('entered playing state!')
-})
-
 player.on(AudioPlayerStatus.Idle, () => {
-	console.log('entered idle state!')
+	currentPlayerState = 'Idle'
 	if (audioQueue.length > 0) {
 		playAudio(audioQueue[0])
 		audioQueue.splice(0, 1)
 	}
+})
+
+player.on(AudioPlayerStatus.Buffering, () => {
+	currentPlayerState = 'Buffering'
+})
+
+player.on(AudioPlayerStatus.Playing, () => {
+	currentPlayerState = 'Playing'
+})
+
+player.on(AudioPlayerStatus.AutoPaused, () => {
+	currentPlayerState = 'AutoPaused'
+})
+
+player.on(AudioPlayerStatus.Paused, () => {
+	currentPlayerState = 'Paused'
 })
 
 async function saveYoutubeVideoToOgg(videoId: string) {
@@ -125,7 +143,7 @@ export async function addVideoToQueue(userInput: string) {
 		return filename
 	}
 
-	if (AudioPlayerStatus.Idle) {
+	if (currentPlayerState === 'Idle') {
 		playAudio(filename)
 	} else {
 		audioQueue.push(filename)
