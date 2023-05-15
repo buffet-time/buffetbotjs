@@ -6,7 +6,7 @@ import {
 	GatewayIntentBits
 } from 'discord.js'
 import type { Reminder } from './types/typings'
-import { token } from './config/config'
+import { discordToken } from './config/config'
 import {
 	removeReminder,
 	getAllReminders,
@@ -144,4 +144,4 @@ client.on('interactionCreate', async (interaction) => {
 	}
 })
 
-client.login(token)
+client.login(discordToken)

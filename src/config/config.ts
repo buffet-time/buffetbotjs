@@ -1,3 +1,2 @@
-export default {
-	token: 'discordTokenHere'
-}
+export const discordToken = 'discordTokenHere'
+export const rapidApiToken = 'rapidApiTokenHere'
