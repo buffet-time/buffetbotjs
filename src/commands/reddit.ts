@@ -1,5 +1,5 @@
 import type { Command } from '../types/typings'
-import { siteEndpoint } from '../assets/endpoints'
+import { botEndpoint } from '../assets/endpoints'
 import { ProperFetch } from '../properFetch'
 
 export { femboyCommand }
@@ -10,7 +10,7 @@ const femboyCommand: Command = {
 	async execute() {
 		try {
 			const returnedObject = (await ProperFetch(
-				`${siteEndpoint}/Reddit/Top/Femboy`
+				`${botEndpoint}/Reddit/Top/Femboy`
 			)) as { url: string }
 
 			return {

@@ -1,5 +1,5 @@
 // API Endpoint to endpoints living in website API
-export const siteEndpoint = 'http://localhost:2080'
+export const siteEndpoint = 'https://api.danielturcich.com'
 
 // API endpoint to buffet bot specific requests
-export const botEndpoint = 'http://localhost:1080'
+export const botEndpoint = 'https://botapi.danielturcich.com'

@@ -15,7 +15,8 @@ import type { VoiceChannel } from 'discord.js'
 import { updateBotStatus } from './main'
 
 const promiseExec = promisify(exec)
-const tmpDirectory = '/home/ubuntu/buffetbotjs/tmp'
+// TODO: don't hardcode this!
+const tmpDirectory = '/home/buffet/buffetbotjs/tmp'
 const audioQueue: string[] = []
 let currentPlayerState:
 	| 'Idle'
@@ -24,6 +25,7 @@ let currentPlayerState:
 	| 'AutoPaused'
 	| 'Paused' = 'Idle'
 
+// TODO: Make this not localize to file so it can be used in both servers.
 const player = createAudioPlayer({
 	behaviors: {
 		noSubscriber: NoSubscriberBehavior.Pause
