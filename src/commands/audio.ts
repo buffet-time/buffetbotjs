@@ -6,17 +6,18 @@ import {
 import type { Command } from '../types/typings'
 import {
 	pausePlayer,
-	unpausePlayer,
-	stopPlayer,
-	playYoutubeVideo,
+	resumePlayer,
+	skipAudio,
 	joinVoice,
 	leaveChannel,
 	addVideoToQueue,
-	validateUrlOrId
+	validateUrlOrId,
+	addPlaylistToQueue
 } from '../audioPlayer'
 
 export { audioCommand }
 
+// TODO: add playlist
 const audioCommand: Command = {
 	name: 'audio',
 	description: 'Play audio into voice channel',
@@ -36,12 +37,12 @@ const audioCommand: Command = {
 		},
 		{
 			name: 'leave',
-			description: 'Leaves voice channel in the server',
+			description: 'Leaves voice channel the bot is currently in.',
 			type: ApplicationCommandOptionType.Subcommand
 		},
 		{
-			name: 'play',
-			description: 'Play audio from a YouTube video',
+			name: 'add',
+			description: 'Add video to bot queue/ play song if queue is empty.',
 			type: ApplicationCommandOptionType.Subcommand,
 			options: [
 				{
@@ -53,13 +54,13 @@ const audioCommand: Command = {
 			]
 		},
 		{
-			name: 'queue',
-			description: 'Add video to bot queue',
+			name: 'playlist',
+			description: 'Add entire playlist to bot queue',
 			type: ApplicationCommandOptionType.Subcommand,
 			options: [
 				{
-					name: 'video',
-					description: 'YouTube video ID or url',
+					name: 'playlist',
+					description: 'YouTube playlist url',
 					type: ApplicationCommandOptionType.String,
 					required: true
 				}
@@ -76,8 +77,8 @@ const audioCommand: Command = {
 			type: ApplicationCommandOptionType.Subcommand
 		},
 		{
-			name: 'stop',
-			description: 'Stop the audio.',
+			name: 'skip',
+			description: 'Skip the current audio.',
 			type: ApplicationCommandOptionType.Subcommand
 		}
 	],
@@ -101,27 +102,7 @@ const audioCommand: Command = {
 				leaveChannel(interaction.guild.id)
 				return { content: 'Left voice channel.' }
 			}
-			case 'play': {
-				const video = interaction.options.getString('video')
-
-				if (!video) {
-					return {
-						content: 'Error(2): Passed invalid video.'
-					}
-				}
-
-				const youtubeId = validateUrlOrId(video.trim())
-
-				if (typeof youtubeId !== 'string') {
-					// return error response if we dont get back a string
-					return youtubeId
-				}
-
-				playYoutubeVideo(youtubeId)
-
-				return { content: 'Audio playing (or soon)' }
-			}
-			case 'queue': {
+			case 'add': {
 				const video = interaction.options.getString('video')
 
 				if (!video) {
@@ -143,17 +124,29 @@ const audioCommand: Command = {
 					content: 'Audio being added to queue'
 				}
 			}
+			case 'playlist': {
+				const playlist = interaction.options.getString('playlist')
+
+				// validate playlist with regex before passing
+
+				if (playlist) {
+					addPlaylistToQueue(playlist)
+					return { content: '' }
+				}
+
+				return { content: 'Error: Invalid playlist URL!' }
+			}
 			case 'pause': {
 				pausePlayer()
 				return { content: 'Paused audio.' }
 			}
 			case 'resume': {
-				unpausePlayer()
+				resumePlayer()
 				return { content: 'Resume audio.' }
 			}
-			case 'stop': {
-				stopPlayer()
-				return { content: 'Stopped audio.' }
+			case 'skip': {
+				skipAudio()
+				return { content: 'Skipped song' }
 			}
 			default: {
 				return {

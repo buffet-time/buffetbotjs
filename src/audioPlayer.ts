@@ -79,7 +79,7 @@ async function saveYoutubeVideoToOgg(videoId: string) {
 
 	// Download video from videoId passed using yt-dlp
 	await promiseExec(
-		`yt-dlp --extract-audio --paths ${tmpDirectory} --output ${videoId} "https://www.youtube.com/watch?v=${videoId}"`
+		`yt-dlp --extract-audio --paths ${tmpDirectory} --output ${videoId} --no-playlist "https://www.youtube.com/watch?v=${videoId}"`
 	)
 
 	return eventualFilename
@@ -131,9 +131,48 @@ function playAudio(filename: string) {
 	player.play(audioResource)
 }
 
-export async function playYoutubeVideo(youtubeId: string) {
-	const filename = await saveYoutubeVideoToOgg(youtubeId)
-	playAudio(filename)
+async function downloadPlaylist(playlistUrl: string) {
+	const playlistId = new URLSearchParams(playlistUrl).get('list')
+
+	if (!playlistId) {
+		return undefined
+	}
+
+	// broken down to be more readable
+	const baseCommand = 'yt-dlp --extract-audio'
+	const commandPaths = `--paths "${tmpDirectory}/${playlistId}"`
+	const commandOutput = `--output '%(playlist_index)s-%(id)s'`
+	const commandCompat = '--compat-options no-youtube-unavailable-videos'
+	const commandOtherOptions = '--yes-playlist'
+
+	await promiseExec(
+		`${baseCommand} ${commandPaths} ${commandOutput} ${commandCompat} ${commandOtherOptions} "${playlistUrl}"`
+	)
+
+	return playlistId
+	// yt-dlp --extract-audio -o '%(playlist_index)s-%(id)s' "https://www.youtube.com/watch?v=PXYeARRyDWk&list=PLSdoVPM5Wnne47ib65gVG206M7qp43us-"
+}
+
+export async function addPlaylistToQueue(youtubePlaylist: string) {
+	const playlistId = await downloadPlaylist(youtubePlaylist)
+
+	if (!playlistId) {
+		return console.warn('Error downloading playlist.')
+	}
+
+	const files = await readdir(`${tmpDirectory}/${playlistId}`)
+	try {
+		files.forEach((file) => {
+			audioQueue.push(`${tmpDirectory}/${playlistId}/${file}`)
+		})
+	} catch (error) {
+		console.warn('Error reading directory!')
+	}
+
+	if (currentPlayerState === 'Idle') {
+		playAudio(audioQueue[0])
+		audioQueue.splice(0, 1)
+	}
 }
 
 export async function addVideoToQueue(youtubeId: string) {
@@ -172,7 +211,7 @@ export function leaveChannel(guildId: string) {
 	updateBotStatus('Team Fortress 2')
 }
 
-export function stopPlayer() {
+export function skipAudio() {
 	const stop = player.stop()
 
 	if (!stop) {
@@ -188,7 +227,7 @@ export function pausePlayer() {
 	}
 }
 
-export function unpausePlayer() {
+export function resumePlayer() {
 	const unpause = player.unpause()
 
 	if (!unpause) {
