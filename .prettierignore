@@ -16,3 +16,4 @@ LICENSE
 ignore.txt
 ignore.json
 /.parcel-cache
+*.gitkeep
