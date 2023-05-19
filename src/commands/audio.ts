@@ -130,7 +130,7 @@ const audioCommand: Command = {
 				// validate playlist with regex before passing
 
 				if (playlist) {
-					addPlaylistToQueue(playlist)
+					addPlaylistToQueue(playlist.trim())
 					return { content: 'Downloading and adding playlist to queue!' }
 				}
 
