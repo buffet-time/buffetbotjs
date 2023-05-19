@@ -132,12 +132,9 @@ function playAudio(filename: string) {
 }
 
 async function downloadPlaylist(playlistUrl: string) {
-	console.log(1, playlistUrl)
 	const playlistId = new URL(playlistUrl).searchParams.get('list')
-	console.log(2, playlistId)
 
 	if (!playlistId) {
-		console.log(3)
 		return undefined
 	}
 
@@ -148,11 +145,6 @@ async function downloadPlaylist(playlistUrl: string) {
 	const commandCompat = '--compat-options no-youtube-unavailable-videos'
 	const commandOtherOptions = '--yes-playlist'
 
-	console.log(
-		4,
-		`${baseCommand} ${commandPaths} ${commandOutput} ${commandCompat} ${commandOtherOptions} "${playlistUrl}"`
-	)
-
 	await promiseExec(
 		`${baseCommand} ${commandPaths} ${commandOutput} ${commandCompat} ${commandOtherOptions} "${playlistUrl}"`
 	)
@@ -162,17 +154,13 @@ async function downloadPlaylist(playlistUrl: string) {
 }
 
 export async function addPlaylistToQueue(youtubePlaylist: string) {
-	console.log(0)
 	const playlistId = await downloadPlaylist(youtubePlaylist)
 
-	console.log(5)
 	if (!playlistId) {
-		console.log(6)
 		return console.warn('Error downloading playlist.')
 	}
 
 	const files = await readdir(`${tmpDirectory}/${playlistId}`)
-	console.log(7, files)
 	try {
 		files.forEach((file) => {
 			audioQueue.push(`${tmpDirectory}/${playlistId}/${file}`)
