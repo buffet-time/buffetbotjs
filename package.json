@@ -14,7 +14,6 @@
 	},
 	"type": "module",
 	"scripts": {
-		"serve": "pnpm compile && pnpm execute",
 		"compile": "parcel build",
 		"execute": "node --experimental-json-modules ./dist/index.js",
 		"checks": "pnpm lint-check && pnpm format-check && pnpm type-check",

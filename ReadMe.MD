@@ -6,7 +6,7 @@
 4. pnpm install
 5. pnpm serve
 
-Ignore: pm2 start "pnpm serve" --name bot
+Ignore: pm2 start "pnpm execute" --name bot
 
 TODO: Fix /femboy
 TODO: Fix /email

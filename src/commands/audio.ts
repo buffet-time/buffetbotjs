@@ -131,7 +131,7 @@ const audioCommand: Command = {
 
 				if (playlist) {
 					addPlaylistToQueue(playlist)
-					return { content: '' }
+					return { content: 'Downloading and adding playlist to queue!' }
 				}
 
 				return { content: 'Error: Invalid playlist URL!' }
