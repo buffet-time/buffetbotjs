@@ -133,7 +133,7 @@ function playAudio(filename: string) {
 
 async function downloadPlaylist(playlistUrl: string) {
 	console.log(1, playlistUrl)
-	const playlistId = new URLSearchParams(playlistUrl).get('list')
+	const playlistId = new URL(playlistUrl).searchParams.get('list')
 	console.log(2, playlistId)
 
 	if (!playlistId) {
