@@ -132,7 +132,7 @@ function playAudio(filename: string) {
 }
 
 async function downloadPlaylist(playlistUrl: string) {
-	const playlistId = new URLSearchParams(playlistUrl).get('list')
+	const playlistId = new URL(playlistUrl).searchParams.get('list')
 
 	if (!playlistId) {
 		return undefined
@@ -166,7 +166,7 @@ export async function addPlaylistToQueue(youtubePlaylist: string) {
 			audioQueue.push(`${tmpDirectory}/${playlistId}/${file}`)
 		})
 	} catch (error) {
-		console.warn('Error reading directory!')
+		return console.warn('Error reading directory!')
 	}
 
 	if (currentPlayerState === 'Idle') {
