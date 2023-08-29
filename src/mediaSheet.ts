@@ -68,7 +68,7 @@ async function getMediaSheetRow(
 
 			switch (channel) {
 				case 'Games': {
-					gamesChannel.send(
+					await gamesChannel.send(
 						`${spreadsheetInfo.personsName}: ${getSheetsRowMessage(
 							'Games',
 							row
@@ -77,7 +77,7 @@ async function getMediaSheetRow(
 					break
 				}
 				case 'Music': {
-					musicChannel.send(
+					await musicChannel.send(
 						`${spreadsheetInfo.personsName}: ${getSheetsRowMessage(
 							'Music',
 							row
@@ -86,7 +86,7 @@ async function getMediaSheetRow(
 					break
 				}
 				case 'Movies': {
-					moviesAndTvChannel.send(
+					await moviesAndTvChannel.send(
 						`${spreadsheetInfo.personsName}: Movie - ${getSheetsRowMessage(
 							'Movies',
 							row
@@ -95,7 +95,7 @@ async function getMediaSheetRow(
 					break
 				}
 				case 'TV': {
-					moviesAndTvChannel.send(
+					await moviesAndTvChannel.send(
 						`${spreadsheetInfo.personsName}: TV - ${getSheetsRowMessage(
 							'TV',
 							row

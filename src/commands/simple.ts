@@ -22,6 +22,7 @@ const kissCommand: Command = {
 	],
 	execute(interaction: ChatInputCommandInteraction) {
 		return {
+			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 			content: `${interaction.user} kissed ${interaction.options.getMentionable(
 				'person'
 			)}`,
@@ -46,6 +47,7 @@ const crocCommand: Command = {
 	description: 'Posts exploding croc',
 	execute(interaction: ChatInputCommandInteraction) {
 		return {
+			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 			content: `${interaction.user} exploded`,
 			files: [
 				'https://cdn.discordapp.com/attachments/480969957438390273/819965221744803870/crocodile.mp4'

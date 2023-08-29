@@ -6,19 +6,16 @@ import {
 	createAudioPlayer,
 	createAudioResource,
 	NoSubscriberBehavior,
-	joinVoiceChannel,
-	getVoiceConnection,
 	StreamType,
 	AudioPlayerStatus
 } from '@discordjs/voice'
-import type { VoiceChannel } from 'discord.js'
-import { updateBotStatus } from './main'
+import { updateBotStatus } from '../../main'
 
 const promiseExec = promisify(exec)
 // TODO: don't hardcode this!
-const tmpDirectory = '/home/buffet/buffetbotjs/tmp'
-const audioQueue: string[] = []
-let currentPlayerState:
+export const tmpDirectory = '/home/buffet/buffetbotjs/tmp'
+export const audioQueue: string[] = []
+export let currentPlayerState:
 	| 'Idle'
 	| 'Buffering'
 	| 'Playing'
@@ -26,7 +23,7 @@ let currentPlayerState:
 	| 'Paused' = 'Idle'
 
 // TODO: Make this not localize to file so it can be used in both servers.
-const player = createAudioPlayer({
+export const player = createAudioPlayer({
 	behaviors: {
 		noSubscriber: NoSubscriberBehavior.Pause
 	}
@@ -65,7 +62,7 @@ player.on(AudioPlayerStatus.Paused, () => {
 	updateBotStatus('Audio: Paused')
 })
 
-async function saveYoutubeVideoToOgg(videoId: string) {
+export async function saveYoutubeVideoToOgg(videoId: string) {
 	const eventualFilename = `${tmpDirectory}/${videoId}.opus`
 	const newMusicFileName = `${videoId}.opus`
 
@@ -123,7 +120,7 @@ export function validateUrlOrId(userInput: string) {
 	return youtubeID
 }
 
-function playAudio(filename: string) {
+export function playAudio(filename: string) {
 	const audioResource = createAudioResource(filename, {
 		inputType: StreamType.Opus
 	})
@@ -131,106 +128,16 @@ function playAudio(filename: string) {
 	player.play(audioResource)
 }
 
-async function downloadPlaylist(playlistUrl: string) {
+export async function downloadPlaylist(playlistUrl: string) {
 	const playlistId = new URL(playlistUrl).searchParams.get('list')
 
 	if (!playlistId) {
 		return undefined
 	}
 
-	// broken down to be more readable
-	const baseCommand = 'yt-dlp --extract-audio'
-	const commandPaths = `--paths "${tmpDirectory}/${playlistId}"`
-	const commandOutput = `--output '%(playlist_index)s-%(id)s'`
-	const commandCompat = '--compat-options no-youtube-unavailable-videos'
-	const commandOtherOptions = '--yes-playlist'
-
 	await promiseExec(
-		`${baseCommand} ${commandPaths} ${commandOutput} ${commandCompat} ${commandOtherOptions} "${playlistUrl}"`
+		`yt-dlp --extract-audio --paths "${tmpDirectory}/${playlistId}" --output '%(playlist_index)s-%(id)s' --compat-options no-youtube-unavailable-videos --yes-playlist "${playlistUrl}"`
 	)
 
 	return playlistId
-	// yt-dlp --extract-audio -o '%(playlist_index)s-%(id)s' "https://www.youtube.com/watch?v=PXYeARRyDWk&list=PLSdoVPM5Wnne47ib65gVG206M7qp43us-"
-}
-
-export async function addPlaylistToQueue(youtubePlaylist: string) {
-	const playlistId = await downloadPlaylist(youtubePlaylist)
-
-	if (!playlistId) {
-		return console.warn('Error downloading playlist.')
-	}
-
-	const files = await readdir(`${tmpDirectory}/${playlistId}`)
-	try {
-		files.forEach((file) => {
-			audioQueue.push(`${tmpDirectory}/${playlistId}/${file}`)
-		})
-	} catch (error) {
-		return console.warn('Error reading directory!')
-	}
-
-	if (currentPlayerState === 'Idle') {
-		playAudio(audioQueue[0])
-		audioQueue.splice(0, 1)
-	}
-}
-
-export async function addVideoToQueue(youtubeId: string) {
-	const filename = await saveYoutubeVideoToOgg(youtubeId)
-
-	if (currentPlayerState === 'Idle') {
-		playAudio(filename)
-	} else {
-		audioQueue.push(filename)
-	}
-}
-
-export function joinVoice(voiceChannel: VoiceChannel) {
-	const connection = joinVoiceChannel({
-		channelId: voiceChannel.id,
-		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-		guildId: voiceChannel.guild!.id,
-		adapterCreator: voiceChannel.guild.voiceAdapterCreator
-	})
-
-	const subscription = connection?.subscribe(player)
-
-	if (!subscription) {
-		return {
-			content:
-				'Error(6): The bot must be in the voice channel first before playing a video!'
-		}
-	}
-
-	return { content: `Joined ${voiceChannel.name}` }
-}
-
-export function leaveChannel(guildId: string) {
-	const connection = getVoiceConnection(guildId)
-	connection?.destroy()
-	updateBotStatus('Team Fortress 2')
-}
-
-export function skipAudio() {
-	const stop = player.stop()
-
-	if (!stop) {
-		console.warn('Player was not stopped correctly.')
-	}
-}
-
-export function pausePlayer() {
-	const pause = player.pause(true)
-
-	if (!pause) {
-		console.warn('Player was not paused correctly.')
-	}
-}
-
-export function resumePlayer() {
-	const unpause = player.unpause()
-
-	if (!unpause) {
-		console.warn('Player was not unpaused correctly.')
-	}
 }

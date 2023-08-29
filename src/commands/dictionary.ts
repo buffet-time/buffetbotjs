@@ -81,7 +81,7 @@ const definitionCommand: Command = {
 
 		const definition = await wordsApiGetDefinition(word)
 
-		if (definition === 'Error' || !definition || !definition.definitions) {
+		if (definition === 'Error' || !definition?.definitions) {
 			const udDefinition = await urbanDictionaryGetDefinition(word)
 
 			if (
@@ -106,8 +106,8 @@ const definitionCommand: Command = {
 		if (definition.definitions.length > definintionNumber) {
 			return {
 				content: `${capitalizeFirstLetter(word)} (${
-					definition.definitions![definintionNumber].partOfSpeech
-				}): ${definition.definitions![definintionNumber].definition}`
+					definition.definitions[definintionNumber].partOfSpeech
+				}): ${definition.definitions[definintionNumber].definition}`
 			}
 		}
 

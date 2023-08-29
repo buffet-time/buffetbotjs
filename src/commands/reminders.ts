@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 import {
 	ApplicationCommandOptionType,
 	ChatInputCommandInteraction
@@ -137,12 +139,7 @@ async function addReminder(
 			channel: channelId
 		}
 		let remindersJson: Reminder[]
-		if (
-			!newReminder ||
-			!newReminder.time ||
-			!newReminder.channel ||
-			timestamp === 0
-		) {
+		if (!newReminder?.time || !newReminder.channel || timestamp === 0) {
 			return 'Incorrect invocation of the add reminders command. See !help'
 		}
 
@@ -218,8 +215,9 @@ async function viewReminders(
 			await FileSystem.readFile(remindersFilePath, 'utf8')
 		)
 		if (
-			!parsedData ||
-			!parsedData.filter((reminder) => reminder.user === interaction.user.id)[0]
+			!parsedData?.filter(
+				(reminder) => reminder.user === interaction.user.id
+			)[0]
 		) {
 			return 'You have no saved reminders.'
 		}
@@ -314,6 +312,8 @@ function remindersArrayToReturnString(remindersArray: Reminder[]) {
 		(reminder) =>
 			`Reminder ${reminder.reminderNumber}: "${
 				reminder.message
-			}" will be sent on: ${new Date(reminder.time)} in <#${reminder.channel}>`
+			}" will be sent on: ${String(new Date(reminder.time))} in <#${
+				reminder.channel
+			}>`
 	)
 }

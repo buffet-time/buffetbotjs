@@ -15,13 +15,11 @@ import {
 import { AdminCommands } from './commands/admin'
 import { acronymCommand } from './commands/acronym'
 import { SimpleCommands } from './commands/simple'
-import { emailCommand } from './commands/email'
 import { sheetsCommand } from './commands/sheets'
-import { femboyCommand } from './commands/reddit'
 import { DictionaryCommands } from './commands/dictionary'
 import { mediaSpreadsheetUsers } from './assets/spreadsheetUsers'
 import { getMediaSheetRow, setupMediaSheetsAndChannels } from './mediaSheet'
-import { audioCommand } from './commands/audio'
+import { audioCommand } from './commands/audio/audio'
 
 // TODO:
 // -- THESE ARE CURRENTLY NOT POSSIBLE
@@ -45,9 +43,7 @@ export function updateBotStatus(newStatus: string) {
 const arrayOfCommandObjects = [
 	remindersCommand,
 	acronymCommand,
-	emailCommand,
 	sheetsCommand,
-	femboyCommand,
 	audioCommand,
 	...AdminCommands,
 	...DictionaryCommands,
@@ -84,8 +80,34 @@ client.on('ready', async () => {
 	let currentTime = 1
 	let x = 0
 
-	// Reminder Handling
-	setInterval(async () => {
+	function mediaSheetCheck() {
+		mediaSpreadsheetUsers.forEach((info, index) => {
+			if (info.Music) {
+				void getMediaSheetRow(info, 'Music', index)
+			}
+
+			if (info.Games) {
+				void getMediaSheetRow(info, 'Games', index)
+			}
+
+			if (info.Movies) {
+				void getMediaSheetRow(info, 'Movies', index)
+			}
+
+			if (info.TV) {
+				void getMediaSheetRow(info, 'TV', index)
+			}
+		})
+	}
+
+	mediaSheetCheck()
+	// setInterval(mediaSheetCheck, 20000) // 20 seconds --- testing
+	setInterval(mediaSheetCheck, 120000) // 2 minutes
+
+	client.user?.setActivity('Team Fortress 2')
+	console.log('Ready')
+
+	async function remindersStuff() {
 		if (!allReminders[0]) {
 			return
 		}
@@ -102,7 +124,7 @@ client.on('ready', async () => {
 			)
 
 			if (channelToSendTo?.type === ChannelType.GuildText) {
-				channelToSendTo.send(
+				await channelToSendTo.send(
 					`<@!${allReminders[x].user}>: ${allReminders[x].message}`
 				)
 				await removeReminder(
@@ -112,38 +134,23 @@ client.on('ready', async () => {
 				allReminders = await getAllReminders()
 			}
 		}
-	}, 15000) // 15 seconds
-
-	function mediaSheetCheck() {
-		// For the music sheets currently
-		mediaSpreadsheetUsers.forEach(async (info, index) => {
-			if (info.Music) {
-				getMediaSheetRow(info, 'Music', index)
-			}
-
-			if (info.Games) {
-				getMediaSheetRow(info, 'Games', index)
-			}
-
-			if (info.Movies) {
-				getMediaSheetRow(info, 'Movies', index)
-			}
-
-			if (info.TV) {
-				getMediaSheetRow(info, 'TV', index)
-			}
-		})
 	}
 
-	mediaSheetCheck()
-	// setInterval(mediaSheetCheck, 20000) // 20 seconds --- testing
-	setInterval(mediaSheetCheck, 120000) // 2 minutes
+	function delay(ms: number) {
+		return new Promise((resolve) => setTimeout(resolve, ms))
+	}
 
-	client.user?.setActivity('Team Fortress 2')
-	console.log('Ready')
+	async function blah() {
+		await remindersStuff()
+		await delay(15000)
+		void blah()
+	}
+
+	void blah()
 })
 
 function isObjectEmpty(object: any) {
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-argument
 	return Object.keys(object).length === 0 && object.constructor === Object
 }
 
@@ -164,14 +171,14 @@ client.on('interactionCreate', async (interaction) => {
 				return
 			}
 			messageToSend
-				? interaction.reply(messageToSend)
-				: interaction.reply('Error Code: 3')
+				? await interaction.reply(messageToSend)
+				: await interaction.reply('Error Code: 3')
 		} else {
-			interaction.reply('Error Code: 2')
+			await interaction.reply('Error Code: 2')
 		}
-	} catch (error) {
-		interaction.reply(`Error Code 1: ${error}`)
+	} catch (error: any) {
+		await interaction.reply(`Error Code 1: ${error}`)
 	}
 })
 
-client.login(discordToken)
+await client.login(discordToken)

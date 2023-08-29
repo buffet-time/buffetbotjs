@@ -3,17 +3,18 @@ import {
 	type ChatInputCommandInteraction,
 	VoiceChannel
 } from 'discord.js'
-import type { Command } from '../types/typings'
+import type { Command } from '../../types/typings'
+import { validateUrlOrId } from './audioPlayer'
 import {
-	pausePlayer,
-	resumePlayer,
-	skipAudio,
 	joinVoice,
 	leaveChannel,
 	addVideoToQueue,
-	validateUrlOrId,
-	addPlaylistToQueue
-} from '../audioPlayer'
+	addPlaylistToQueue,
+	pausePlayer,
+	resumePlayer,
+	clearQueue,
+	skipAudio
+} from './audioCommands'
 
 export { audioCommand }
 
@@ -77,6 +78,11 @@ const audioCommand: Command = {
 			type: ApplicationCommandOptionType.Subcommand
 		},
 		{
+			name: 'clear',
+			description: 'Clears the queue, keeps current song playing.',
+			type: ApplicationCommandOptionType.Subcommand
+		},
+		{
 			name: 'skip',
 			description: 'Skip the current audio.',
 			type: ApplicationCommandOptionType.Subcommand
@@ -118,7 +124,7 @@ const audioCommand: Command = {
 					return youtubeId
 				}
 
-				addVideoToQueue(youtubeId)
+				await addVideoToQueue(youtubeId)
 
 				return {
 					content: 'Audio being added to queue'
@@ -130,7 +136,7 @@ const audioCommand: Command = {
 				// validate playlist with regex before passing
 
 				if (playlist) {
-					addPlaylistToQueue(playlist.trim())
+					await addPlaylistToQueue(playlist.trim())
 					return { content: 'Downloading and adding playlist to queue!' }
 				}
 
@@ -144,9 +150,13 @@ const audioCommand: Command = {
 				resumePlayer()
 				return { content: 'Resume audio.' }
 			}
+			case 'clear': {
+				clearQueue()
+				return { content: 'Clearing queue.' }
+			}
 			case 'skip': {
 				skipAudio()
-				return { content: 'Skipped song' }
+				return { content: 'Skipped song.' }
 			}
 			default: {
 				return {
