@@ -1,7 +1,7 @@
 import { getVoiceConnection, joinVoiceChannel } from '@discordjs/voice'
 import type { VoiceChannel } from 'discord.js'
 import { readdir } from 'fs/promises'
-import { updateBotStatus } from 'src/main'
+import { updateBotStatus } from '../../main'
 import {
 	player,
 	saveYoutubeVideoToOgg,
