@@ -5,7 +5,8 @@ import {
 import type { Command } from '../types/typings'
 import AcronymWords from '../assets/acronymWords'
 
-const words: { [key: string]: string[] } = AcronymWords
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+const words: Record<string, string[]> = AcronymWords
 
 export { acronymCommand }
 

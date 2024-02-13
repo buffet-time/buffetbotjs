@@ -25,7 +25,7 @@ const deleteCommand: Command = {
 			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 			for (const element of liveCommands!) {
 				if (element[1].name === commandToDelete) {
-					client.application?.commands.delete(element[1])
+					await client.application?.commands.delete(element[1])
 
 					return {
 						content: `Passed command deleted.`
