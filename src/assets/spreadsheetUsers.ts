@@ -2,12 +2,14 @@ import type {  MediaSpreadsheetsUsers } from '../types/typings'
 
 export const buffetsUserId = '136494200391729152'
 
+// TODO
+// i really need to improve this and make it self service.
 export const mediaSpreadsheetUsers: MediaSpreadsheetsUsers[] = [
 	{
 		personsName: 'Buffet',
 		userId: buffetsUserId,
 		Music: {
-			id: '1kbSckEbjlI55bCds6qB0bE4h2osHJjbTzXfFoBHnqQA',
+			id: '1c2LLIH5e7voXgWQ_tiJKrDhx14VVevPEdmi6Yv1AE84',
 			range: 'Main!A2:G'
 		},
 		Games: {
