@@ -44,7 +44,7 @@ const sheetsCommand: Command = {
 				{ name: 'Music', value: 'Music' },
 				{ name: 'Games', value: 'Games' },
 				{ name: 'Movies', value: 'Movies' },
-				{ name: 'TV', value: 'tv' }
+				{ name: 'TV', value: 'TV' }
 			]
 		}
 	],
@@ -120,8 +120,9 @@ async function getRowByIndex(
 	range: string
 ): Promise<string[] | undefined> {
 	try {
+		console.log(1, siteEndpoint, id, range, index)
 		const blah = `${siteEndpoint}/Sheets?id=${id}&range=${range}&index=${index}`
-		console.log(blah)
+		console.log(2, blah)
 
 		return (await ProperFetch(blah)) as string[]
 	} catch (error) {
@@ -133,6 +134,7 @@ async function getRowByIndex(
 function getSheetsRowMessage(type: MediaChannels, row: string[]): string {
 	switch (type) {
 		case 'Music': {
+			console.log(3, row)
 			return `${row[Release.artist].trim()} - ${row[
 				Release.name
 			].trim()} (${row[Release.year].trim()} ${row[Release.type].trim()}) ${row[
