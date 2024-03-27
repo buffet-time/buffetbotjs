@@ -1,6 +1,3 @@
-#!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
-
 # Run ESLint and Prettier on all files to ensure no bad commits
 pnpm type-check
 pnpm lint-fix

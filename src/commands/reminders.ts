@@ -228,7 +228,7 @@ async function viewReminders(
 						(reminder) =>
 							reminder.reminderNumber ===
 							interaction.options.getInteger('reminder')
-				  )
+					)
 				: getRemindersByAuthor(parsedData, interaction.user.id)
 		).join(`\n`)
 	} catch (error) {

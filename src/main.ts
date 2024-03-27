@@ -70,11 +70,11 @@ client.on('ready', async () => {
 					name: command.name,
 					description: command.description,
 					options: command.options
-			  })
+				})
 			: client.application?.commands.create({
 					name: command.name,
 					description: command.description
-			  })
+				})
 	}
 
 	let currentTime = 1
