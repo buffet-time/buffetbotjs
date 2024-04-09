@@ -44,7 +44,6 @@ export function resumePlayer() {
 export function joinVoice(voiceChannel: VoiceChannel) {
 	const connection = joinVoiceChannel({
 		channelId: voiceChannel.id,
-		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 		guildId: voiceChannel.guild.id,
 		adapterCreator: voiceChannel.guild.voiceAdapterCreator
 	})

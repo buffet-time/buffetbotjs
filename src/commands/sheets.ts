@@ -15,6 +15,7 @@ import {
 	mediaSpreadsheetUsers
 } from '../assets/spreadsheetUsers'
 import { ProperFetch } from '../properFetch'
+import { getCurrentDate } from '../helpers'
 
 export {
 	getNumberOfRows,
@@ -109,7 +110,8 @@ async function getNumberOfRows(
 			`${siteEndpoint}/Sheets?id=${id}&range=${range}&rows=true&nonmusic=true`
 		)) as number
 	} catch (error) {
-		console.log(error)
+		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+		console.log(`Error: ${error} ~ ${getCurrentDate()}`)
 		return undefined
 	}
 }
@@ -124,7 +126,8 @@ async function getRowByIndex(
 			`${siteEndpoint}/Sheets?id=${id}&range=${range}&index=${index}`
 		)) as string[]
 	} catch (error) {
-		console.log(error)
+		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+		console.log(`Error: ${error} ~ ${getCurrentDate()}`)
 		return undefined
 	}
 }

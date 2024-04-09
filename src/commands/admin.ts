@@ -22,7 +22,6 @@ const deleteCommand: Command = {
 			const commandToDelete = interaction.options.getString('command')
 
 			const liveCommands = await client.application?.commands.fetch()
-			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 			for (const element of liveCommands!) {
 				if (element[1].name === commandToDelete) {
 					await client.application?.commands.delete(element[1])
@@ -52,7 +51,6 @@ const liveCommand: Command = {
 			const liveCommands = await client.application?.commands.fetch()
 
 			const commandNameArray: string[] = []
-			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 			liveCommands?.forEach((command) => {
 				commandNameArray.push(command.name)
 			})

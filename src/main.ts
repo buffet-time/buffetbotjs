@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
 	ChannelType,
 	ChatInputCommandInteraction,
@@ -20,6 +19,7 @@ import { DictionaryCommands } from './commands/dictionary'
 import { mediaSpreadsheetUsers } from './assets/spreadsheetUsers'
 import { getMediaSheetRow, setupMediaSheetsAndChannels } from './mediaSheet'
 import { audioCommand } from './commands/audio/audio'
+import { getCurrentDate } from './helpers'
 
 // TODO:
 // -- THESE ARE CURRENTLY NOT POSSIBLE
@@ -59,7 +59,7 @@ export function updateReminders(reminders: Reminder[]): void {
 }
 
 client.on('ready', async () => {
-	console.log('Starting up...')
+	console.log(`Starting up... ~ ${getCurrentDate()}`)
 	setupMediaSheetsAndChannels(client)
 
 	allReminders = await getAllReminders()
@@ -101,11 +101,10 @@ client.on('ready', async () => {
 	}
 
 	mediaSheetCheck()
-	// setInterval(mediaSheetCheck, 20000) // 20 seconds --- testing
 	setInterval(mediaSheetCheck, 120000) // 2 minutes
 
 	client.user?.setActivity('Team Fortress 2')
-	console.log('Ready')
+	console.log(`Ready ~ ${getCurrentDate()}`)
 
 	async function remindersStuff() {
 		if (!allReminders[0]) {
@@ -136,21 +135,14 @@ client.on('ready', async () => {
 		}
 	}
 
-	function delay(ms: number) {
-		return new Promise((resolve) => setTimeout(resolve, ms))
-	}
-
-	async function blah() {
-		await remindersStuff()
-		await delay(15000)
-		void blah()
-	}
-
-	void blah()
+	// check every 10 minutes
+	setInterval(() => {
+		void remindersStuff
+	}, 600000)
 })
 
 function isObjectEmpty(object: any) {
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-argument
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
 	return Object.keys(object).length === 0 && object.constructor === Object
 }
 
