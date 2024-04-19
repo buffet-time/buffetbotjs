@@ -1,7 +1,7 @@
 import {
 	ApplicationCommandOptionType,
-	AttachmentBuilder,
-	ChatInputCommandInteraction
+	type ChatInputCommandInteraction,
+	EmbedBuilder
 } from 'discord.js'
 import type { Command } from '../types/typings'
 import {
@@ -10,11 +10,11 @@ import {
 	leftistQuotes
 } from '../assets/commandLinks'
 
-const garyAttachment = new AttachmentBuilder(
+const garyEmbed = new EmbedBuilder().setURL(
 	'https://api.danielturcich.com/Asset?fileName=gary'
 )
 
-const crocAttachment = new AttachmentBuilder(
+const crocEmbed = new EmbedBuilder().setURL(
 	'https://api.danielturcich.com/Asset?fileName=croc'
 )
 
@@ -90,7 +90,7 @@ const garyCommand: Command = {
 	description: 'The only solution to pedos: Gary Plauché',
 	execute() {
 		return {
-			files: [garyAttachment]
+			embeds: [garyEmbed]
 		}
 	}
 }
@@ -102,7 +102,7 @@ const crocCommand: Command = {
 		return {
 			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 			content: `${interaction.user} exploded`,
-			files: [crocAttachment]
+			embeds: [crocEmbed]
 		}
 	}
 }

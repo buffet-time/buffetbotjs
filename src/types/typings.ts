@@ -1,5 +1,5 @@
 /* eslint-disable no-mixed-spaces-and-tabs */
-import {
+import type {
 	APIAttachment,
 	ApplicationCommandOptionData,
 	Attachment,
@@ -7,6 +7,7 @@ import {
 	AttachmentPayload,
 	BufferResolvable,
 	ChatInputCommandInteraction,
+	EmbedBuilder,
 	JSONEncodable
 } from 'discord.js'
 
@@ -32,6 +33,7 @@ export interface Command {
 					| AttachmentBuilder
 					| AttachmentPayload
 				)[]
+				embeds?: EmbedBuilder[]
 		  }>
 		| {
 				content?: string
@@ -42,6 +44,7 @@ export interface Command {
 					| AttachmentBuilder
 					| AttachmentPayload
 				)[]
+				embeds?: EmbedBuilder[]
 		  }
 }
 
