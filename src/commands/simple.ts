@@ -49,9 +49,7 @@ const crocCommand: Command = {
 		return {
 			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 			content: `${interaction.user} exploded`,
-			files: [
-				'https://cdn.discordapp.com/attachments/480969957438390273/819965221744803870/crocodile.mp4'
-			]
+			files: ['https://api.danielturcich.com/Asset?fileName=croc']
 		}
 	}
 }
@@ -95,9 +93,7 @@ const garyCommand: Command = {
 	description: 'The only solution to pedos: Gary Plauché',
 	execute() {
 		return {
-			files: [
-				'https://cdn.discordapp.com/attachments/280830527055855618/1034143513689985034/gary.png'
-			]
+			files: ['https://api.danielturcich.com/Asset?fileName=gary']
 		}
 	}
 }
