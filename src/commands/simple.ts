@@ -10,13 +10,13 @@ import {
 	leftistQuotes
 } from '../assets/commandLinks'
 
-const garyEmbed = new EmbedBuilder().setURL(
-	'https://api.danielturcich.com/Asset?fileName=gary'
-)
+const garyEmbed = new EmbedBuilder()
+	.setURL('https://api.danielturcich.com/Asset?fileName=gary')
+	.setDescription('Gary')
 
-const crocEmbed = new EmbedBuilder().setURL(
-	'https://api.danielturcich.com/Asset?fileName=croc'
-)
+const crocEmbed = new EmbedBuilder()
+	.setURL('https://api.danielturcich.com/Asset?fileName=croc')
+	.setDescription('Croc')
 
 const kissCommand: Command = {
 	name: 'kiss',
