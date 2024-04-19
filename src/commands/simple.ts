@@ -11,11 +11,11 @@ import {
 } from '../assets/commandLinks'
 
 const garyEmbed = new EmbedBuilder()
-	.setURL('https://api.danielturcich.com/Asset?fileName=gary')
+	.setImage('https://api.danielturcich.com/Asset?fileName=gary')
 	.setDescription('Gary')
 
 const crocEmbed = new EmbedBuilder()
-	.setURL('https://api.danielturcich.com/Asset?fileName=croc')
+	.setImage('https://api.danielturcich.com/Asset?fileName=croc')
 	.setDescription('Croc')
 
 const kissCommand: Command = {
