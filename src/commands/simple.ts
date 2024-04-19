@@ -1,7 +1,6 @@
 import {
 	ApplicationCommandOptionType,
-	type ChatInputCommandInteraction,
-	EmbedBuilder
+	ChatInputCommandInteraction
 } from 'discord.js'
 import type { Command } from '../types/typings'
 import {
@@ -9,14 +8,6 @@ import {
 	parentsImages,
 	leftistQuotes
 } from '../assets/commandLinks'
-
-const garyEmbed = new EmbedBuilder()
-	.setImage('https://api.danielturcich.com/Asset?fileName=gary')
-	.setDescription('Gary')
-
-const crocEmbed = new EmbedBuilder()
-	.setImage('https://api.danielturcich.com/Asset?fileName=croc')
-	.setDescription('Croc')
 
 const kissCommand: Command = {
 	name: 'kiss',
@@ -85,16 +76,6 @@ const leftistCommand: Command = {
 	}
 }
 
-const garyCommand: Command = {
-	name: 'gary',
-	description: 'The only solution to pedos: Gary Plauché',
-	execute() {
-		return {
-			embeds: [garyEmbed]
-		}
-	}
-}
-
 const crocCommand: Command = {
 	name: 'croc',
 	description: 'Posts exploding croc',
@@ -102,7 +83,17 @@ const crocCommand: Command = {
 		return {
 			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 			content: `${interaction.user} exploded`,
-			embeds: [crocEmbed]
+			files: ['https://i.imgur.com/dEm3wwF.mp4']
+		}
+	}
+}
+
+const garyCommand: Command = {
+	name: 'gary',
+	description: 'The only solution to pedos: Gary Plauché',
+	execute() {
+		return {
+			files: ['https://i.imgur.com/FjheM9j.png']
 		}
 	}
 }
