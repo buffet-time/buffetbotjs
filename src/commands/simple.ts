@@ -1,5 +1,6 @@
 import {
 	ApplicationCommandOptionType,
+	AttachmentBuilder,
 	ChatInputCommandInteraction
 } from 'discord.js'
 import type { Command } from '../types/typings'
@@ -8,6 +9,14 @@ import {
 	parentsImages,
 	leftistQuotes
 } from '../assets/commandLinks'
+
+const garyAttachment = new AttachmentBuilder(
+	'https://api.danielturcich.com/Asset?fileName=gary'
+)
+
+const crocAttachment = new AttachmentBuilder(
+	'https://api.danielturcich.com/Asset?fileName=croc'
+)
 
 const kissCommand: Command = {
 	name: 'kiss',
@@ -38,18 +47,6 @@ const parentsCommand: Command = {
 		return {
 			content: 'MY PARENTS SUCK ASS',
 			files: [parentsImages[Math.floor(Math.random() * parentsImages.length)]]
-		}
-	}
-}
-
-const crocCommand: Command = {
-	name: 'croc',
-	description: 'Posts exploding croc',
-	execute(interaction: ChatInputCommandInteraction) {
-		return {
-			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-			content: `${interaction.user} exploded`,
-			files: ['https://api.danielturcich.com/Asset?fileName=croc']
 		}
 	}
 }
@@ -93,7 +90,19 @@ const garyCommand: Command = {
 	description: 'The only solution to pedos: Gary Plauché',
 	execute() {
 		return {
-			files: ['https://api.danielturcich.com/Asset?fileName=gary']
+			files: [garyAttachment]
+		}
+	}
+}
+
+const crocCommand: Command = {
+	name: 'croc',
+	description: 'Posts exploding croc',
+	execute(interaction: ChatInputCommandInteraction) {
+		return {
+			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+			content: `${interaction.user} exploded`,
+			files: [crocAttachment]
 		}
 	}
 }
