@@ -58,6 +58,7 @@ export function updateReminders(reminders: Reminder[]): void {
 	allReminders = reminders
 }
 
+// eslint-disable-next-line @typescript-eslint/no-misused-promises
 client.on('ready', async () => {
 	console.log(`Starting up... ~ ${getCurrentDate()}`)
 	setupMediaSheetsAndChannels(client)
@@ -146,6 +147,7 @@ function isObjectEmpty(object: any) {
 	return Object.keys(object).length === 0 && object.constructor === Object
 }
 
+// eslint-disable-next-line @typescript-eslint/no-misused-promises
 client.on('interactionCreate', async (interaction) => {
 	if (!interaction.isCommand()) {
 		return

@@ -5,8 +5,9 @@
 1. Clone Repo
 2. Get Discord bots token and update config.js
 3. install ffmpeg on your machine
-4. `$ pnpm install`
-5. `$ pnpm compile && pnpm execute`
+4. install <https://github.com/yt-dlp/yt-dlp?tab=readme-ov-file#installation>
+5. `$ pnpm install`
+6. `$ pnpm compile && pnpm execute`
 
 ## Notes for myself for deployment
 
