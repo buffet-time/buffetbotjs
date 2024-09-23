@@ -6,7 +6,8 @@
 		"./.vscode/*",
 		"./.husky/*",
 		"./.github/*",
-		"./node_modules/*"
+		"./node_modules/*",
+		"*.js"
 	],
 	"env": {
 		"es2022": true,

@@ -19,12 +19,14 @@ export async function ProperFetch(
 			return await response.json()
 		}
 
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
 		console.error(
 			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 			`Responded with an error: ${await response.json()} ~ ${getCurrentDate()}`
 		)
 		return null
 	} catch (error: any) {
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
 		console.error(`Error in fetch call: ${error} ~ ${getCurrentDate()}`)
 		return null
 	}
