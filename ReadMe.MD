@@ -11,7 +11,7 @@
 
 ## Notes for myself for deployment
 
-`pm2 start "pnpm compile && pnpm execute" --name bot`
+`pm2 start "pnpm serve" --name bot`
 
 in (/etc/network/interfaces)
 

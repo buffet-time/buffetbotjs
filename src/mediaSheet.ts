@@ -42,8 +42,8 @@ async function getMediaSheetRow(
 	if (!spreadsheetInfo[channel]) return
 
 	const tempLength = await getNumberOfRows(
-		spreadsheetInfo[channel]!.id,
-		spreadsheetInfo[channel]!.range
+		spreadsheetInfo[channel].id,
+		spreadsheetInfo[channel].range
 	)
 
 	if (tempLength !== spreadsheetLengths[index][channel]) {
@@ -53,8 +53,8 @@ async function getMediaSheetRow(
 
 		const row = await getRowByIndex(
 			tempLength - 1,
-			spreadsheetInfo[channel]!.id,
-			spreadsheetInfo[channel]!.range
+			spreadsheetInfo[channel].id,
+			spreadsheetInfo[channel].range
 		)
 
 		// if (row && rowIsFilledOut(row)) {

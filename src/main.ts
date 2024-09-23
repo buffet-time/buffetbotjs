@@ -66,7 +66,7 @@ client.on('ready', async () => {
 	allReminders = await getAllReminders()
 
 	for (const command of arrayOfCommandObjects) {
-		command.options
+		void (command.options
 			? client.application?.commands.create({
 					name: command.name,
 					description: command.description,
@@ -75,7 +75,7 @@ client.on('ready', async () => {
 			: client.application?.commands.create({
 					name: command.name,
 					description: command.description
-				})
+				}))
 	}
 
 	let currentTime = 1
