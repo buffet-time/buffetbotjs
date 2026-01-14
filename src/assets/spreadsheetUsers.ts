@@ -4,12 +4,13 @@ export const buffetsUserId = '136494200391729152'
 
 // TODO
 // i really need to improve this and make it self service.
+// no seriously fix this eventually bud
 export const mediaSpreadsheetUsers: MediaSpreadsheetsUsers[] = [
 	{
 		personsName: 'Buffet',
 		userId: buffetsUserId,
 		Music: {
-			id: '1GFwmZwMiBBWvA6ZZx4M3ITRjrCDvF5tif15A0cfQhug',
+			id: '1bSwQhl5fsOEj_OUIBl4cL2huYRujtIYf3uA5bnTv1iE',
 			range: 'Main!A2:G'
 		},
 		Games: {
